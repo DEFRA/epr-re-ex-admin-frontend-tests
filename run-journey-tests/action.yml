@@ -27,7 +27,7 @@ runs:
     - name: Start docker compose
       shell: bash
       run: |
-          CDP_EXAMPLE_NODE_FRONTEND=${{inputs.epr-re-ex-admin-frontend}} \
+          EPR_RE_EX_ADMIN_FRONTEND=${{inputs.epr-re-ex-admin-frontend}} \
           docker compose up --wait-timeout 300 -d --quiet-pull
 
     - name: Run the tests
