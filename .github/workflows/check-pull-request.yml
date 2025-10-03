@@ -75,7 +75,7 @@ jobs:
     name: Run Journey Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: DEFRA/epr-re-ex-admin-frontend-tests/run-journey-tests@PAE-275-configure-repo
+      - uses: DEFRA/epr-re-ex-admin-frontend-tests/run-journey-tests@main
 
 
 # Uncomment this to run the tests in your test suite

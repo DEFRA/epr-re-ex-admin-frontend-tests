@@ -15,7 +15,6 @@ runs:
     - uses: actions/checkout@v5
       with:
         repository: DEFRA/epr-re-ex-admin-frontend-tests
-        ref: PAE-275-configure-repo
 
     - uses: actions/setup-node@v5
       with:
