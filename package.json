@@ -46,12 +46,12 @@
     "undici": "7.16.0"
   },
   "devDependencies": {
-    "eslint": "^8.57.0",
+    "eslint": "9.37.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-config-standard": "17.1.0",
     "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-wdio": "9.16.2",
     "husky": "9.1.7",
+    "neostandard": "0.12.2",
     "prettier": "3.6.2"
   }
 }
