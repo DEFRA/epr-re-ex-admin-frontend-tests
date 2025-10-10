@@ -75,12 +75,11 @@ jobs:
     name: Run Journey Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: DEFRA/epr-re-ex-admin-frontend-tests/run-journey-tests@main
+      - name: Checkout journey-tests repo
+        uses: actions/checkout@v5
 
-
-# Uncomment this to run the tests in your test suite
-#  tests:
-#    name: Run Journey Tests
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: DEFRA/cdp-node-journey-test-suite-template/run-journey-tests@main
+      - name: Run journey tests
+        uses: ./run-journey-tests
+        with:
+          branch: ${{ github.head_ref }}
+          journey-test-pr: true
