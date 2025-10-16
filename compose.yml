@@ -20,17 +20,16 @@
 name: epr-re-ex-admin-frontend-tests
 
 services:
-
-################################################################################
-# Headless browser, used by the test suite to actually run the tests against the
-# containers.
+  ################################################################################
+  # Headless browser, used by the test suite to actually run the tests against the
+  # containers.
   selenium-chrome:
     image: selenium/standalone-chrome:123.0
     ports:
       - 4444:4444
     network_mode: host
 
-################################################################################
+  ################################################################################
   localstack:
     image: localstack/localstack:3.2.0
     environment:
@@ -47,22 +46,21 @@ services:
       start_period: 5s
       retries: 3
 
-################################################################################
+  ################################################################################
   redis:
-    image: redis:7
+    image: redis:8.2.2-alpine3.22
     restart: always
     healthcheck:
-      test: [ "CMD", "redis-cli", "PING" ]
+      test: ["CMD", "redis-cli", "PING"]
       interval: 5s
       start_period: 2s
       retries: 5
 
-
-################################################################################
-#
-# Add the services you want to test below.
-#
-################################################################################
+  ################################################################################
+  #
+  # Add the services you want to test below.
+  #
+  ################################################################################
   epr-re-ex-admin-frontend:
     image: defradigital/epr-re-ex-admin-frontend:${EPR_RE_EX_ADMIN_FRONTEND:-latest}
     env_file:
@@ -84,20 +82,3 @@ services:
       interval: 3s
       start_period: 2s
       retries: 3
-
-################################################################################
-# cdp-example-node-backend:
-#   image: defradigital/cdp-example-node-backend:${CDP_EXAMPLE_NODE_BACKEND:-latest}
-#   env_file:
-#     - ./docker/config/defaults.env
-#     - ./docker/config/example-backend.env
-#   environment:
-#     - PORT=3001
-#   depends_on:
-#     mongodb:
-#       condition: service_healthy
-#   healthcheck:
-#     test: ["CMD", "curl", "http://localhost:3001/health"]
-#     interval: 3s
-#     start_period: 2s
-#     retries: 3
