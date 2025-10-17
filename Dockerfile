@@ -4,20 +4,19 @@ ENV TZ="Europe/London"
 
 USER root
 
-RUN apt-get update -qq \
-    && apt-get install -qqy \
+RUN apk update\
+    && apk add \
     curl \
     zip \
-    openjdk-17-jre-headless
+    bash \
+    openjdk17-jdk
 
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && ./aws/install
+RUN apk add --no-cache aws-cli
 
 WORKDIR /app
 
 COPY . .
-RUN npm install
+RUN npm install --ignore-scripts
 
 ENTRYPOINT [ "./entrypoint.sh" ]
 
