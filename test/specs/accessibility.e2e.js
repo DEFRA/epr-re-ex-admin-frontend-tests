@@ -7,7 +7,7 @@ import { logViolationsToAllure } from '../support/accessibility.js'
 function failOnViolationLevel(results) {
   results.violations.forEach((violation) => {
     if (violation.impact === 'critical' || violation.impact === 'serious') {
-      expect.fail(
+      throw new Error(
         'At least one Serious or Critical accessibility violation found'
       )
     }
