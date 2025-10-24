@@ -71,9 +71,16 @@ services:
       NODE_ENV: development
       REDIS_HOST: redis
       LOCALSTACK_ENDPOINT: http://localstack:4566
+      EPR_BACKEND_URL: http://epr-backend:3001
+      ENTRA_TENANT_ID: tenantId
+      ENTRA_CLIENT_ID: clientId
+      ENTRA_CLIENT_SECRET: test
+      OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
       USE_SINGLE_INSTANCE_CACHE: true
     depends_on:
       redis:
+        condition: service_healthy
+      epr-re-ex-entra-stub:
         condition: service_healthy
     ports:
       - 3002:3002
@@ -82,3 +89,51 @@ services:
       interval: 3s
       start_period: 2s
       retries: 3
+
+  epr-re-ex-entra-stub:
+    image: defradigital/epr-re-ex-entra-stub:latest
+    ports:
+      - 3010:3010
+    environment:
+      STUB_INTERNAL_URL: http://epr-re-ex-entra-stub:3010
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:3010/health"]
+      interval: 3s
+      start_period: 2s
+      retries: 3
+
+  mongodb:
+    image: mongo:6.0.13
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      start_period: 5s
+      retries: 3
+
+  epr-backend:
+    image: defradigital/epr-backend:${EPR_BACKEND:-latest}
+    links:
+      - 'localstack:localstack'
+      - 'mongodb:mongodb'
+    depends_on:
+      localstack:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    env_file:
+      - ./docker/config/defaults.env
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      LOCALSTACK_ENDPOINT: http://localstack:4566
+      MONGO_URI: mongodb://mongodb:27017/
+      GOVUK_NOTIFY_API_KEY: fake-key-for-testing
+      AUDIT_ENABLED: false
+      FEATURE_FLAG_SUMMARY_LOGS: true
+      FEATURE_FLAG_ORGANISATIONS: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 5s
+      start_period: 10s
+      retries: 5
