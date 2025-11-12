@@ -1,5 +1,5 @@
 import { Page } from 'page-objects/page'
-import { $$ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 class OrganisationsPage extends Page {
   open() {
@@ -9,7 +9,6 @@ class OrganisationsPage extends Page {
   async getTableData() {
     return $$('table.govuk-table tbody tr').map(async (row) => {
       const header = await row.$('th.govuk-table__header')
-      // #main-content > div > div > div > table > tbody > tr:nth-child(1) > td:nth-child(2)
       const orgId = await row.$('td:nth-child(2)')
       const regNo = await row.$('td:nth-child(3)')
       const status = await row.$('td:nth-child(4)')
@@ -20,6 +19,17 @@ class OrganisationsPage extends Page {
         status: await status.getText()
       }
     })
+  }
+
+  async editLink(row) {
+    await $(
+      `#main-content > div > div > div > table > tbody > tr:nth-child(${row}) > td:nth-child(5) > a`
+    ).click()
+  }
+
+  async getSuccessMessage() {
+    const successElem = await $('#organisation-success-message')
+    return successElem.getText()
   }
 }
 
