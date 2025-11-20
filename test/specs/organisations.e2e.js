@@ -18,6 +18,23 @@ describe('Organisations page', () => {
 
     await Navigation.clickOnLink('Organisations')
 
+    await OrganisationsPage.searchFor('Plastic')
+    const searchResult = await OrganisationsPage.searchResult()
+    expect(searchResult).toEqual('1 result found')
+
+    const searchOrgTable = await OrganisationsPage.getTableData()
+    const expectedSearchOrgTable = [
+      {
+        header: 'Plastic Exporters',
+        orgId: '50004',
+        regNo: 'PE789012',
+        regulator: 'NRW',
+        status: 'created'
+      }
+    ]
+    expect(searchOrgTable).toEqual(expectedSearchOrgTable)
+    await OrganisationsPage.clearSearch()
+
     await OrganisationsPage.editLink(1)
 
     await JsonEditor.switchToTextEditor()
@@ -38,24 +55,28 @@ describe('Organisations page', () => {
         header: 'ACME ltd',
         orgId: '50006',
         regNo: 'AC012345',
+        regulator: 'EA',
         status: 'created'
       },
       {
         header: 'Plastic Exporters',
         orgId: '50004',
         regNo: 'PE789012',
+        regulator: 'NRW',
         status: 'created'
       },
       {
         header: 'Green Future Trust',
         orgId: '50005',
         regNo: 'GF345678',
+        regulator: 'NIEA',
         status: 'created'
       },
       {
         header: 'Eco Recycle Ltd',
         orgId: '50003',
         regNo: 'ER123456',
+        regulator: 'SEPA',
         status: 'created'
       }
     ]
