@@ -53,6 +53,6 @@
     "eslint-plugin-wdio": "9.16.2",
     "husky": "9.1.7",
     "neostandard": "0.12.2",
-    "prettier": "3.7.3"
+    "prettier": "3.7.4"
   }
 }
