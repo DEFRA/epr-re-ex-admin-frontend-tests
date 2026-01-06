@@ -40,7 +40,7 @@
     "@wdio/junit-reporter": "9.21.0",
     "@wdio/mocha-framework": "9.21.0",
     "@wdio/spec-reporter": "9.20.0",
-    "allure-commandline": "2.34.1",
+    "allure-commandline": "2.36.0",
     "esm-module-alias": "2.2.1",
     "global-agent": "3.0.0",
     "undici": "7.16.0",
