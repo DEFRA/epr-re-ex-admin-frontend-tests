@@ -47,12 +47,12 @@
     "@axe-core/webdriverio": "4.11.0"
   },
   "devDependencies": {
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.4",
-    "eslint-plugin-wdio": "9.16.2",
+    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-wdio": "9.23.0",
     "husky": "9.1.7",
     "neostandard": "0.12.2",
-    "prettier": "3.7.3"
+    "prettier": "3.8.0"
   }
 }
