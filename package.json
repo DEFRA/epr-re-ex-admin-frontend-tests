@@ -32,27 +32,27 @@
     "report:publish": "npm run report; ./bin/publish-tests.sh"
   },
   "dependencies": {
-    "@wdio/browserstack-service": "9.21.0",
-    "@wdio/cli": "9.21.1",
-    "@wdio/globals": "9.17.0",
-    "@wdio/local-runner": "9.21.0",
-    "@wdio/allure-reporter": "9.21.0",
-    "@wdio/junit-reporter": "9.21.0",
-    "@wdio/mocha-framework": "9.21.0",
-    "@wdio/spec-reporter": "9.20.0",
-    "allure-commandline": "2.34.1",
+    "@wdio/browserstack-service": "9.23.2",
+    "@wdio/cli": "9.23.2",
+    "@wdio/globals": "9.23.0",
+    "@wdio/local-runner": "9.23.2",
+    "@wdio/allure-reporter": "9.23.2",
+    "@wdio/junit-reporter": "9.23.2",
+    "@wdio/mocha-framework": "9.23.2",
+    "@wdio/spec-reporter": "9.23.2",
+    "allure-commandline": "2.36.0",
     "esm-module-alias": "2.2.1",
     "global-agent": "3.0.0",
     "undici": "7.18.2",
     "@axe-core/webdriverio": "4.11.0"
   },
   "devDependencies": {
-    "eslint": "9.39.1",
+    "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.4",
-    "eslint-plugin-wdio": "9.16.2",
+    "eslint-plugin-prettier": "5.5.5",
+    "eslint-plugin-wdio": "9.23.0",
     "husky": "9.1.7",
     "neostandard": "0.12.2",
-    "prettier": "3.7.3"
+    "prettier": "3.8.0"
   }
 }
