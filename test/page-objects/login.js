@@ -12,10 +12,21 @@ class LoginPage extends Page {
   }
 
   async enterCredentialsMSLogin(username, password) {
-    await $('#i0116').setValue(username)
-    await $('input[type=submit]').click()
-    await $('input[type=submit]').click()
-    await $('input[type=submit]').click()
+    const usernameField = await $('#i0116')
+    await usernameField.waitForExist({ timeout: 5000 })
+    await usernameField.setValue(username)
+    const nextButton = await $('#idSIButton9')
+    await nextButton.click()
+
+    const passwordField = await $('#i0118')
+    await passwordField.waitForExist({ timeout: 5000 })
+    await passwordField.setValue(password)
+    const nextPWButton = await $('input[value="Sign in"]')
+    await nextPWButton.click()
+
+    const submitElement = await $('input[value="Yes"]')
+    submitElement.waitForExist({ timeout: 5000 })
+    submitElement.click()
   }
 
   async submitCredentials() {

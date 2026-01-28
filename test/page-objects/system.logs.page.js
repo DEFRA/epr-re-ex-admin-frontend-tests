@@ -21,6 +21,10 @@ class SystemLogsPage extends Page {
     )
     return difference.getText()
   }
+
+  async noSystemLogsFound() {
+    return await $('#main-content div.govuk-inset-text').getText()
+  }
 }
 
 export default new SystemLogsPage()

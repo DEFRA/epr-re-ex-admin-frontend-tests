@@ -6,6 +6,10 @@ class OrganisationsPage extends Page {
     return super.open('/organisations')
   }
 
+  async getHeaderText() {
+    return $('#main-content h1.govuk-heading-xl').getText()
+  }
+
   async getTableData() {
     return $$('table.govuk-table tbody tr').map(async (row) => {
       const header = await row.$('th.govuk-table__header')

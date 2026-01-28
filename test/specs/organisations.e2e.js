@@ -6,6 +6,7 @@ import OrganisationsPage from 'page-objects/organisations.js'
 import JsonEditor from 'page-objects/jsoneditor.js'
 import { createLinkedOrganisation } from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
+import HomePage from 'page-objects/home.page.js'
 
 describe('Organisations page', () => {
   it('Should be able to update an organisation and view system logs @organisations', async () => {
@@ -15,6 +16,9 @@ describe('Organisations page', () => {
     ])
 
     const organisation = linkedOrganisation.organisation
+
+    await HomePage.open()
+    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
 
     await LoginPage.open()
     await expect(browser).toHaveTitle(expect.stringContaining('Login'))
