@@ -31,12 +31,6 @@ runs:
       run: npm i
       shell: bash
 
-    - name: Create downloads directory
-      shell: bash
-      run: |
-        mkdir -p downloads
-        chmod 777 downloads
-
     - name: Start docker compose
       shell: bash
       run: |

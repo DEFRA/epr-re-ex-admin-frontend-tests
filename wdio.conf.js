@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import path from 'node:path'
 
 const oneMinute = 60 * 1000
 
@@ -52,13 +51,7 @@ export const config = {
           '--disable-remote-fonts',
           '--ignore-certificate-errors',
           '--disable-dev-shm-usage'
-        ],
-        prefs: {
-          'download.default_directory': path.join(process.cwd(), 'downloads'),
-          'download.prompt_for_download': false,
-          'download.directory_upgrade': true,
-          'safebrowsing.enabled': false
-        }
+        ]
       }
     }
   ],

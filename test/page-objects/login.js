@@ -11,6 +11,13 @@ class LoginPage extends Page {
     await $('#password').setValue(password)
   }
 
+  async enterCredentialsMSLogin(username, password) {
+    await $('#i0116').setValue(username)
+    await $('input[type=submit]').click()
+    await $('input[type=submit]').click()
+    await $('input[type=submit]').click()
+  }
+
   async submitCredentials() {
     await $('button[type=submit]').click()
   }
