@@ -6,6 +6,10 @@ class OrganisationsPage extends Page {
     return super.open('/organisations')
   }
 
+  async getHeaderText() {
+    return $('#main-content h1.govuk-heading-xl').getText()
+  }
+
   async getTableData() {
     return $$('table.govuk-table tbody tr').map(async (row) => {
       const header = await row.$('th.govuk-table__header')
@@ -45,7 +49,9 @@ class OrganisationsPage extends Page {
   }
 
   async clearSearch() {
-    await $('#main-content > div:nth-child(1) > div > p > a').click()
+    await $(
+      '#main-content > div:nth-child(1) > div > form > div.govuk-button-group > a'
+    ).click()
   }
 }
 

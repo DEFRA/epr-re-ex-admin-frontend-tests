@@ -171,7 +171,9 @@ export const config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: debug ? oneHour : 60000
+    timeout: debug ? oneHour : 60000,
+    grep: process.env.GREP || '',
+    invert: process.env.GREP_INVERT === 'true'
   },
   //
   // =====
