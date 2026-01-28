@@ -50,7 +50,9 @@ export const config = {
           'download.default_directory': path.join(process.cwd(), 'downloads'),
           'download.prompt_for_download': false,
           'download.directory_upgrade': true,
-          'safebrowsing.enabled': false
+          'safebrowsing.enabled': false,
+          'safebrowsing.disable_download_protection': true,
+          'profile.default_content_setting_values.automatic_downloads': 1
         }
       }
     }
