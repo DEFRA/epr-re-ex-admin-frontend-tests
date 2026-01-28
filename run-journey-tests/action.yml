@@ -33,7 +33,9 @@ runs:
 
     - name: Create downloads directory
       shell: bash
-      run: mkdir -p downloads
+      run: |
+        mkdir -p downloads
+        chmod 777 downloads
 
     - name: Start docker compose
       shell: bash
