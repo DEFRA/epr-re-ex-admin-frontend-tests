@@ -45,7 +45,9 @@ class OrganisationsPage extends Page {
   }
 
   async clearSearch() {
-    await $('#main-content > div:nth-child(1) > div > p > a').click()
+    await $(
+      '#main-content > div:nth-child(1) > div > form > div.govuk-button-group > a'
+    ).click()
   }
 }
 

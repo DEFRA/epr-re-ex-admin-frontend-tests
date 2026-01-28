@@ -25,7 +25,7 @@ class JsonEditor {
 
   async updateOrgId(orgId) {
     await $(
-      '#jsoneditor > div > div.jsoneditor-outer.has-main-menu-bar.has-nav-bar > div > div > table > tbody > tr:nth-child(3) > td:nth-child(3) > table > tbody > tr > td:nth-child(4) > div'
+      '#jsoneditor > div > div.jsoneditor-outer.has-main-menu-bar.has-nav-bar > div > div > table > tbody > tr:nth-child(6) > td:nth-child(3) > table > tbody > tr > td:nth-child(4) > div'
     ).setValue(orgId)
   }
 

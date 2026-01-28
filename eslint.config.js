@@ -22,4 +22,16 @@ for (const item of ns) {
   }
 }
 
-export default ns
+export default [
+  ...ns,
+  {
+    rules: {
+      camelcase: [
+        'error',
+        {
+          allow: ['^faker[A-Z]{2}_[A-Z]{2}$']
+        }
+      ]
+    }
+  }
+]

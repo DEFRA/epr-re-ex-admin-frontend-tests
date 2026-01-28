@@ -1,4 +1,5 @@
 import allure from 'allure-commandline'
+import path from 'node:path'
 
 const oneMinute = 60 * 1000
 
@@ -44,7 +45,13 @@ export const config = {
           '--disable-remote-fonts',
           '--ignore-certificate-errors',
           '--disable-dev-shm-usage'
-        ]
+        ],
+        prefs: {
+          'download.default_directory': path.join(process.cwd(), 'downloads'),
+          'download.prompt_for_download': false,
+          'download.directory_upgrade': true,
+          'safebrowsing.enabled': false
+        }
       }
     }
   ],
@@ -89,7 +96,8 @@ export const config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: oneMinute
+    timeout: oneMinute,
+    grep: process.env.GREP || ''
   },
   //
   // =====
