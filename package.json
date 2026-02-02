@@ -18,6 +18,7 @@
     "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js",
     "test:browserstack": "npm run clean && wdio run wdio.browserstack.conf.js",
     "test:local": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.local.conf.js",
+    "test:local:grep": "npm run clean && wdio run wdio.local.conf.js",
     "test:local:debug": "npm run clean && GREP='@smoketest' GREP_INVERT=true DEBUG=true wdio run wdio.local.conf.js",
     "test:github": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.github.conf.js",
     "test:github:browserstack": "npm run clean && wdio run wdio.github.browserstack.conf.js",

@@ -7,6 +7,7 @@ import OrganisationsPage from 'page-objects/organisations.js'
 import PublicRegisterPage from 'page-objects/public.register.page.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
 import config from '../config/config.js'
+import TonnageMonitoringPage from 'page-objects/tonnage.monitoring.page.js'
 
 describe('Smoke tests @smoketest', () => {
   it('Should be to login and view Home Page and Organisations Page', async () => {
@@ -32,5 +33,8 @@ describe('Smoke tests @smoketest', () => {
 
     await Navigation.clickOnLink('Public register')
     await PublicRegisterPage.downloadPublicRegister()
+
+    await Navigation.clickOnLink('Tonnage monitoring')
+    await TonnageMonitoringPage.downloadCsv()
   })
 })
