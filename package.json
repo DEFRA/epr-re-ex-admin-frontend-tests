@@ -36,7 +36,7 @@
     "@axe-core/webdriverio": "4.11.0",
     "@faker-js/faker": "10.2.0",
     "@wdio/allure-reporter": "9.23.2",
-    "@wdio/browserstack-service": "9.23.2",
+    "@wdio/browserstack-service": "9.23.3",
     "@wdio/cli": "9.23.2",
     "@wdio/globals": "9.23.0",
     "@wdio/junit-reporter": "9.23.2",
