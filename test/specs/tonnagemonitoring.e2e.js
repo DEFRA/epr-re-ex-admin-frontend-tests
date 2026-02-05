@@ -15,7 +15,7 @@ describe('Tonnage Monitoring page', () => {
 
     const expectedTable = [
       { Material: 'Aluminium', Tonnage: '0.00' },
-      { Material: 'Fibre based composite ', Tonnage: '0.00' },
+      { Material: 'Fibre based composite', Tonnage: '0.00' },
       { Material: 'Paper and board', Tonnage: '0.00' },
       { Material: 'Plastic', Tonnage: '0.00' },
       { Material: 'Steel', Tonnage: '0.00' },
