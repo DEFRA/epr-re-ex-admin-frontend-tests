@@ -17,7 +17,7 @@ class SystemLogsPage extends Page {
 
   async jsonDifference() {
     const difference = await $(
-      '#main-content > div > div > div > div > div.govuk-summary-card__content > dl > div:nth-child(7) > dd > code'
+      '#main-content > div > div > div > div > div.govuk-summary-card__content > dl > div:nth-child(8) > dd > code'
     )
     return difference.getText()
   }
