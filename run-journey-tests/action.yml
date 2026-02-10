@@ -1,65 +1,115 @@
 name: Run Journey Tests on GitHub
+description: Run epr-re-ex-admin-frontend journey tests
 
 inputs:
   epr-re-ex-admin-frontend:
-    required: false
-    type: string
+    description: commit hash of epr-re-ex-admin-frontend
   branch:
-    required: false
-    type: string
+    description: branch in this repo
     default: main
   journey-test-pr:
-    required: false
-    type: string
-    default: false
+    description: is this action being called from a pr in this repo?
+    default: 'false'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Checkout repository if not called by Journey Test PR
       if: inputs.journey-test-pr == 'false'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         repository: DEFRA/epr-re-ex-admin-frontend-tests
         ref: ${{inputs.branch}}
 
-    - uses: actions/setup-node@v5
-      with:
-        node-version: 22
-        cache: npm
-    - name: Setup the tests
-      run: npm i
-      shell: bash
-
-    - name: Start docker compose
+    - name: Check for matching epr-re-ex-admin-frontend branch if it is Journey Test PR
+      if: inputs.journey-test-pr != 'false'
+      id: service-branch
       shell: bash
       run: |
-          EPR_RE_EX_ADMIN_FRONTEND=${{inputs.epr-re-ex-admin-frontend}} \
-          docker compose up --wait-timeout 300 -d --quiet-pull
+        BRANCH="${{ github.head_ref }}"
+        if git ls-remote --heads https://github.com/DEFRA/epr-re-ex-admin-frontend.git "$BRANCH" | grep -q .; then
+          echo "ref=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "ref=main" >> "$GITHUB_OUTPUT"
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Checkout epr-re-ex-admin-frontend repository if it is Journey Test PR and there is a matching service branch
+      if: inputs.journey-test-pr != 'false' && steps.service-branch.outputs.exists == 'true'
+      uses: actions/checkout@v6
+      with:
+        repository: DEFRA/epr-re-ex-admin-frontend
+        ref: ${{steps.service-branch.outputs.ref}}
+        path: epr-re-ex-admin-frontend
+
+    - name: Build Docker image from epr-re-ex-admin-frontend if it is Journey Test PR and same branch exists
+      if: inputs.journey-test-pr != 'false' && steps.service-branch.outputs.exists == 'true'
+      id: docker-branch
+      shell: bash
+      run: |
+        cd epr-re-ex-admin-frontend
+        EPR_RE_EX_ADMIN_FRONTEND_SHA=$(git rev-parse --short HEAD)
+        IMAGE_TAG="defradigital/epr-re-ex-admin-frontend:${EPR_RE_EX_ADMIN_FRONTEND_SHA}"
+        docker build -t $IMAGE_TAG .
+        echo "image=$EPR_RE_EX_ADMIN_FRONTEND_SHA" >> $GITHUB_OUTPUT
+
+    - uses: actions/setup-node@v5
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - name: Install
+      run: npm ci
+      shell: bash
+
+    - name: Start docker compose with matching Service Branch if it is Journey Test PR
+      if: inputs.journey-test-pr != 'false' && steps.service-branch.outputs.exists == 'true'
+      shell: bash
+      run: |
+        EPR_RE_EX_ADMIN_FRONTEND=${{ steps.docker-branch.outputs.image }} \
+        docker compose up --wait-timeout 300 -d --quiet-pull
+
+    - name: Start docker compose
+      if: steps.service-branch.outputs.exists != 'true'
+      shell: bash
+      run: |
+        EPR_RE_EX_ADMIN_FRONTEND=${{ inputs.epr-re-ex-admin-frontend }} \
+        docker compose up --wait-timeout 300 -d --quiet-pull
+
+    - name: Wait for services to be ready
+      shell: bash
+      run: |
+        echo "Waiting for admin frontend to be ready..."
+        timeout 180 bash -c 'until curl -f http://localhost:3002/health; do sleep 5; done'
 
     - name: Run the tests
       shell: bash
       run: |
         npm run test:github
         npm run report
+
     - name: debug
       if: always()
       run: |
         docker compose logs > logs.txt
         docker ps
       shell: bash
+
     - name: Upload allure report
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: allure-report
         path: ./allure-report
+
     - name: Upload docker compose logs
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: docker-compose-logs
         path: ./logs.txt
+
     - name: Fail this step if FAILED file exists
       if: always()
       run: |
