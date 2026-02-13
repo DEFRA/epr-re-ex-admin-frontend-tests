@@ -24,9 +24,14 @@ class LoginPage extends Page {
     const nextPWButton = await $('input[value="Sign in"]')
     await nextPWButton.click()
 
-    const submitElement = await $('input[value="Yes"]')
-    submitElement.waitForExist({ timeout: 5000 })
-    submitElement.click()
+    try {
+      const submitElement = await $('input[value="Yes"]')
+      await submitElement.waitForExist({ timeout: 5000 })
+      await submitElement.click()
+    } catch (error) {
+      // Element didn't appear, continue without clicking
+      console.log('"Yes" button not found on MS Login, skipping...')
+    }
   }
 
   async submitCredentials() {
