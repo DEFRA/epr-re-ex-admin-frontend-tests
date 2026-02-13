@@ -8,10 +8,12 @@ import PublicRegisterPage from 'page-objects/public.register.page.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
 import config from '../config/config.js'
 import TonnageMonitoringPage from 'page-objects/tonnage.monitoring.page.js'
-import { checkBodyText } from '~/test/support/check.js'
 
 describe('Smoke tests @smoketest', () => {
   it('Should be to login and view Home Page and Organisations Page', async () => {
+    // Increase timeout for Smoke tests for slow loading pages like Organisation page
+    await browser.setTimeout({ pageLoad: 60000 })
+
     await HomePage.open()
     await expect(browser).toHaveTitle(expect.stringContaining('Home'))
 
@@ -25,8 +27,6 @@ describe('Smoke tests @smoketest', () => {
     expect(headerText).toEqual('Welcome ServiceMaintainer TestUser (Defra)!')
 
     await Navigation.clickOnLink('Organisations')
-    // Give it some time as organisations page might take time to load
-    checkBodyText('All organisations', 60)
     const orgTableHeader = await OrganisationsPage.getHeaderText()
     expect(orgTableHeader).toBe('All organisations')
 
@@ -35,8 +35,6 @@ describe('Smoke tests @smoketest', () => {
     expect(actualNoSystemLogsFoundText).toEqual('No system logs found')
 
     await Navigation.clickOnLink('Public register')
-    // Give it some time to load
-    checkBodyText('Public register', 30)
     await PublicRegisterPage.downloadPublicRegister()
 
     await Navigation.clickOnLink('Tonnage monitoring')
