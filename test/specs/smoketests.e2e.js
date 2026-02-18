@@ -7,9 +7,13 @@ import OrganisationsPage from 'page-objects/organisations.js'
 import PublicRegisterPage from 'page-objects/public.register.page.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
 import config from '../config/config.js'
+import TonnageMonitoringPage from 'page-objects/tonnage.monitoring.page.js'
 
 describe('Smoke tests @smoketest', () => {
   it('Should be to login and view Home Page and Organisations Page', async () => {
+    // Increase timeout for Smoke tests for slow loading pages like Organisation page
+    await browser.setTimeout({ pageLoad: 60000 })
+
     await HomePage.open()
     await expect(browser).toHaveTitle(expect.stringContaining('Home'))
 
@@ -32,5 +36,8 @@ describe('Smoke tests @smoketest', () => {
 
     await Navigation.clickOnLink('Public register')
     await PublicRegisterPage.downloadPublicRegister()
+
+    await Navigation.clickOnLink('Tonnage monitoring')
+    await TonnageMonitoringPage.downloadCsv()
   })
 })

@@ -25,8 +25,8 @@ class LoginPage extends Page {
     await nextPWButton.click()
 
     const submitElement = await $('input[value="Yes"]')
-    submitElement.waitForExist({ timeout: 5000 })
-    submitElement.click()
+    await submitElement.waitForExist({ timeout: 5000 })
+    await submitElement.click()
   }
 
   async submitCredentials() {

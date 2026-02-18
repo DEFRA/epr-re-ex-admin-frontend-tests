@@ -103,7 +103,7 @@ services:
       retries: 3
 
   mongodb:
-    image: mongo:6.0.13
+    image: mongo:7.0.28
     restart: always
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]

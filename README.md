@@ -44,6 +44,14 @@ Start application you are testing on the url specified in `baseUrl` [wdio.local.
 npm run test:local
 ```
 
+### Running tests with specific tag
+
+You can run tests locally with a specific tag by using this command:
+
+```bash
+GREP='@tonnagemonitoring' npm run test:local:grep
+```
+
 ### Debugging local tests
 
 ```bash
