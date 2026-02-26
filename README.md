@@ -5,6 +5,8 @@ The template to create a service that runs WDIO tests against an environment.
 - [Local](#local)
   - [Requirements](#requirements)
     - [Node.js](#nodejs)
+    - [Gitleaks](#gitleaks)
+    - [Mise](#mise)
   - [Setup](#setup)
   - [Running local tests](#running-local-tests)
   - [Debugging local tests](#debugging-local-tests)
@@ -27,6 +29,28 @@ To use the correct version of Node.js for this application, via nvm:
 ```bash
 nvm use
 ```
+
+#### Gitleaks
+
+[Gitleaks](https://github.com/gitleaks/gitleaks) is required for pre-commit secret scanning and must be available on your PATH.
+
+The simplest install on macOS/Linux is via [mise](#mise)
+
+```bash
+mise trust && mise install
+```
+
+Alternatively, install directly:
+
+- macOS: `brew install gitleaks`
+- Linux/Windows: see the [gitleaks releases page](https://github.com/gitleaks/gitleaks/releases)
+
+#### Mise
+
+[mise](https://mise.jdx.dev/) - a polyglot version manager that reads `mise.toml` in this repo to install the correct pinned versions
+
+1. [Install](https://mise.jdx.dev/getting-started.html#installing-mise-cli)
+2. [Activate](https://mise.jdx.dev/getting-started.html#activate-mise) in your shell
 
 ### Setup
 
