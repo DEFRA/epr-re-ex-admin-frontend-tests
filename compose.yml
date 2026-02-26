@@ -41,7 +41,7 @@ services:
     volumes:
       - ./docker/scripts/localstack:/etc/localstack/init/ready.d
     healthcheck:
-      test: ["CMD", "curl", "localhost:4566"]
+      test: ["CMD", "test", "-f", "/tmp/READY"]
       interval: 5s
       start_period: 5s
       retries: 3
