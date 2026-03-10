@@ -14,9 +14,11 @@ class TonnageMonitoringPage extends Page {
     const table = await $('#main-content > div > div > div > table.govuk-table')
 
     const headerElements = await table.$$('thead th')
-    const headers = await headerElements.map(async (el) => {
-      return await el.getText()
-    })
+    const headers = await Promise.all(
+      headerElements.map(async (el) => {
+        return await el.getText()
+      })
+    )
 
     const rows = await table.$$('tbody tr')
     const tonnageMaterial = []
