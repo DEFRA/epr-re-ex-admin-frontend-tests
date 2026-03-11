@@ -1,5 +1,5 @@
 import { Page } from 'page-objects/page'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 class TonnageMonitoringPage extends Page {
   open() {
@@ -11,17 +11,18 @@ class TonnageMonitoringPage extends Page {
   }
 
   async tonnageMaterialTableData() {
-    const table = await $('#main-content > div > div > div > table.govuk-table')
+    const table = await $('table.govuk-table')
+    await table.waitForExist({ timeout: 5000 })
 
-    const headerElements = await table.$$('thead th')
-    const headers = await Promise.all(
-      headerElements.map(async (el) => {
-        return await el.getText()
-      })
-    )
+    const headerElements = await $$('table.govuk-table thead th')
+    const headers = []
+    for (const el of headerElements) {
+      const text = await el.getText()
+      headers.push(text)
+    }
 
-    const rows = await table.$$('tbody tr')
-    const tonnageMaterial = []
+    const rows = await $$('table.govuk-table tbody tr')
+    const tableData = []
 
     for (const row of rows) {
       const cells = await row.$$('th, td')
@@ -32,13 +33,10 @@ class TonnageMonitoringPage extends Page {
         rowData[headers[i]] = cellText.trim()
       }
 
-      // exclude Total row
-      if (rowData[headers[0]] !== 'Total') {
-        tonnageMaterial.push(rowData)
-      }
+      tableData.push(rowData)
     }
 
-    return tonnageMaterial
+    return tableData
   }
 }
 

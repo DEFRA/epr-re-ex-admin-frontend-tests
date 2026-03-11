@@ -13,31 +13,47 @@ describe('Tonnage Monitoring page', () => {
 
     await Navigation.clickOnLink('Tonnage monitoring')
 
-    const materialTableData =
-      await TonnageMonitoringPage.tonnageMaterialTableData()
+    const tableData = await TonnageMonitoringPage.tonnageMaterialTableData()
 
-    // Validate table structure has Material, Type, and month columns
-    await expect(materialTableData.length).toBeGreaterThan(0)
-    const firstRow = materialTableData[0]
+    await expect(tableData.length).toBeGreaterThan(0)
+    const firstRow = tableData[0]
     await expect(firstRow).toHaveProperty('Material')
     await expect(firstRow).toHaveProperty('Type')
+    await expect(firstRow).toHaveProperty('Total')
 
-    const monthColumns = Object.keys(firstRow).filter(key => key !== 'Material' && key !== 'Type' && key !== '')
+    const monthColumns = Object.keys(firstRow).filter(
+      (key) =>
+        key !== 'Material' && key !== 'Type' && key !== 'Total' && key !== ''
+    )
     await expect(monthColumns.length).toBeGreaterThan(0)
 
-    // Validate key materials are present for both Reprocessor and Exporter types
-    const materials = ['Aluminium', 'Fibre based composite', 'Paper and board', 'Plastic', 'Steel', 'Wood', 'Glass re-melt', 'Glass other']
+    const materials = [
+      'Aluminium',
+      'Fibre based composite',
+      'Paper and board',
+      'Plastic',
+      'Steel',
+      'Wood',
+      'Glass re-melt',
+      'Glass other'
+    ]
     const types = ['Reprocessor', 'Exporter']
 
     for (const material of materials) {
       for (const type of types) {
-        const row = materialTableData.find(r => r.Material === material && r.Type === type)
+        const row = tableData.find(
+          (r) => r.Material === material && r.Type === type
+        )
         await expect(row).toBeDefined()
+
         for (const month of monthColumns) {
           await expect(row).toHaveProperty(month)
           const tonnageValue = row[month]
           await expect(tonnageValue).toBeDefined()
         }
+
+        await expect(row).toHaveProperty('Total')
+        await expect(row.Total).toBeDefined()
       }
     }
 
