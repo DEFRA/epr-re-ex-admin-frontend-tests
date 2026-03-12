@@ -13,20 +13,49 @@ describe('Tonnage Monitoring page', () => {
 
     await Navigation.clickOnLink('Tonnage monitoring')
 
-    const expectedTable = [
-      { Material: 'Aluminium', Tonnage: '0.00' },
-      { Material: 'Fibre based composite', Tonnage: '0.00' },
-      { Material: 'Paper and board', Tonnage: '0.00' },
-      { Material: 'Plastic', Tonnage: '0.00' },
-      { Material: 'Steel', Tonnage: '0.00' },
-      { Material: 'Wood', Tonnage: '0.00' },
-      { Material: 'Glass re-melt', Tonnage: '0.00' },
-      { Material: 'Glass other', Tonnage: '0.00' }
-    ]
-    const materialTableData =
-      await TonnageMonitoringPage.tonnageMaterialTableData()
+    const tableData = await TonnageMonitoringPage.tonnageMaterialTableData()
 
-    await expect(materialTableData).toEqual(expectedTable)
+    await expect(tableData.length).toBeGreaterThan(0)
+    const firstRow = tableData[0]
+    await expect(firstRow).toHaveProperty('Material')
+    await expect(firstRow).toHaveProperty('Type')
+    await expect(firstRow).toHaveProperty('Total')
+
+    const monthColumns = Object.keys(firstRow).filter(
+      (key) =>
+        key !== 'Material' && key !== 'Type' && key !== 'Total' && key !== ''
+    )
+    await expect(monthColumns.length).toBeGreaterThan(0)
+
+    const materials = [
+      'Aluminium',
+      'Fibre based composite',
+      'Paper and board',
+      'Plastic',
+      'Steel',
+      'Wood',
+      'Glass re-melt',
+      'Glass other'
+    ]
+    const types = ['Reprocessor', 'Exporter']
+
+    for (const material of materials) {
+      for (const type of types) {
+        const row = tableData.find(
+          (r) => r.Material === material && r.Type === type
+        )
+        await expect(row).toBeDefined()
+
+        for (const month of monthColumns) {
+          await expect(row).toHaveProperty(month)
+          const tonnageValue = row[month]
+          await expect(tonnageValue).toBeDefined()
+        }
+
+        await expect(row).toHaveProperty('Total')
+        await expect(row.Total).toBeDefined()
+      }
+    }
 
     await TonnageMonitoringPage.downloadCsv()
   })
