@@ -1,4 +1,4 @@
-FROM node:24.13.0-alpine3.23
+FROM node:24.14.0-trixie-slim
 
 ENV TZ="Europe/London"
 
