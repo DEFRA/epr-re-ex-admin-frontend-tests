@@ -63,11 +63,45 @@ runs:
       run: npm ci
       shell: bash
 
+    - name: Check for matching epr-backend branch
+      id: backend-branch
+      shell: bash
+      run: |
+        BRANCH="${{ github.head_ref }}"
+        if git ls-remote --heads https://github.com/DEFRA/epr-backend.git "$BRANCH" | grep -q .; then
+          echo "ref=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+          echo "::notice::Found matching epr-backend branch: $BRANCH — will build from source"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::No matching epr-backend branch '$BRANCH' — using latest published image"
+        fi
+
+    - name: Checkout epr-backend repository if matching branch exists
+      if: steps.backend-branch.outputs.exists == 'true'
+      uses: actions/checkout@v6
+      with:
+        repository: DEFRA/epr-backend
+        ref: ${{ steps.backend-branch.outputs.ref }}
+        path: epr-backend
+
+    - name: Build Docker image from epr-backend matching branch
+      if: steps.backend-branch.outputs.exists == 'true'
+      id: docker-backend-branch
+      shell: bash
+      run: |
+        cd epr-backend
+        EPR_BACKEND_SHA=$(git rev-parse --short HEAD)
+        IMAGE_TAG="defradigital/epr-backend:${EPR_BACKEND_SHA}"
+        docker build -t $IMAGE_TAG .
+        echo "image=$EPR_BACKEND_SHA" >> "$GITHUB_OUTPUT"
+
     - name: Start docker compose with matching Service Branch if it is Journey Test PR
       if: inputs.journey-test-pr != 'false' && steps.service-branch.outputs.exists == 'true'
       shell: bash
       run: |
         EPR_RE_EX_ADMIN_FRONTEND=${{ steps.docker-branch.outputs.image }} \
+        EPR_BACKEND=${{ steps.docker-backend-branch.outputs.image }} \
         docker compose up --wait-timeout 300 -d --quiet-pull
 
     - name: Start docker compose
@@ -75,6 +109,7 @@ runs:
       shell: bash
       run: |
         EPR_RE_EX_ADMIN_FRONTEND=${{ inputs.epr-re-ex-admin-frontend }} \
+        EPR_BACKEND=${{ steps.docker-backend-branch.outputs.image }} \
         docker compose up --wait-timeout 300 -d --quiet-pull
 
     - name: Wait for services to be ready
