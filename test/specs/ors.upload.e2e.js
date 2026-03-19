@@ -12,7 +12,7 @@ describe('ORS upload flow @orsupload', () => {
   it('Should upload an ORS workbook and show completed import status', async () => {
     const workbookPath = path.resolve(
       process.cwd(),
-      '../epr-backend/src/data/fixtures/spreadsheet/templates/ors/ors-id-log-example.xlsx'
+      'test/fixtures/ors/ors-id-log-example.xlsx'
     )
 
     if (!fs.existsSync(workbookPath)) {
