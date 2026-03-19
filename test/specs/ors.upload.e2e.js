@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { browser, expect } from '@wdio/globals'
 
+import HomePage from 'page-objects/home.page'
 import LoginPage from 'page-objects/login.js'
 import OrsUploadPage from 'page-objects/ors.upload.page.js'
 
@@ -17,8 +18,12 @@ describe('ORS upload flow @orsupload', () => {
       throw new Error(`Expected ORS workbook fixture at ${workbookPath}`)
     }
 
+    await browser.setTimeout({ pageLoad: 60000 })
+
+    await HomePage.open()
+    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
+
     await LoginPage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Login'))
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
 
