@@ -1,27 +1,47 @@
-import fs from 'node:fs'
 import path from 'node:path'
+import os from 'node:os'
 
 import { browser, expect } from '@wdio/globals'
 
-import HomePage from 'page-objects/home.page'
 import LoginPage from 'page-objects/login.js'
 import OrsUploadPage from 'page-objects/ors.upload.page.js'
+import {
+  createLinkedOrganisation,
+  updateMigratedOrganisation
+} from '../support/apicalls.js'
+import {
+  createOrsSpreadsheet,
+  validOrsSites
+} from '../support/ors-spreadsheet.js'
 
 describe('ORS upload flow @orsupload', () => {
   it('Should upload an ORS workbook and show completed import status', async () => {
-    const workbookPath = path.resolve(
-      process.cwd(),
-      'test/fixtures/ors/ors-id-log-example.xlsx'
-    )
+    const { orgId, refNo } = await createLinkedOrganisation([
+      { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' }
+    ])
 
-    if (!fs.existsSync(workbookPath)) {
-      throw new Error(`Expected ORS workbook fixture at ${workbookPath}`)
-    }
+    const registrationNumber = `EPR/TEST${orgId}/R1`
+    const accreditationNumber = `ACC/TEST${orgId}/A1`
 
-    await browser.setTimeout({ pageLoad: 60000 })
+    await updateMigratedOrganisation(refNo, [
+      {
+        regNumber: registrationNumber,
+        accNumber: accreditationNumber,
+        status: 'approved'
+      }
+    ])
 
-    await HomePage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
+    const workbookPath = path.join(os.tmpdir(), `ors-test-${orgId}.xlsx`)
+
+    await createOrsSpreadsheet(workbookPath, {
+      metadata: {
+        packagingWasteCategory: 'Paper or board',
+        orgId: parseInt(orgId),
+        registrationNumber,
+        accreditationNumber
+      },
+      sites: validOrsSites
+    })
 
     await LoginPage.open()
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
@@ -44,16 +64,7 @@ describe('ORS upload flow @orsupload', () => {
     const statusSummary = await OrsUploadPage.getStatusSummaryText()
     expect(statusSummary).toContain('Files processed:')
     expect(statusSummary).toContain('Successful:')
-    expect(statusSummary).toContain('Failed:')
 
-    const uploadedFileName = OrsUploadPage.workbookFileName(workbookPath)
-    const fileResults = await OrsUploadPage.getUploadedFileResults()
-
-    expect(fileResults).toContainEqual(
-      expect.objectContaining({
-        fileName: uploadedFileName,
-        result: 'success'
-      })
-    )
+    expect(statusSummary).toContain('Failed: 0')
   })
 })

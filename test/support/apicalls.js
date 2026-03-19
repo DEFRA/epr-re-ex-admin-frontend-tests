@@ -6,6 +6,69 @@ import {
 
 import { BaseAPI } from '../apis/base-api.js'
 import { expect } from '@wdio/globals'
+import { request } from 'undici'
+
+async function getEntraToken() {
+  const entraUrl = 'http://localhost:3010/sign'
+  const payload = JSON.stringify({
+    clientId: 'clientId',
+    username: 'ea@test.gov.uk'
+  })
+  const response = await request(entraUrl, {
+    method: 'POST',
+    body: payload
+  })
+  const data = await response.body.json()
+  return data.access_token
+}
+
+export async function updateMigratedOrganisation(refNo, updateDataRows) {
+  const baseAPI = new BaseAPI()
+  const token = await getEntraToken()
+  const authHeader = { Authorization: `Bearer ${token}` }
+
+  const response = await baseAPI.get(`/v1/organisations/${refNo}`, authHeader)
+  expect(response.statusCode).toBe(200)
+
+  const data = await response.body.json()
+  const currentYear = new Date().getFullYear()
+
+  for (let i = 0; i < updateDataRows.length; i++) {
+    const updateData = updateDataRows[i]
+    data.registrations[i].status = updateData.status
+    data.registrations[i].validFrom = '2026-01-01'
+    data.registrations[i].validTo = `${currentYear + 1}-01-01`
+    data.registrations[i].registrationNumber = updateData.regNumber
+    if (updateData.reprocessingType) {
+      data.registrations[i].reprocessingType = updateData.reprocessingType
+    }
+    data.registrations[i].statusHistory = [
+      ...(data.registrations[i].statusHistory || []),
+      { status: updateData.status, updatedAt: '2026-01-01' }
+    ]
+
+    if (updateData.accNumber && data.accreditations[i]) {
+      data.accreditations[i].status = updateData.status
+      data.accreditations[i].validFrom = '2026-01-01'
+      data.accreditations[i].validTo = `${currentYear + 1}-01-01`
+      data.accreditations[i].accreditationNumber = updateData.accNumber
+      if (updateData.reprocessingType) {
+        data.accreditations[i].reprocessingType = updateData.reprocessingType
+      }
+      data.registrations[i].accreditationId = data.accreditations[i].id
+    }
+  }
+
+  data.status = updateDataRows[0].status
+
+  const putResponse = await baseAPI.put(
+    `/v1/dev/organisations/${refNo}`,
+    JSON.stringify({ organisation: data })
+  )
+  expect(putResponse.statusCode).toBe(200)
+
+  return data
+}
 
 // Examples
 // dataRows = [{ material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor'}, { material: 'Steel (R4)', wasteProcessingType: 'Exporter'}]

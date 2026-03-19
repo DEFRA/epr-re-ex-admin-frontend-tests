@@ -74,7 +74,7 @@ class OrsUploadPage extends Page {
   }
 
   async getUploadedFileResults() {
-    const rows = await $$('table.govuk-table tbody tr')
+    const rows = await $$('table.govuk-table tbody tr').getElements()
 
     return Promise.all(
       rows.map(async (row) => {
