@@ -1,7 +1,7 @@
 import path from 'node:path'
 import os from 'node:os'
 
-import { browser, expect } from '@wdio/globals'
+import { $, browser, expect } from '@wdio/globals'
 
 import LoginPage from 'page-objects/login.js'
 import OrsUploadPage from 'page-objects/ors.upload.page.js'
@@ -62,9 +62,16 @@ describe('ORS upload flow @orsupload', () => {
     expect(finalStatus).toEqual('Import completed')
 
     const statusSummary = await OrsUploadPage.getStatusSummaryText()
-    expect(statusSummary).toContain('Files processed:')
-    expect(statusSummary).toContain('Successful:')
-
+    expect(statusSummary).toContain('Files processed: 1')
+    expect(statusSummary).toContain('Successful: 1')
     expect(statusSummary).toContain('Failed: 0')
+
+    const fileResults = await OrsUploadPage.getUploadedFileResults()
+    expect(fileResults).toHaveLength(1)
+    expect(fileResults[0].fileName).toContain(`ors-test-${orgId}`)
+    expect(fileResults[0].result).toEqual('success')
+
+    const uploadMoreLink = await $('a[href="/overseas-sites/imports"]')
+    await expect(uploadMoreLink).toBeDisplayed()
   })
 })

@@ -74,21 +74,18 @@ class OrsUploadPage extends Page {
   }
 
   async getUploadedFileResults() {
-    const rows = await $$('table.govuk-table tbody tr').getElements()
+    const rows = await $$('table.govuk-table tbody tr')
+    const results = []
 
-    return Promise.all(
-      rows.map(async (row) => {
-        const fileName = await row.$('td:nth-child(1)').getText()
-        const result = await row.$('td:nth-child(2)').getText()
-        const details = await row.$('td:nth-child(3)').getText()
+    for (const row of rows) {
+      const fileName = await row.$('td:nth-child(1)').getText()
+      const result = await row.$('td:nth-child(2)').getText()
+      const details = await row.$('td:nth-child(3)').getText()
 
-        return {
-          fileName,
-          result,
-          details
-        }
-      })
-    )
+      results.push({ fileName, result, details })
+    }
+
+    return results
   }
 
   async expectUploadFormVisible() {
