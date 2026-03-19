@@ -20,8 +20,8 @@ describe('ORS upload flow @orsupload', () => {
       { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' }
     ])
 
-    const registrationNumber = `EPR/TEST${orgId}/R1`
-    const accreditationNumber = `ACC/TEST${orgId}/A1`
+    const registrationNumber = `FAKE/REG${orgId}/TEST`
+    const accreditationNumber = `FAKE/ACC${orgId}/TEST`
 
     await updateMigratedOrganisation(refNo, [
       {
