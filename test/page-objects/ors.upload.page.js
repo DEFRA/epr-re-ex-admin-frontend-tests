@@ -8,16 +8,34 @@ class OrsUploadPage extends Page {
     return super.open('/overseas-sites/imports')
   }
 
+  async capturePageState() {
+    const url = await browser.getUrl()
+    const heading = await $('main h1')
+      .getText()
+      .catch(() => '(no h1 found)')
+    const body = await $('[data-testid="app-page-body"]')
+      .getText()
+      .catch(() => '(no page body found)')
+
+    return `URL: ${url}\nHeading: ${heading}\nBody: ${body}`
+  }
+
   async uploadWorkbook(localFilePath) {
     const remotePath = await browser.uploadFile(localFilePath)
     const uploadInput = await $('#ors-upload')
-    await uploadInput.waitForDisplayed({ timeout: 10000 })
+    await uploadInput.waitForDisplayed({
+      timeout: 5000,
+      timeoutMsg: 'Upload file input not displayed'
+    })
     await uploadInput.setValue(remotePath)
   }
 
   async clickStartUpload() {
     const startUploadButton = await $('button[type="submit"]')
-    await startUploadButton.waitForClickable({ timeout: 10000 })
+    await startUploadButton.waitForClickable({
+      timeout: 5000,
+      timeoutMsg: 'Start upload button not clickable'
+    })
     await startUploadButton.click()
   }
 
@@ -28,9 +46,9 @@ class OrsUploadPage extends Page {
         return /\/overseas-sites\/imports\/[^/]+$/u.test(url)
       },
       {
-        timeout: 30000,
+        timeout: 15000,
         interval: 500,
-        timeoutMsg: 'Expected to be redirected to ORS upload status page'
+        timeoutMsg: `Not redirected to status page. ${await this.capturePageState()}`
       }
     )
   }
@@ -42,9 +60,9 @@ class OrsUploadPage extends Page {
         return heading === 'Import completed' || heading === 'Import failed'
       },
       {
-        timeout: 180000,
+        timeout: 30000,
         interval: 3000,
-        timeoutMsg: 'Expected ORS upload to reach completed or failed status'
+        timeoutMsg: `Import did not reach terminal state. ${await this.capturePageState()}`
       }
     )
 

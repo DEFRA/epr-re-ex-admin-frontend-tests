@@ -40,21 +40,49 @@ services:
       - ./docker/config/defaults.env
     volumes:
       - ./docker/scripts/localstack:/etc/localstack/init/ready.d
+    ports:
+      - 4566:4566
     healthcheck:
       test: ["CMD", "test", "-f", "/tmp/READY"]
       interval: 5s
       start_period: 5s
-      retries: 3
+      retries: 10
 
   ################################################################################
   redis:
     image: redis:7.2.11-alpine3.21
     restart: always
+    ports:
+      - 6379:6379
     healthcheck:
       test: ["CMD", "redis-cli", "PING"]
       interval: 5s
       start_period: 2s
       retries: 5
+
+  ################################################################################
+  cdp-uploader:
+    image: defradigital/cdp-uploader:${CDP_UPLOADER_VERSION:-latest}
+    ports:
+      - '7337:7337'
+    depends_on:
+      localstack:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - 'docker/config/aws.env'
+    environment:
+      PORT: 7337
+      NODE_ENV: development
+      APP_BASE_URL: http://localhost:7337
+      REDIS_HOST: redis
+      USE_SINGLE_INSTANCE_CACHE: true
+      MOCK_VIRUS_SCAN_ENABLED: true
+      MOCK_VIRUS_RESULT_DELAY: 3
+      SQS_ENDPOINT: http://localstack:4566
+      S3_ENDPOINT: http://localstack:4566
+      CONSUMER_BUCKETS: re-ex-summary-logs
 
   ################################################################################
   #
@@ -77,6 +105,8 @@ services:
       ENTRA_CLIENT_SECRET: test
       OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
       USE_SINGLE_INSTANCE_CACHE: true
+      FEATURE_FLAG_OVERSEAS_SITES: true
+      CDP_UPLOADER_URL: http://localhost:7337
     depends_on:
       redis:
         condition: service_healthy
@@ -105,6 +135,8 @@ services:
   mongodb:
     image: mongo:7.0.28
     restart: always
+    ports:
+      - 27017:27017
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -121,9 +153,12 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
+      cdp-uploader:
+        condition: service_started
     env_file:
       - ./docker/config/defaults.env
     environment:
+      APP_BASE_URL: http://epr-backend:3001
       PORT: 3001
       NODE_ENV: development
       LOCALSTACK_ENDPOINT: http://localstack:4566
@@ -131,9 +166,13 @@ services:
       GOVUK_NOTIFY_API_KEY: fake-key-for-testing
       FEATURE_FLAG_SUMMARY_LOGS: true
       FEATURE_FLAG_DEV_ENDPOINTS: true
+      FEATURE_FLAG_OVERSEAS_SITES: true
       ENTRA_OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
       ADMIN_UI_ENTRA_CLIENT_ID: clientId
       SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
+      CDP_UPLOADER_URL: http://cdp-uploader:7337
+      SQS_ENDPOINT: http://localstack:4566
+      COMMAND_QUEUE_SQS_ENDPOINT: http://localstack:4566
     ports:
       - '3001:3001'
     healthcheck:
