@@ -98,7 +98,7 @@ describe('ORS upload flow @orsupload', () => {
     const rows = await OrsUploadPage.getListTableRows()
     expect(rows.length).toBeGreaterThan(0)
     expect(rows).toContainEqual([
-      '1',
+      '001',
       'Testland',
       'Fake Recycling Co',
       '1 Test Street',
