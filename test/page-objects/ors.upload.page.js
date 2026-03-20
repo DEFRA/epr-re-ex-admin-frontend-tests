@@ -4,6 +4,10 @@ import { $, $$, browser, expect } from '@wdio/globals'
 import { Page } from 'page-objects/page'
 
 class OrsUploadPage extends Page {
+  openList() {
+    return super.open('/overseas-sites')
+  }
+
   open() {
     return super.open('/overseas-sites/imports')
   }
@@ -86,6 +90,35 @@ class OrsUploadPage extends Page {
     }
 
     return results
+  }
+
+  async getListTableHeaders() {
+    const headerCells = await $$('table.govuk-table thead th')
+    const headers = []
+
+    for (const headerCell of headerCells) {
+      headers.push(await headerCell.getText())
+    }
+
+    return headers
+  }
+
+  async getListTableRows() {
+    const rows = await $$('table.govuk-table tbody tr')
+    const tableRows = []
+
+    for (const row of rows) {
+      const cells = await row.$$('td')
+      const rowValues = []
+
+      for (const cell of cells) {
+        rowValues.push(await cell.getText())
+      }
+
+      tableRows.push(rowValues)
+    }
+
+    return tableRows
   }
 
   async expectUploadFormVisible() {
