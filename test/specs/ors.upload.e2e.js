@@ -81,6 +81,10 @@ describe('ORS upload flow @orsupload', () => {
 
     const expectedHeaders = [
       'ORS ID',
+      'Packaging waste category',
+      'Org ID',
+      'Registration Number',
+      'Accreditation Number',
       'Destination country',
       'Overseas reprocessor name',
       'Address line 1',
@@ -97,8 +101,15 @@ describe('ORS upload flow @orsupload', () => {
 
     const rows = await OrsUploadPage.getListTableRows()
     expect(rows.length).toBeGreaterThan(0)
-    expect(rows).toContainEqual([
-      '001',
+
+    const ors001Row = rows.find((row) => row[0] === '001')
+    expect(ors001Row).toBeDefined()
+    expect(ors001Row).toHaveLength(14)
+    expect(ors001Row[1]).not.toEqual('-')
+    expect(ors001Row[2]).toEqual(orgId)
+    expect(ors001Row[3]).toEqual(registrationNumber)
+    expect(ors001Row[4]).toEqual(accreditationNumber)
+    expect(ors001Row.slice(5)).toEqual([
       'Testland',
       'Fake Recycling Co',
       '1 Test Street',
