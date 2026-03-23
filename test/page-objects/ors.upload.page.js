@@ -4,6 +4,10 @@ import { $, $$, browser, expect } from '@wdio/globals'
 import { Page } from 'page-objects/page'
 
 class OrsUploadPage extends Page {
+  get listTable() {
+    return $('table.govuk-table')
+  }
+
   openList() {
     return super.open('/overseas-sites')
   }
@@ -93,17 +97,38 @@ class OrsUploadPage extends Page {
   }
 
   async getListTableHeaders() {
+    const listTable = await this.listTable
+    await listTable.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'ORS list table not displayed'
+    })
+
     const headerCells = await $$('table.govuk-table thead th')
     const headers = []
 
     for (const headerCell of headerCells) {
-      headers.push(await headerCell.getText())
+      headers.push((await headerCell.getText()).trim())
     }
 
     return headers
   }
 
   async getListTableRows() {
+    const listTable = await this.listTable
+    await listTable.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'ORS list table not displayed'
+    })
+
+    await browser.waitUntil(
+      async () => (await $$('table.govuk-table tbody tr')).length > 0,
+      {
+        timeout: 10000,
+        interval: 250,
+        timeoutMsg: 'ORS list table rows not displayed'
+      }
+    )
+
     const rows = await $$('table.govuk-table tbody tr')
     const tableRows = []
 
@@ -112,7 +137,7 @@ class OrsUploadPage extends Page {
       const rowValues = []
 
       for (const cell of cells) {
-        rowValues.push(await cell.getText())
+        rowValues.push((await cell.getText()).trim())
       }
 
       tableRows.push(rowValues)
