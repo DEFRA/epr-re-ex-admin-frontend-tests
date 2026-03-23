@@ -106,7 +106,7 @@ describe('ORS upload flow @orsupload', () => {
     expect(ors001Row).toBeDefined()
     expect(ors001Row).toHaveLength(14)
     expect(ors001Row[1]).not.toEqual('-')
-    expect(ors001Row[2]).toEqual(orgId)
+    expect(ors001Row[2]).toEqual(String(orgId))
     expect(ors001Row[3]).toEqual(registrationNumber)
     expect(ors001Row[4]).toEqual(accreditationNumber)
     expect(ors001Row.slice(5)).toEqual([
