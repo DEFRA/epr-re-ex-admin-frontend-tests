@@ -8,8 +8,13 @@ class OrsUploadPage extends Page {
     return $('table.govuk-table')
   }
 
-  openList() {
-    return super.open('/overseas-sites')
+  get paginationNav() {
+    return $('nav.govuk-pagination')
+  }
+
+  openList(query = '') {
+    const suffix = query ? `?${query}` : ''
+    return super.open(`/overseas-sites${suffix}`)
   }
 
   open() {
@@ -144,6 +149,30 @@ class OrsUploadPage extends Page {
     }
 
     return tableRows
+  }
+
+  async expectPaginationVisible() {
+    const paginationNav = await this.paginationNav
+    await expect(paginationNav).toBeDisplayed()
+  }
+
+  async getPaginationStatusText() {
+    const summary = await $('//p[contains(normalize-space(.), "Showing page")]')
+    await summary.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Pagination status summary not displayed'
+    })
+
+    return summary.getText()
+  }
+
+  async clickNextPage() {
+    const nextLink = await $('nav.govuk-pagination .govuk-pagination__next a')
+    await nextLink.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Next pagination link not clickable'
+    })
+    await nextLink.click()
   }
 
   async expectUploadFormVisible() {

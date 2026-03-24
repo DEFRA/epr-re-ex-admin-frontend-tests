@@ -120,5 +120,23 @@ describe('ORS upload flow @orsupload', () => {
       '0.0000,0.0000',
       '1 January 2025'
     ])
+
+    await OrsUploadPage.openList('page=1&pageSize=2')
+    await OrsUploadPage.expectPaginationVisible()
+
+    const pageOneStatus = await OrsUploadPage.getPaginationStatusText()
+    expect(pageOneStatus).toContain('Showing page 1 of 2')
+
+    await OrsUploadPage.clickNextPage()
+    await expect(browser).toHaveUrl(
+      expect.stringContaining('page=2&pageSize=2')
+    )
+
+    const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
+    expect(pageTwoStatus).toContain('Showing page 2 of 2')
+
+    const pageTwoRows = await OrsUploadPage.getListTableRows()
+    expect(pageTwoRows).toHaveLength(1)
+    expect(pageTwoRows[0][3]).toEqual('003')
   })
 })
