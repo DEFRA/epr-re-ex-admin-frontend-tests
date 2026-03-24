@@ -73,5 +73,52 @@ describe('ORS upload flow @orsupload', () => {
 
     const uploadMoreLink = await $('a[href="/overseas-sites/imports"]')
     await expect(uploadMoreLink).toBeDisplayed()
+
+    await OrsUploadPage.openList()
+    await expect(browser).toHaveTitle(
+      expect.stringContaining('Overseas reprocessing sites')
+    )
+
+    const expectedHeaders = [
+      'Org ID',
+      'Registration Number',
+      'Accreditation Number',
+      'ORS ID',
+      'Packaging waste category',
+      'Destination country',
+      'Overseas reprocessor name',
+      'Address line 1',
+      'Address line 2',
+      'City or town',
+      'State, province or region',
+      'Postcode or similar',
+      'Coordinates',
+      'Valid from'
+    ]
+
+    const actualHeaders = await OrsUploadPage.getListTableHeaders()
+    expect(actualHeaders).toEqual(expectedHeaders)
+
+    const rows = await OrsUploadPage.getListTableRows()
+    expect(rows.length).toBeGreaterThan(0)
+
+    const ors001Row = rows.find((row) => row[3] === '001')
+    expect(ors001Row).toBeDefined()
+    expect(ors001Row).toHaveLength(14)
+    expect(ors001Row[0]).toEqual(String(orgId))
+    expect(ors001Row[1]).toEqual(registrationNumber)
+    expect(ors001Row[2]).toEqual(accreditationNumber)
+    expect(ors001Row[4]).not.toEqual('-')
+    expect(ors001Row.slice(5)).toEqual([
+      'Testland',
+      'Fake Recycling Co',
+      '1 Test Street',
+      'Unit 99',
+      'Testville',
+      'Testshire',
+      'TEST 001',
+      '0.0000,0.0000',
+      '1 January 2025'
+    ])
   })
 })
