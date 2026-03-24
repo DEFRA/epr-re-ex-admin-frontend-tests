@@ -175,6 +175,17 @@ class OrsUploadPage extends Page {
     await nextLink.click()
   }
 
+  async clickPageNumber(pageNumber) {
+    const pageLink = await $(
+      `nav.govuk-pagination a[href*="page=${pageNumber}&"]`
+    )
+    await pageLink.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: `Pagination link for page ${pageNumber} not clickable`
+    })
+    await pageLink.click()
+  }
+
   async expectUploadFormVisible() {
     const uploadInput = await $('#ors-upload')
     const startButton = await $('button[type="submit"]')

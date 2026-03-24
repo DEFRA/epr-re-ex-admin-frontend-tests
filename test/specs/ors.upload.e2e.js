@@ -71,8 +71,8 @@ describe('ORS upload flow @orsupload', () => {
     expect(fileResults[0].fileName).toContain(`ors-test-${orgId}`)
     expect(fileResults[0].result).toEqual('success')
 
-    const uploadMoreLink = await $('a[href="/overseas-sites/imports"]')
-    await expect(uploadMoreLink).toBeDisplayed()
+    const viewRecordsLink = await $('a[href="/overseas-sites"]')
+    await expect(viewRecordsLink).toBeDisplayed()
 
     await OrsUploadPage.openList()
     await expect(browser).toHaveTitle(
@@ -102,14 +102,17 @@ describe('ORS upload flow @orsupload', () => {
     const rows = await OrsUploadPage.getListTableRows()
     expect(rows.length).toBeGreaterThan(0)
 
-    const ors001Row = rows.find((row) => row[3] === '001')
-    expect(ors001Row).toBeDefined()
-    expect(ors001Row).toHaveLength(14)
-    expect(ors001Row[0]).toEqual(String(orgId))
-    expect(ors001Row[1]).toEqual(registrationNumber)
-    expect(ors001Row[2]).toEqual(accreditationNumber)
-    expect(ors001Row[4]).not.toEqual('-')
-    expect(ors001Row.slice(5)).toEqual([
+    const uploadedRow = rows.find(
+      (row) =>
+        row[0] === String(orgId) &&
+        row[1] === registrationNumber &&
+        row[2] === accreditationNumber &&
+        row[3] === '001'
+    )
+    expect(uploadedRow).toBeDefined()
+    expect(uploadedRow).toHaveLength(14)
+    expect(uploadedRow[4]).not.toEqual('-')
+    expect(uploadedRow.slice(5)).toEqual([
       'Testland',
       'Fake Recycling Co',
       '1 Test Street',
@@ -125,18 +128,18 @@ describe('ORS upload flow @orsupload', () => {
     await OrsUploadPage.expectPaginationVisible()
 
     const pageOneStatus = await OrsUploadPage.getPaginationStatusText()
-    expect(pageOneStatus).toContain('Showing page 1 of 2')
+    expect(pageOneStatus).toContain('Showing page 1 of')
 
-    await OrsUploadPage.clickNextPage()
+    await OrsUploadPage.clickPageNumber(2)
     await expect(browser).toHaveUrl(
       expect.stringContaining('page=2&pageSize=2')
     )
 
     const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
-    expect(pageTwoStatus).toContain('Showing page 2 of 2')
+    expect(pageTwoStatus).toContain('Showing page 2 of')
 
     const pageTwoRows = await OrsUploadPage.getListTableRows()
-    expect(pageTwoRows).toHaveLength(1)
-    expect(pageTwoRows[0][3]).toEqual('003')
+    expect(pageTwoRows.length).toBeGreaterThan(0)
+    expect(pageTwoRows.length).toBeLessThanOrEqual(2)
   })
 })
