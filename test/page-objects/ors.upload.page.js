@@ -12,6 +12,10 @@ class OrsUploadPage extends Page {
     return $('nav.govuk-pagination')
   }
 
+  get downloadCsvForm() {
+    return $('form[method="POST"]')
+  }
+
   openList(query = '') {
     const suffix = query ? `?${query}` : ''
     return super.open(`/overseas-sites${suffix}`)
@@ -149,6 +153,41 @@ class OrsUploadPage extends Page {
     }
 
     return tableRows
+  }
+
+  async expectDownloadCsvVisible() {
+    const form = await this.downloadCsvForm
+    const button = await form.$('button[type="submit"]')
+
+    await expect(form).toBeDisplayed()
+    await expect(button).toBeDisplayed()
+    await expect(button).toHaveText('Download CSV')
+  }
+
+  async fetchListCsv() {
+    return browser.execute(async () => {
+      const crumbElement = document.querySelector('input[name="crumb"]')
+
+      if (!crumbElement) {
+        throw new Error('ORS download crumb input not found')
+      }
+
+      const response = await fetch('/overseas-sites', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: new URLSearchParams({ crumb: crumbElement.value }).toString()
+      })
+
+      return {
+        status: response.status,
+        contentDisposition: response.headers.get('content-disposition'),
+        contentType: response.headers.get('content-type'),
+        body: await response.text()
+      }
+    })
   }
 
   async expectPaginationVisible() {

@@ -78,6 +78,21 @@ describe('ORS upload flow @orsupload', () => {
     await expect(browser).toHaveTitle(
       expect.stringContaining('Overseas reprocessing sites')
     )
+    await OrsUploadPage.expectDownloadCsvVisible()
+
+    const csvDownload = await OrsUploadPage.fetchListCsv()
+    expect(csvDownload.status).toEqual(200)
+    expect(csvDownload.contentType).toContain('text/csv')
+    expect(csvDownload.contentDisposition).toEqual(
+      'attachment; filename="overseas-reprocessing-sites.csv"'
+    )
+    expect(csvDownload.body).toContain(
+      '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+    )
+    expect(csvDownload.body).toContain(String(orgId))
+    expect(csvDownload.body).toContain(registrationNumber)
+    expect(csvDownload.body).toContain(accreditationNumber)
+    expect(csvDownload.body).toContain('Fake Recycling Co')
 
     const expectedHeaders = [
       'Org ID',

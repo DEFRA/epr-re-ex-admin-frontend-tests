@@ -63,7 +63,8 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
 
   const putResponse = await baseAPI.put(
     `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: data })
+    JSON.stringify({ organisation: data }),
+    authHeader
   )
   expect(putResponse.statusCode).toBe(200)
 
