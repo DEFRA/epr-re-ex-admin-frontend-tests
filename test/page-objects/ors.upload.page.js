@@ -13,7 +13,7 @@ class OrsUploadPage extends Page {
   }
 
   get downloadCsvForm() {
-    return $('form[action="/overseas-sites/download"]')
+    return $('form[method="POST"]')
   }
 
   openList(query = '') {
@@ -172,7 +172,7 @@ class OrsUploadPage extends Page {
         throw new Error('ORS download crumb input not found')
       }
 
-      const response = await fetch('/overseas-sites/download', {
+      const response = await fetch('/overseas-sites', {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
