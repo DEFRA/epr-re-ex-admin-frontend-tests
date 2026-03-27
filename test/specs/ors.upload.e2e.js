@@ -15,6 +15,7 @@ import {
 } from '../support/ors-spreadsheet.js'
 
 async function loginAsServiceMaintainer() {
+  await browser.deleteCookies()
   await LoginPage.open()
   await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
   await LoginPage.submitCredentials()
@@ -223,12 +224,14 @@ describe('ORS upload flow @orsupload', () => {
     )
 
     await OrsUploadPage.openList()
-    await OrsUploadPage.filterByRegistrationNumber('ALPHA')
+    await OrsUploadPage.filterByRegistrationNumber(alphaRegistrationNumber)
     await expect(browser).toHaveUrl(
-      expect.stringContaining('registrationNumber=ALPHA')
+      expect.stringContaining(
+        `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
+      )
     )
     await expect(await OrsUploadPage.getRegistrationNumberFilterValue()).toBe(
-      'ALPHA'
+      alphaRegistrationNumber
     )
 
     const filteredRows = await OrsUploadPage.getListTableRows()
@@ -239,10 +242,18 @@ describe('ORS upload flow @orsupload', () => {
 
     await OrsUploadPage.clearRegistrationNumberFilter()
     await expect(browser).not.toHaveUrl(
-      expect.stringContaining('registrationNumber=ALPHA')
+      expect.stringContaining(
+        `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
+      )
     )
 
-    await OrsUploadPage.openList('page=1&pageSize=2&registrationNumber=ALPHA')
+    await OrsUploadPage.openList(
+      new URLSearchParams({
+        page: '1',
+        pageSize: '2',
+        registrationNumber: alphaRegistrationNumber
+      }).toString()
+    )
     await OrsUploadPage.expectPaginationVisible()
 
     const pageOneStatus = await OrsUploadPage.getPaginationStatusText()
@@ -256,12 +267,25 @@ describe('ORS upload flow @orsupload', () => {
 
     const filteredCsvDownload = await OrsUploadPage.fetchListCsv()
     expect(filteredCsvDownload.status).toEqual(200)
+    expect(filteredCsvDownload.contentType).toContain('text/csv')
+    expect(filteredCsvDownload.contentDisposition).toEqual(
+      'attachment; filename="overseas-reprocessing-sites.csv"'
+    )
+    expect(filteredCsvDownload.body).toContain(
+      '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+    )
     expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
     expect(filteredCsvDownload.body).not.toContain(betaRegistrationNumber)
 
     await OrsUploadPage.clickPageNumber(2)
     await expect(browser).toHaveUrl(
-      expect.stringContaining('page=2&pageSize=2&registrationNumber=ALPHA')
+      expect.stringContaining(
+        new URLSearchParams({
+          page: '2',
+          pageSize: '2',
+          registrationNumber: alphaRegistrationNumber
+        }).toString()
+      )
     )
 
     const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
