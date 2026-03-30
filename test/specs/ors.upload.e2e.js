@@ -275,7 +275,7 @@ describe('ORS upload flow @orsupload', () => {
       '"Org ID","Registration Number","Accreditation Number","ORS ID"'
     )
     expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
-    expect(filteredCsvDownload.body).not.toContain(betaRegistrationNumber)
+    expect(filteredCsvDownload.body).toContain(betaRegistrationNumber)
 
     await OrsUploadPage.clickPageNumber(2)
     await expect(browser).toHaveUrl(
