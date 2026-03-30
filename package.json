@@ -49,10 +49,7 @@
     "undici": "7.24.5"
   },
   "overrides": {
-    "ajv": "^6.14.0",
-    "flatted": "^3.4.1",
-    "serialize-javascript": "^7.0.3",
-    "yauzl": "^3.2.1"
+    "serialize-javascript": "^7.0.5"
   },
   "devDependencies": {
     "eslint": "9.39.2",
