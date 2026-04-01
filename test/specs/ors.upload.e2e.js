@@ -167,137 +167,165 @@ describe('ORS upload flow @orsupload', () => {
     expect(pageTwoRows.length).toBeLessThanOrEqual(2)
   })
 
-  it('Should filter overseas reprocessing sites by registration number before pagination @orsupload', async () => {
-    const { orgId, refNo } = await createLinkedOrganisation([
-      { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' },
-      { material: 'Steel (R4)', wasteProcessingType: 'Exporter' }
-    ])
+  describe('Registration number filter @orsupload', () => {
+    let alphaRegistrationNumber
+    let betaRegistrationNumber
 
-    const alphaRegistrationNumber = `FAKE/REG${orgId}/ALPHA`
-    const betaRegistrationNumber = `FAKE/REG${orgId}/BETA`
-    const alphaAccreditationNumber = `FAKE/ACC${orgId}/ALPHA`
-    const betaAccreditationNumber = `FAKE/ACC${orgId}/BETA`
+    it('Should upload workbooks for filter tests', async () => {
+      const { orgId, refNo } = await createLinkedOrganisation([
+        { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' },
+        { material: 'Steel (R4)', wasteProcessingType: 'Exporter' }
+      ])
 
-    await updateMigratedOrganisation(refNo, [
-      {
-        regNumber: alphaRegistrationNumber,
-        accNumber: alphaAccreditationNumber,
-        status: 'approved'
-      },
-      {
-        regNumber: betaRegistrationNumber,
-        accNumber: betaAccreditationNumber,
-        status: 'approved'
-      }
-    ])
+      alphaRegistrationNumber = `FAKE/REG${orgId}/ALPHA`
+      betaRegistrationNumber = `FAKE/REG${orgId}/BETA`
+      const alphaAccreditationNumber = `FAKE/ACC${orgId}/ALPHA`
+      const betaAccreditationNumber = `FAKE/ACC${orgId}/BETA`
 
-    const alphaWorkbookPath = path.join(os.tmpdir(), `ors-alpha-${orgId}.xlsx`)
-    const betaWorkbookPath = path.join(os.tmpdir(), `ors-beta-${orgId}.xlsx`)
+      await updateMigratedOrganisation(refNo, [
+        {
+          regNumber: alphaRegistrationNumber,
+          accNumber: alphaAccreditationNumber,
+          status: 'approved'
+        },
+        {
+          regNumber: betaRegistrationNumber,
+          accNumber: betaAccreditationNumber,
+          status: 'approved'
+        }
+      ])
 
-    await createOrsSpreadsheet(alphaWorkbookPath, {
-      metadata: {
-        packagingWasteCategory: 'Paper or board',
-        orgId: parseInt(orgId),
-        registrationNumber: alphaRegistrationNumber,
-        accreditationNumber: alphaAccreditationNumber
-      },
-      sites: validOrsSites
+      const alphaWorkbookPath = path.join(
+        os.tmpdir(),
+        `ors-alpha-${orgId}.xlsx`
+      )
+      const betaWorkbookPath = path.join(os.tmpdir(), `ors-beta-${orgId}.xlsx`)
+
+      await createOrsSpreadsheet(alphaWorkbookPath, {
+        metadata: {
+          packagingWasteCategory: 'Paper or board',
+          orgId: parseInt(orgId),
+          registrationNumber: alphaRegistrationNumber,
+          accreditationNumber: alphaAccreditationNumber
+        },
+        sites: validOrsSites
+      })
+
+      await createOrsSpreadsheet(betaWorkbookPath, {
+        metadata: {
+          packagingWasteCategory: 'Steel',
+          orgId: parseInt(orgId),
+          registrationNumber: betaRegistrationNumber,
+          accreditationNumber: betaAccreditationNumber
+        },
+        sites: validOrsSites
+      })
+
+      await loginAsServiceMaintainer()
+
+      expect(
+        await uploadWorkbookAndWaitForCompletion(alphaWorkbookPath)
+      ).toEqual('Import completed')
+      expect(
+        await uploadWorkbookAndWaitForCompletion(betaWorkbookPath)
+      ).toEqual('Import completed')
     })
 
-    await createOrsSpreadsheet(betaWorkbookPath, {
-      metadata: {
-        packagingWasteCategory: 'Steel',
-        orgId: parseInt(orgId),
-        registrationNumber: betaRegistrationNumber,
-        accreditationNumber: betaAccreditationNumber
-      },
-      sites: validOrsSites
+    it('Should filter list by registration number', async () => {
+      await OrsUploadPage.openList()
+      await OrsUploadPage.filterByRegistrationNumber(alphaRegistrationNumber)
+      await expect(browser).toHaveUrl(
+        expect.stringContaining(
+          `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
+        )
+      )
+      await expect(await OrsUploadPage.getRegistrationNumberFilterValue()).toBe(
+        alphaRegistrationNumber
+      )
+
+      const filteredRows = await OrsUploadPage.getListTableRows()
+      expect(filteredRows.length).toBe(3)
+      expect(
+        filteredRows.every((row) => row[1] === alphaRegistrationNumber)
+      ).toBe(true)
     })
 
-    await loginAsServiceMaintainer()
-
-    expect(await uploadWorkbookAndWaitForCompletion(alphaWorkbookPath)).toEqual(
-      'Import completed'
-    )
-    expect(await uploadWorkbookAndWaitForCompletion(betaWorkbookPath)).toEqual(
-      'Import completed'
-    )
-
-    await OrsUploadPage.openList()
-    await OrsUploadPage.filterByRegistrationNumber(alphaRegistrationNumber)
-    await expect(browser).toHaveUrl(
-      expect.stringContaining(
-        `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
+    it('Should clear the registration number filter', async () => {
+      await OrsUploadPage.openList()
+      await OrsUploadPage.filterByRegistrationNumber(alphaRegistrationNumber)
+      await OrsUploadPage.clearRegistrationNumberFilter()
+      await expect(browser).not.toHaveUrl(
+        expect.stringContaining(
+          `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
+        )
       )
-    )
-    await expect(await OrsUploadPage.getRegistrationNumberFilterValue()).toBe(
-      alphaRegistrationNumber
-    )
+    })
 
-    const filteredRows = await OrsUploadPage.getListTableRows()
-    expect(filteredRows.length).toBe(3)
-    expect(
-      filteredRows.every((row) => row[1] === alphaRegistrationNumber)
-    ).toBe(true)
-
-    await OrsUploadPage.clearRegistrationNumberFilter()
-    await expect(browser).not.toHaveUrl(
-      expect.stringContaining(
-        `registrationNumber=${encodeURIComponent(alphaRegistrationNumber)}`
-      )
-    )
-
-    await OrsUploadPage.openList(
-      new URLSearchParams({
-        page: '1',
-        pageSize: '2',
-        registrationNumber: alphaRegistrationNumber
-      }).toString()
-    )
-    await OrsUploadPage.expectPaginationVisible()
-
-    const pageOneStatus = await OrsUploadPage.getPaginationStatusText()
-    expect(pageOneStatus).toContain('Showing page 1 of 2')
-
-    const pageOneRows = await OrsUploadPage.getListTableRows()
-    expect(pageOneRows).toHaveLength(2)
-    expect(pageOneRows.every((row) => row[1] === alphaRegistrationNumber)).toBe(
-      true
-    )
-
-    const filteredCsvDownload = await OrsUploadPage.fetchListCsv()
-    expect(filteredCsvDownload.status).toEqual(200)
-    expect(filteredCsvDownload.contentType).toContain('text/csv')
-    expect(filteredCsvDownload.contentDisposition).toEqual(
-      'attachment; filename="overseas-reprocessing-sites.csv"'
-    )
-    expect(filteredCsvDownload.body).toContain(
-      '"Org ID","Registration Number","Accreditation Number","ORS ID"'
-    )
-    expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
-    expect(filteredCsvDownload.body).toContain(betaRegistrationNumber)
-
-    await OrsUploadPage.clickPageNumber(2)
-    await expect(browser).toHaveUrl(
-      expect.stringContaining(
+    it('Should preserve filter through pagination', async () => {
+      await OrsUploadPage.openList(
         new URLSearchParams({
-          page: '2',
+          page: '1',
           pageSize: '2',
           registrationNumber: alphaRegistrationNumber
         }).toString()
       )
-    )
+      await OrsUploadPage.expectPaginationVisible()
 
-    const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
-    expect(pageTwoStatus).toContain('Showing page 2 of 2')
+      const pageOneStatus = await OrsUploadPage.getPaginationStatusText()
+      expect(pageOneStatus).toContain('Showing page 1 of 2')
 
-    const pageTwoRows = await OrsUploadPage.getListTableRows()
-    expect(pageTwoRows).toHaveLength(1)
-    expect(pageTwoRows[0][1]).toEqual(alphaRegistrationNumber)
+      const pageOneRows = await OrsUploadPage.getListTableRows()
+      expect(pageOneRows).toHaveLength(2)
+      expect(
+        pageOneRows.every((row) => row[1] === alphaRegistrationNumber)
+      ).toBe(true)
 
-    await OrsUploadPage.openList('registrationNumber=NOT-FOUND')
-    expect(await OrsUploadPage.getInsetText()).toContain(
-      "No overseas reprocessing site data found matching 'NOT-FOUND'."
-    )
+      await OrsUploadPage.clickPageNumber(2)
+      await expect(browser).toHaveUrl(
+        expect.stringContaining(
+          new URLSearchParams({
+            page: '2',
+            pageSize: '2',
+            registrationNumber: alphaRegistrationNumber
+          }).toString()
+        )
+      )
+
+      const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
+      expect(pageTwoStatus).toContain('Showing page 2 of 2')
+
+      const pageTwoRows = await OrsUploadPage.getListTableRows()
+      expect(pageTwoRows).toHaveLength(1)
+      expect(pageTwoRows[0][1]).toEqual(alphaRegistrationNumber)
+    })
+
+    it('Should download CSV with active filter', async () => {
+      await OrsUploadPage.openList(
+        new URLSearchParams({
+          page: '1',
+          pageSize: '2',
+          registrationNumber: alphaRegistrationNumber
+        }).toString()
+      )
+
+      const filteredCsvDownload = await OrsUploadPage.fetchListCsv()
+      expect(filteredCsvDownload.status).toEqual(200)
+      expect(filteredCsvDownload.contentType).toContain('text/csv')
+      expect(filteredCsvDownload.contentDisposition).toEqual(
+        'attachment; filename="overseas-reprocessing-sites.csv"'
+      )
+      expect(filteredCsvDownload.body).toContain(
+        '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+      )
+      expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
+      expect(filteredCsvDownload.body).toContain(betaRegistrationNumber)
+    })
+
+    it('Should show empty state for non-matching filter', async () => {
+      await OrsUploadPage.openList('registrationNumber=NOT-FOUND')
+      expect(await OrsUploadPage.getInsetText()).toContain(
+        "No overseas reprocessing site data found matching 'NOT-FOUND'."
+      )
+    })
   })
 })
