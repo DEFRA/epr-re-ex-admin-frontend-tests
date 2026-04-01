@@ -165,6 +165,7 @@ services:
       GOVUK_NOTIFY_API_KEY: fake-key-for-testing
       FEATURE_FLAG_SUMMARY_LOGS: true
       FEATURE_FLAG_DEV_ENDPOINTS: true
+      FEATURE_FLAG_OVERSEAS_SITES: true
       ENTRA_OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
       ADMIN_UI_ENTRA_CLIENT_ID: clientId
       SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
