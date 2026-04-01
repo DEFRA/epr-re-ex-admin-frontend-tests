@@ -8,6 +8,10 @@ class OrsUploadPage extends Page {
     return $('table.govuk-table')
   }
 
+  get registrationNumberInput() {
+    return $('#registrationNumber')
+  }
+
   get paginationNav() {
     return $('nav.govuk-pagination')
   }
@@ -166,10 +170,16 @@ class OrsUploadPage extends Page {
 
   async fetchListCsv() {
     return browser.execute(async () => {
-      const crumbElement = document.querySelector('input[name="crumb"]')
+      const form = document.querySelector('form[method="POST"]')
 
-      if (!crumbElement) {
-        throw new Error('ORS download crumb input not found')
+      if (!form) {
+        throw new Error('ORS download form not found')
+      }
+
+      const formData = new URLSearchParams()
+
+      for (const input of form.querySelectorAll('input[name]')) {
+        formData.set(input.name, input.value)
       }
 
       const response = await fetch('/overseas-sites', {
@@ -178,7 +188,7 @@ class OrsUploadPage extends Page {
         headers: {
           'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
         },
-        body: new URLSearchParams({ crumb: crumbElement.value }).toString()
+        body: formData.toString()
       })
 
       return {
@@ -223,6 +233,51 @@ class OrsUploadPage extends Page {
       timeoutMsg: `Pagination link for page ${pageNumber} not clickable`
     })
     await pageLink.click()
+  }
+
+  async filterByRegistrationNumber(registrationNumber) {
+    const input = await this.registrationNumberInput
+    await input.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Registration number filter input not displayed'
+    })
+    await input.setValue(registrationNumber)
+
+    const button = await $('form.app-filters button[type="submit"]')
+    await button.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Registration number search button not clickable'
+    })
+    await button.click()
+  }
+
+  async getRegistrationNumberFilterValue() {
+    const input = await this.registrationNumberInput
+    await input.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Registration number filter input not displayed'
+    })
+
+    return input.getValue()
+  }
+
+  async clearRegistrationNumberFilter() {
+    const clearLink = await $('form.app-filters a.govuk-button--inverse')
+    await clearLink.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Clear registration number filter link not clickable'
+    })
+    await clearLink.click()
+  }
+
+  async getInsetText() {
+    const insetText = await $('.govuk-inset-text')
+    await insetText.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Inset text not displayed'
+    })
+
+    return insetText.getText()
   }
 
   async expectUploadFormVisible() {
