@@ -34,10 +34,22 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - run: npm install -g npm@11.12.1
       - run: |
           npm ci --ignore-scripts
           npm run format:check
           npm run lint
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: pr-prep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build Docker image
+        run: docker build .
 
   tests:
     name: Run Journey Tests
