@@ -24,14 +24,14 @@ services:
   # Headless browser, used by the test suite to actually run the tests against the
   # containers.
   selenium-chrome:
-    image: selenium/standalone-chrome:123.0
+    image: selenium/standalone-chrome:145.0
     ports:
       - 4444:4444
     network_mode: host
 
   ################################################################################
   localstack:
-    image: localstack/localstack:3.2.0
+    image: localstack/localstack:4.14.0
     environment:
       - LOCALSTACK_HOST=127.0.0.1
       - SERVICES=s3,sqs,sns,dynamodb
@@ -50,7 +50,7 @@ services:
 
   ################################################################################
   redis:
-    image: redis:7.2.11-alpine3.21
+    image: redis:8.0.6-alpine3.21
     restart: always
     ports:
       - 6379:6379
@@ -133,7 +133,7 @@ services:
       retries: 3
 
   mongodb:
-    image: mongo:7.0.28
+    image: mongo:8.2.5
     restart: always
     ports:
       - 27017:27017
