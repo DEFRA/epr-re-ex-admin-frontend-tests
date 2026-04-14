@@ -53,7 +53,7 @@ class OrsUploadPage extends Page {
 
   async clickStartUpload() {
     await clickWhenReady(
-      await $('button[type="submit"]'),
+      'button[type="submit"]',
       'Start upload button not clickable'
     )
   }
@@ -215,26 +215,26 @@ class OrsUploadPage extends Page {
 
   async clickNextPage() {
     await clickWhenReady(
-      await $('nav.govuk-pagination .govuk-pagination__next a'),
+      'nav.govuk-pagination .govuk-pagination__next a',
       'Next pagination link not clickable'
     )
   }
 
   async clickPageNumber(pageNumber) {
     await clickWhenReady(
-      await $(`nav.govuk-pagination a[href*="page=${pageNumber}&"]`),
+      `nav.govuk-pagination a[href*="page=${pageNumber}&"]`,
       `Pagination link for page ${pageNumber} not clickable`
     )
   }
 
   async filterByRegistrationNumber(registrationNumber) {
     await setValueWhenReady(
-      await this.registrationNumberInput,
+      this.registrationNumberInput,
       registrationNumber,
       'Registration number filter input not displayed'
     )
     await clickWhenReady(
-      await $('form.app-filters button[type="submit"]'),
+      'form.app-filters button[type="submit"]',
       'Registration number search button not clickable'
     )
   }
@@ -251,7 +251,7 @@ class OrsUploadPage extends Page {
 
   async clearRegistrationNumberFilter() {
     await clickWhenReady(
-      await $('form.app-filters a.govuk-button--inverse'),
+      'form.app-filters a.govuk-button--inverse',
       'Clear registration number filter link not clickable'
     )
   }

@@ -36,12 +36,12 @@ class OrganisationsPage extends Page {
 
   async searchFor(orgName) {
     await setValueWhenReady(
-      await $('#search'),
+      '#search',
       orgName,
       'Organisation search input not displayed'
     )
     await clickWhenReady(
-      await $('button[type=submit]'),
+      'button[type=submit]',
       'Organisation search submit button not clickable'
     )
   }

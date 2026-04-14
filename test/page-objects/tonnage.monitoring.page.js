@@ -9,7 +9,7 @@ class TonnageMonitoringPage extends Page {
 
   async downloadCsv() {
     return clickWhenReady(
-      await $('main form button[type="submit"]'),
+      'main form button[type="submit"]',
       'Tonnage monitoring download button not clickable'
     )
   }
