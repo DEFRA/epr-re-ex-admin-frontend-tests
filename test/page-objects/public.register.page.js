@@ -1,4 +1,5 @@
 import { Page } from 'page-objects/page'
+import { clickWhenReady } from 'page-objects/actions'
 import { $ } from '@wdio/globals'
 
 class PublicRegisterPage extends Page {
@@ -7,12 +8,10 @@ class PublicRegisterPage extends Page {
   }
 
   async downloadPublicRegister() {
-    const downloadButton = await $('main form button[type="submit"]')
-    await downloadButton.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: 'Public register download button not clickable'
-    })
-    return downloadButton.click()
+    return clickWhenReady(
+      await $('main form button[type="submit"]'),
+      'Public register download button not clickable'
+    )
   }
 }
 

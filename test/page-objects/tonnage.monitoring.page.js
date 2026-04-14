@@ -1,4 +1,5 @@
 import { Page } from 'page-objects/page'
+import { clickWhenReady } from 'page-objects/actions'
 import { $, $$ } from '@wdio/globals'
 
 class TonnageMonitoringPage extends Page {
@@ -7,12 +8,10 @@ class TonnageMonitoringPage extends Page {
   }
 
   async downloadCsv() {
-    const downloadButton = await $('main form button[type="submit"]')
-    await downloadButton.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: 'Tonnage monitoring download button not clickable'
-    })
-    return downloadButton.click()
+    return clickWhenReady(
+      await $('main form button[type="submit"]'),
+      'Tonnage monitoring download button not clickable'
+    )
   }
 
   async tonnageMaterialTableData() {
