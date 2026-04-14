@@ -7,12 +7,20 @@ class TonnageMonitoringPage extends Page {
   }
 
   async downloadCsv() {
-    return await $('#main-content > div > div > div > form > button').click()
+    const downloadButton = await $('main form button[type="submit"]')
+    await downloadButton.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Tonnage monitoring download button not clickable'
+    })
+    return downloadButton.click()
   }
 
   async tonnageMaterialTableData() {
     const table = await $('table.govuk-table')
-    await table.waitForExist({ timeout: 5000 })
+    await table.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Tonnage monitoring table not displayed'
+    })
 
     const headerElements = await $$('table.govuk-table thead th')
     const headers = []

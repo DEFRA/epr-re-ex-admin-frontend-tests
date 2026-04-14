@@ -7,7 +7,12 @@ class PublicRegisterPage extends Page {
   }
 
   async downloadPublicRegister() {
-    return await $('#main-content > div > div > div > form > button').click()
+    const downloadButton = await $('main form button[type="submit"]')
+    await downloadButton.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Public register download button not clickable'
+    })
+    return downloadButton.click()
   }
 }
 

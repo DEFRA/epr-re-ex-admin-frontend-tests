@@ -42,13 +42,12 @@ class OrsUploadPage extends Page {
   }
 
   async uploadWorkbook(localFilePath) {
-    const remotePath = await browser.uploadFile(localFilePath)
     const uploadInput = await $('#ors-upload')
-    await uploadInput.waitForDisplayed({
+    await uploadInput.waitForExist({
       timeout: 5000,
-      timeoutMsg: 'Upload file input not displayed'
+      timeoutMsg: 'Upload file input not found'
     })
-    await uploadInput.setValue(remotePath)
+    await uploadInput.setValue(localFilePath)
   }
 
   async clickStartUpload() {

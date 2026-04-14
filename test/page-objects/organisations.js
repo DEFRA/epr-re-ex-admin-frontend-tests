@@ -34,8 +34,19 @@ class OrganisationsPage extends Page {
   }
 
   async searchFor(orgName) {
-    await $('#search').setValue(orgName)
-    await $('button[type=submit]').click()
+    const searchInput = await $('#search')
+    await searchInput.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Organisation search input not displayed'
+    })
+    await searchInput.setValue(orgName)
+
+    const submitButton = await $('button[type=submit]')
+    await submitButton.waitForClickable({
+      timeout: 10000,
+      timeoutMsg: 'Organisation search submit button not clickable'
+    })
+    await submitButton.click()
   }
 
   async searchResult() {
