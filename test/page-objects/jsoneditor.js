@@ -1,22 +1,26 @@
 import { $ } from '@wdio/globals'
 
+import { clickWhenReady } from 'page-objects/actions'
+
+const modeButton = '#jsoneditor .jsoneditor-modes > button'
+const modeOption = (nth) =>
+  `#jsoneditor .jsoneditor-anchor ul li:nth-child(${nth}) button .jsoneditor-text`
+
 class JsonEditor {
   async switchToTextEditor() {
-    await $(
-      '#jsoneditor > div > div.jsoneditor-menu > div.jsoneditor-modes > button'
-    ).click()
-    await $(
-      '#jsoneditor > div > div.jsoneditor-menu > div.jsoneditor-anchor > div > div > ul > li:nth-child(2) > button > div.jsoneditor-text'
-    ).click()
+    await clickWhenReady(modeButton, 'JSON editor mode button not clickable')
+    await clickWhenReady(
+      modeOption(2),
+      'JSON editor text mode option not clickable'
+    )
   }
 
   async switchToTreeEditor() {
-    await $(
-      '#jsoneditor > div > div.jsoneditor-menu > div.jsoneditor-modes > button'
-    ).click()
-    await $(
-      '#jsoneditor > div > div.jsoneditor-menu > div.jsoneditor-anchor > div > div > ul > li:nth-child(3) > button > div.jsoneditor-text'
-    ).click()
+    await clickWhenReady(modeButton, 'JSON editor mode button not clickable')
+    await clickWhenReady(
+      modeOption(3),
+      'JSON editor tree mode option not clickable'
+    )
   }
 
   async getEditorTextValue() {
@@ -30,7 +34,10 @@ class JsonEditor {
   }
 
   async saveChanges() {
-    await $('#jsoneditor-save-button').click()
+    await clickWhenReady(
+      '#jsoneditor-save-button',
+      'JSON editor save button not clickable'
+    )
   }
 }
 

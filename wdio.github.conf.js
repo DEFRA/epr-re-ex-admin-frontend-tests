@@ -59,6 +59,7 @@ export const config = {
 
   // Number of failures before the test suite bails.
   bail: 0,
+  specFileRetries: 1,
   waitforTimeout: 10000,
   waitforInterval: 200,
   connectionRetryTimeout: 120000,

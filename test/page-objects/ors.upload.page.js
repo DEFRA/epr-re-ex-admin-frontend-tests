@@ -2,6 +2,7 @@ import path from 'node:path'
 
 import { $, $$, browser, expect } from '@wdio/globals'
 import { Page } from 'page-objects/page'
+import { clickWhenReady, setValueWhenReady } from 'page-objects/actions'
 
 class OrsUploadPage extends Page {
   get listTable() {
@@ -44,20 +45,18 @@ class OrsUploadPage extends Page {
   async uploadWorkbook(localFilePath) {
     const remotePath = await browser.uploadFile(localFilePath)
     const uploadInput = await $('#ors-upload')
-    await uploadInput.waitForDisplayed({
+    await uploadInput.waitForExist({
       timeout: 5000,
-      timeoutMsg: 'Upload file input not displayed'
+      timeoutMsg: 'Upload file input not found'
     })
     await uploadInput.setValue(remotePath)
   }
 
   async clickStartUpload() {
-    const startUploadButton = await $('button[type="submit"]')
-    await startUploadButton.waitForClickable({
-      timeout: 5000,
-      timeoutMsg: 'Start upload button not clickable'
-    })
-    await startUploadButton.click()
+    await clickWhenReady(
+      'button[type="submit"]',
+      'Start upload button not clickable'
+    )
   }
 
   async waitForStatusPage() {
@@ -216,39 +215,29 @@ class OrsUploadPage extends Page {
   }
 
   async clickNextPage() {
-    const nextLink = await $('nav.govuk-pagination .govuk-pagination__next a')
-    await nextLink.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: 'Next pagination link not clickable'
-    })
-    await nextLink.click()
+    await clickWhenReady(
+      'nav.govuk-pagination .govuk-pagination__next a',
+      'Next pagination link not clickable'
+    )
   }
 
   async clickPageNumber(pageNumber) {
-    const pageLink = await $(
-      `nav.govuk-pagination a[href*="page=${pageNumber}&"]`
+    await clickWhenReady(
+      `nav.govuk-pagination a[href*="page=${pageNumber}&"]`,
+      `Pagination link for page ${pageNumber} not clickable`
     )
-    await pageLink.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: `Pagination link for page ${pageNumber} not clickable`
-    })
-    await pageLink.click()
   }
 
   async filterByRegistrationNumber(registrationNumber) {
-    const input = await this.registrationNumberInput
-    await input.waitForDisplayed({
-      timeout: 10000,
-      timeoutMsg: 'Registration number filter input not displayed'
-    })
-    await input.setValue(registrationNumber)
-
-    const button = await $('form.app-filters button[type="submit"]')
-    await button.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: 'Registration number search button not clickable'
-    })
-    await button.click()
+    await setValueWhenReady(
+      this.registrationNumberInput,
+      registrationNumber,
+      'Registration number filter input not displayed'
+    )
+    await clickWhenReady(
+      'form.app-filters button[type="submit"]',
+      'Registration number search button not clickable'
+    )
   }
 
   async getRegistrationNumberFilterValue() {
@@ -262,12 +251,10 @@ class OrsUploadPage extends Page {
   }
 
   async clearRegistrationNumberFilter() {
-    const clearLink = await $('form.app-filters a.govuk-button--inverse')
-    await clearLink.waitForClickable({
-      timeout: 10000,
-      timeoutMsg: 'Clear registration number filter link not clickable'
-    })
-    await clearLink.click()
+    await clickWhenReady(
+      'form.app-filters a.govuk-button--inverse',
+      'Clear registration number filter link not clickable'
+    )
   }
 
   async getInsetText() {
