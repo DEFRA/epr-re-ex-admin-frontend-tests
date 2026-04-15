@@ -2,11 +2,7 @@ import path from 'node:path'
 
 import { $, $$, browser, expect } from '@wdio/globals'
 import { Page } from 'page-objects/page'
-import {
-  clickAndWaitForNavigation,
-  clickWhenReady,
-  setValueWhenReady
-} from 'page-objects/actions'
+import { clickWhenReady, setValueWhenReady } from 'page-objects/actions'
 
 class OrsUploadPage extends Page {
   get listTable() {
@@ -57,7 +53,7 @@ class OrsUploadPage extends Page {
   }
 
   async clickStartUpload() {
-    await clickAndWaitForNavigation(
+    await clickWhenReady(
       'button[type="submit"]',
       'Start upload button not clickable'
     )
