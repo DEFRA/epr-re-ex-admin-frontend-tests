@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { resetTracker } from './test/support/cleanup-tracker.js'
 
 const oneMinute = 60 * 1000
 
@@ -146,7 +147,9 @@ export const config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // before: function (capabilities, specs) {},
+  before: function (capabilities, specs) {
+    resetTracker()
+  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name

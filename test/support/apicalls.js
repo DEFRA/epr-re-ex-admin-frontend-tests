@@ -5,6 +5,7 @@ import {
 } from '../support/generator.js'
 
 import { BaseAPI } from '../apis/base-api.js'
+import { trackCreatedOrgId } from './cleanup-tracker.js'
 import { expect } from '@wdio/globals'
 import { request } from 'undici'
 
@@ -93,6 +94,7 @@ export async function createLinkedOrganisation(dataRows) {
   const orgResponseData = await response.body.json()
 
   const orgId = orgResponseData?.orgId
+  trackCreatedOrgId(orgId)
   const refNo = orgResponseData?.referenceNumber
 
   for (const dataRow of dataRows) {
