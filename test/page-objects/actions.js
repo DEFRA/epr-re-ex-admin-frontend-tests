@@ -20,6 +20,15 @@ export const clickWhenReady = async (target, timeoutMsg) => {
   return element.click()
 }
 
+export const clickAndWaitForNavigation = async (target, timeoutMsg) => {
+  const urlBefore = await browser.getUrl()
+  await clickWhenReady(target, timeoutMsg)
+  await browser.waitUntil(async () => (await browser.getUrl()) !== urlBefore, {
+    timeout: DEFAULT_TIMEOUT,
+    timeoutMsg: `${timeoutMsg} — click did not trigger navigation from ${urlBefore}`
+  })
+}
+
 export const setValueWhenReady = async (target, value, timeoutMsg) => {
   const element = await resolve(target)
   await waitWith((opts) => element.waitForDisplayed(opts), timeoutMsg)
