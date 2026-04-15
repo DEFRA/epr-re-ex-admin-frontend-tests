@@ -1,23 +1,11 @@
-import { $$, browser } from '@wdio/globals'
+import { clickWhenReady } from 'page-objects/actions'
 
 class Navigation {
   async clickOnLink(linkText) {
-    await browser.waitUntil(
-      async () => {
-        const elements = await $$('#navigation li a')
-        return elements.length > 0
-      },
-      {
-        timeout: 5000,
-        timeoutMsg: 'Expected to find navigation items'
-      }
+    await clickWhenReady(
+      `#navigation a=${linkText}`,
+      `Navigation link "${linkText}" not clickable`
     )
-    const links = await $$('#navigation li a').getElements()
-    const targetLink = await links.find(async (el) => {
-      const text = await el.getText()
-      return text === linkText
-    })
-    await targetLink.click()
   }
 }
 
