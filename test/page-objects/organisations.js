@@ -48,6 +48,10 @@ class OrganisationsPage extends Page {
 
   async searchResult() {
     const elem = await $('#main-content > div:nth-child(2) > div > div > h2')
+    await elem.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Search result heading not displayed'
+    })
     return elem.getText()
   }
 
