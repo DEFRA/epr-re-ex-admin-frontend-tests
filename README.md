@@ -105,12 +105,12 @@ The results of the test run are made available in the portal.
 
 Alternatively you can run the test suite as a GitHub workflow.
 Test runs on GitHub are not able to connect to the CDP Test environments. Instead, they run the tests agains a version of the services running in docker.
-A docker compose `compose.yml` is included as a starting point, which includes the databases (mongodb, redis) and infrastructure (localstack) pre-setup.
+A docker compose `compose.yml` is included as a starting point, which includes the databases (mongodb, redis) and infrastructure (floci) pre-setup.
 
 Steps:
 
 1. Edit the compose.yml to include your services.
-2. Modify the scripts in docker/scripts to pre-populate the database, if required and create any localstack resources.
+2. Modify the scripts in docker/scripts to pre-populate the database, if required and create any floci resources.
 3. Test the setup locally with `docker compose up` and `npm run test:github`
 4. Set up the workflow trigger in `.github/workflows/journey-tests`.
 
