@@ -3,7 +3,7 @@
 # This template provides comparable infrastructure to the real environment.
 #   - mongodb
 #   - redis
-#   - floci (s3, sqs, sns, dynamodb) — LocalStack-compatible AWS emulator
+#   - floci (s3, sqs, sns) — LocalStack-compatible AWS emulator
 #
 # Mongo has init scripts included for setting up resources on startup. Floci's
 # resources (buckets, queues) are created by the one-shot floci-init container,
