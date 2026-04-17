@@ -96,6 +96,7 @@ services:
       SQS_SCAN_RESULTS: http://floci:4566/000000000000/cdp-clamav-results
       SQS_SCAN_RESULTS_CALLBACK: http://floci:4566/000000000000/cdp-uploader-scan-results-callback.fifo
       SQS_DOWNLOAD_REQUESTS: http://floci:4566/000000000000/cdp-uploader-download-requests
+      SQS_MOCK_CLAMAV: http://floci:4566/000000000000/mock-clamav
       CONSUMER_BUCKETS: re-ex-summary-logs,re-ex-overseas-sites
 
   ################################################################################
