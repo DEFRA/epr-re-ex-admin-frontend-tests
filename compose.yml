@@ -3,7 +3,7 @@
 # This template provides comparable infrastructure to the real environment.
 #   - mongodb
 #   - redis
-#   - floci (s3, sqs, sns) — LocalStack-compatible AWS emulator
+#   - floci (s3, sqs, sns)
 #
 # Mongo has init scripts included for setting up resources on startup. Floci's
 # resources (buckets, queues) are created by the one-shot floci-init container,
@@ -92,7 +92,7 @@ services:
       SQS_ENDPOINT: http://floci:4566
       S3_ENDPOINT: http://floci:4566
       # Floci requires path-form queue URLs (/<account>/<name>) for ReceiveMessage;
-      # LocalStack tolerated the bare-name default shipped in cdp-uploader config.
+      # cdp-uploader's baked defaults are bare names — override them here.
       SQS_SCAN_RESULTS: http://floci:4566/000000000000/cdp-clamav-results
       SQS_SCAN_RESULTS_CALLBACK: http://floci:4566/000000000000/cdp-uploader-scan-results-callback.fifo
       SQS_DOWNLOAD_REQUESTS: http://floci:4566/000000000000/cdp-uploader-download-requests
