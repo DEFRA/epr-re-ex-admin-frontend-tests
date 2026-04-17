@@ -113,7 +113,6 @@ services:
       PORT: 3002
       NODE_ENV: development
       REDIS_HOST: redis
-      LOCALSTACK_ENDPOINT: http://floci:4566
       EPR_BACKEND_URL: http://epr-backend:3001
       ENTRA_TENANT_ID: tenantId
       ENTRA_CLIENT_ID: clientId
@@ -175,7 +174,6 @@ services:
       APP_BASE_URL: http://epr-backend:3001
       PORT: 3001
       NODE_ENV: development
-      LOCALSTACK_ENDPOINT: http://floci:4566
       MONGO_URI: mongodb://mongodb:27017/
       GOVUK_NOTIFY_API_KEY: fake-key-for-testing
       FEATURE_FLAG_SUMMARY_LOGS: true
@@ -185,7 +183,6 @@ services:
       SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
       CDP_UPLOADER_URL: http://cdp-uploader:7337
       SQS_ENDPOINT: http://floci:4566
-      COMMAND_QUEUE_SQS_ENDPOINT: http://floci:4566
     ports:
       - '3001:3001'
     healthcheck:
