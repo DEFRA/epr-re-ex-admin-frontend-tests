@@ -1,5 +1,5 @@
 import { Page } from 'page-objects/page'
-import { $ } from '@wdio/globals'
+import { clickWhenReady } from 'page-objects/actions'
 
 class PublicRegisterPage extends Page {
   open() {
@@ -7,7 +7,10 @@ class PublicRegisterPage extends Page {
   }
 
   async downloadPublicRegister() {
-    return await $('#main-content > div > div > div > form > button').click()
+    return clickWhenReady(
+      'main form button[type="submit"]',
+      'Public register download button not clickable'
+    )
   }
 }
 

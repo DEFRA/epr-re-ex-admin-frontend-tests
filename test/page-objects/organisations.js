@@ -1,4 +1,5 @@
 import { Page } from 'page-objects/page'
+import { clickWhenReady, setValueWhenReady } from 'page-objects/actions'
 import { $, $$ } from '@wdio/globals'
 
 class OrganisationsPage extends Page {
@@ -34,12 +35,23 @@ class OrganisationsPage extends Page {
   }
 
   async searchFor(orgName) {
-    await $('#search').setValue(orgName)
-    await $('button[type=submit]').click()
+    await setValueWhenReady(
+      '#search',
+      orgName,
+      'Organisation search input not displayed'
+    )
+    await clickWhenReady(
+      'button[type=submit]',
+      'Organisation search submit button not clickable'
+    )
   }
 
   async searchResult() {
     const elem = await $('#main-content > div:nth-child(2) > div > div > h2')
+    await elem.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Search result heading not displayed'
+    })
     return elem.getText()
   }
 

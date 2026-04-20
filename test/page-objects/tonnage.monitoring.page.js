@@ -1,4 +1,5 @@
 import { Page } from 'page-objects/page'
+import { clickWhenReady } from 'page-objects/actions'
 import { $, $$ } from '@wdio/globals'
 
 class TonnageMonitoringPage extends Page {
@@ -7,12 +8,18 @@ class TonnageMonitoringPage extends Page {
   }
 
   async downloadCsv() {
-    return await $('#main-content > div > div > div > form > button').click()
+    return clickWhenReady(
+      'main form button[type="submit"]',
+      'Tonnage monitoring download button not clickable'
+    )
   }
 
   async tonnageMaterialTableData() {
     const table = await $('table.govuk-table')
-    await table.waitForExist({ timeout: 5000 })
+    await table.waitForDisplayed({
+      timeout: 10000,
+      timeoutMsg: 'Tonnage monitoring table not displayed'
+    })
 
     const headerElements = await $$('table.govuk-table thead th')
     const headers = []
