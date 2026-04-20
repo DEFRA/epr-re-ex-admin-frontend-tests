@@ -12,6 +12,15 @@ describe('Report Submissions page', () => {
     await LoginPage.submitCredentials()
 
     await Navigation.clickOnLink('Report submissions')
-    await ReportSubmissionsPage.downloadReportSubmissions()
+
+    const csv = await ReportSubmissionsPage.fetchCsv()
+    expect(csv.status).toEqual(200)
+    expect(csv.contentType).toContain('text/csv')
+    expect(csv.contentDisposition).toContain('attachment')
+    expect(csv.body).toContain(
+      '"Organisation name","Registration submitter contact number","Registration approved person contact number","Registration submitter email address","Registration approved person email address","Material","Registration No","Accreditation No","Report Type","Reporting Period","Due Date","Submitted Date","Submitted By"'
+    )
+    const rows = csv.body.split('\n').filter((line) => line.trim().length > 0)
+    expect(rows.length).toBeGreaterThan(3)
   })
 })

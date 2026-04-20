@@ -1,13 +1,37 @@
 import { Page } from 'page-objects/page'
-import { $ } from '@wdio/globals'
+import { browser } from '@wdio/globals'
 
 class ReportSubmissionsPage extends Page {
   open() {
     return super.open('/report-submissions')
   }
 
-  async downloadReportSubmissions() {
-    return await $('#main-content button[type="submit"].govuk-button').click()
+  async fetchCsv() {
+    return browser.execute(async () => {
+      const form = document.querySelector('#main-content form')
+      if (!form) throw new Error('Report submissions form not found')
+
+      const formData = new URLSearchParams()
+      for (const input of form.querySelectorAll('input[name]')) {
+        formData.set(input.name, input.value)
+      }
+
+      const response = await fetch('/report-submissions', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: formData.toString()
+      })
+
+      return {
+        status: response.status,
+        contentDisposition: response.headers.get('content-disposition'),
+        contentType: response.headers.get('content-type'),
+        body: await response.text()
+      }
+    })
   }
 }
 
