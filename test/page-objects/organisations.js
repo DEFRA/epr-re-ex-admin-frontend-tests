@@ -27,6 +27,12 @@ class OrganisationsPage extends Page {
     })
   }
 
+  async viewLink(row) {
+    await $(
+      `main table tbody tr:nth-child(${row}) td:nth-child(6) a:nth-of-type(1)`
+    ).click()
+  }
+
   async editLink(row) {
     await $(
       `#main-content > div > div > div > table > tbody > tr:nth-child(${row}) > td:nth-child(6) > a:nth-of-type(2)`

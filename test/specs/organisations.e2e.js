@@ -3,6 +3,8 @@ import { browser, expect } from '@wdio/globals'
 import LoginPage from 'page-objects/login.js'
 import Navigation from 'page-objects/navigation.js'
 import OrganisationsPage from 'page-objects/organisations.js'
+import OrganisationOverviewPage from 'page-objects/organisation.overview.page.js'
+import RegistrationOverviewPage from 'page-objects/registration.overview.page.js'
 import JsonEditor from 'page-objects/jsoneditor.js'
 import { createLinkedOrganisation } from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
@@ -102,5 +104,89 @@ describe('Organisations page', () => {
       }
     }
     expect(JSON.parse(actualJsonDifference)).toEqual(expectedJsonDifference)
+  })
+
+  it('Should be able to view an organisation overview and drill down to a registration overview', async () => {
+    const linkedOrganisation = await createLinkedOrganisation([
+      { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' },
+      { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' }
+    ])
+
+    const { organisation, registrations } = linkedOrganisation
+
+    await HomePage.open()
+    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
+
+    await LoginPage.open()
+    await expect(browser).toHaveTitle(expect.stringContaining('Login'))
+    await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
+    await LoginPage.submitCredentials()
+
+    const headerText = await browser.$('main h1').getText()
+    expect(headerText).toEqual('Welcome EA Regulator!')
+
+    await Navigation.clickOnLink('Organisations')
+
+    await OrganisationsPage.searchFor(organisation.companyName)
+    const searchResult = await OrganisationsPage.searchResult()
+    expect(searchResult).toEqual('1 result found')
+
+    const searchOrgTable = await OrganisationsPage.getTableData()
+    const expectedSearchOrgTable = [
+      {
+        header: organisation.companyName,
+        orgId: `${linkedOrganisation.orgId}`,
+        regNo: '',
+        regulator: 'EA',
+        status: 'created'
+      }
+    ]
+    expect(searchOrgTable).toEqual(expectedSearchOrgTable)
+
+    await OrganisationsPage.viewLink(1)
+
+    // organisation overview page
+    const organisationOverviewPageHeader =
+      await OrganisationOverviewPage.getHeaderText()
+    expect(organisationOverviewPageHeader).toEqual(organisation.companyName)
+
+    const registrationsData =
+      await OrganisationOverviewPage.getRegistrationsTableData()
+    const expectedRegistrationsData = [
+      {
+        registrationNumber: '',
+        registrationStatus: 'created',
+        processingType: 'reprocessor',
+        material: 'paper',
+        site: registrations[0].streetAddress,
+        accreditationNumber: '',
+        accreditationStatus: 'created'
+      },
+      {
+        registrationNumber: '',
+        registrationStatus: 'created',
+        processingType: 'exporter',
+        material: 'paper',
+        site: '',
+        accreditationNumber: '',
+        accreditationStatus: 'created'
+      }
+    ]
+    expect(registrationsData).toEqual(expectedRegistrationsData)
+
+    await OrganisationOverviewPage.viewRegistrationLink(1)
+
+    // registration overview page
+    const registrationOverviewPageHeader =
+      await RegistrationOverviewPage.getHeaderText()
+    const registrationOverviewHeaderRegex = new RegExp(
+      `^${organisation.companyName} - \\w+$` // Header is company name following by registration number or (dynamic) registration id (when no registration number has been assigned)
+    )
+    expect(registrationOverviewPageHeader).toMatch(
+      registrationOverviewHeaderRegex
+    )
+
+    const reportsData = await RegistrationOverviewPage.getReportsTableData()
+    expect(reportsData.length).toBeGreaterThanOrEqual(1)
   })
 })
