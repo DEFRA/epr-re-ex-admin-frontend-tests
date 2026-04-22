@@ -29,7 +29,7 @@ class OrganisationsPage extends Page {
 
   async editLink(row) {
     await $(
-      `#main-content > div > div > div > table > tbody > tr:nth-child(${row}) > td:nth-child(6) > a`
+      `#main-content > div > div > div > table > tbody > tr:nth-child(${row}) > td:nth-child(6) > a:nth-of-type(2)`
     ).click()
   }
 
