@@ -27,7 +27,9 @@ export default [
   ...ns,
   {
     files: ['test/**/*.js'],
-    languageOptions: { globals: wdio.configs['flat/recommended'].languageOptions.globals }
+    languageOptions: {
+      globals: wdio.configs['flat/recommended'].languageOptions.globals
+    }
   },
   {
     rules: {
