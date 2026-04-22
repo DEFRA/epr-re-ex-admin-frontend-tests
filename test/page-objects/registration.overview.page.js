@@ -7,7 +7,9 @@ class RegistrationOverviewPage extends Page {
   }
 
   async getHeaderText() {
-    return await $('#main-content h1.govuk-heading-xl').getText()
+    const heading = $('#main-content h1.govuk-heading-xl')
+    await heading.waitForExist()
+    return heading.getText()
   }
 
   async getReportsTableData() {
