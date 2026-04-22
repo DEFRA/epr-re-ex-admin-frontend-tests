@@ -10,6 +10,13 @@ import { createLinkedOrganisation } from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
 import HomePage from 'page-objects/home.page.js'
 
+async function loginAsServiceMaintainer() {
+  await browser.deleteCookies()
+  await LoginPage.open()
+  await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
+  await LoginPage.submitCredentials()
+}
+
 describe('Organisations page', () => {
   it('Should be able to update an organisation and view system logs @organisations', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
@@ -22,10 +29,7 @@ describe('Organisations page', () => {
     await HomePage.open()
     await expect(browser).toHaveTitle(expect.stringContaining('Home'))
 
-    await LoginPage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Login'))
-    await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
+    await loginAsServiceMaintainer()
 
     const headerText = await browser.$('main h1').getText()
     expect(headerText).toEqual('Welcome EA Regulator!')
@@ -114,18 +118,9 @@ describe('Organisations page', () => {
 
     const { organisation, registrations } = linkedOrganisation
 
-    await HomePage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
+    await loginAsServiceMaintainer()
 
-    await LoginPage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Login'))
-    await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
-
-    const headerText = await browser.$('main h1').getText()
-    expect(headerText).toEqual('Welcome EA Regulator!')
-
-    await Navigation.clickOnLink('Organisations')
+    await OrganisationsPage.open()
 
     await OrganisationsPage.searchFor(organisation.companyName)
     const searchResult = await OrganisationsPage.searchResult()
