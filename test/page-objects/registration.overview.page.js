@@ -7,11 +7,11 @@ class RegistrationOverviewPage extends Page {
   }
 
   async getHeaderText() {
-    return $('#main-content h1.govuk-heading-xl').getText()
+    return await $('#main-content h1.govuk-heading-xl').getText()
   }
 
   async getReportsTableData() {
-    return $$('table.govuk-table tbody tr').map(async (row) => {
+    return await $$('table.govuk-table tbody tr').map(async (row) => {
       const start = await row.$('td:nth-child(1)')
       const end = await row.$('td:nth-child(2)')
       const due = await row.$('td:nth-child(3)')

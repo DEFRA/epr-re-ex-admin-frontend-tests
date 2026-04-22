@@ -102,7 +102,7 @@ describe('Organisations page', () => {
     expect(JSON.parse(actualJsonDifference)).toEqual(expectedJsonDifference)
   })
 
-  it('Should be able to view an organisation overview and drill down to a registration overview', async () => {
+  it('Should be able to view an organisation overview and drill down to a registration overview @organisations', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' },
       { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' }

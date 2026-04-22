@@ -7,11 +7,11 @@ class OrganisationOverviewPage extends Page {
   }
 
   async getHeaderText() {
-    return $('#main-content h1.govuk-heading-xl').getText()
+    return await $('#main-content h1.govuk-heading-xl').getText()
   }
 
   async getRegistrationsTableData() {
-    return $$('table.govuk-table tbody tr').map(async (row) => {
+    return await $$('table.govuk-table tbody tr').map(async (row) => {
       const registrationNumber = await row.$('td:nth-child(1)')
       const registrationStatus = await row.$('td:nth-child(2)')
       const processingType = await row.$('td:nth-child(3)')
