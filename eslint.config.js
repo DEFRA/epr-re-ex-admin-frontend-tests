@@ -25,7 +25,10 @@ for (const item of ns) {
 
 export default [
   ...ns,
-  wdio.configs['flat/recommended'],
+  {
+    files: ['test/**/*.js'],
+    languageOptions: { globals: wdio.configs['flat/recommended'].languageOptions.globals }
+  },
   {
     rules: {
       camelcase: [
