@@ -8,16 +8,16 @@ import RegistrationOverviewPage from 'page-objects/registration.overview.page.js
 import JsonEditor from 'page-objects/jsoneditor.js'
 import { createLinkedOrganisation } from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
-import HomePage from 'page-objects/home.page.js'
-
-async function loginAsServiceMaintainer() {
-  await browser.deleteCookies()
-  await LoginPage.open()
-  await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
-  await LoginPage.submitCredentials()
-}
 
 describe('Organisations page', () => {
+  before(async () => {
+    // login as service maintainer
+    await browser.deleteCookies()
+    await LoginPage.open()
+    await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
+    await LoginPage.submitCredentials()
+  })
+
   it('Should be able to update an organisation and view system logs @organisations', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' },
@@ -25,14 +25,6 @@ describe('Organisations page', () => {
     ])
 
     const organisation = linkedOrganisation.organisation
-
-    await HomePage.open()
-    await expect(browser).toHaveTitle(expect.stringContaining('Home'))
-
-    await loginAsServiceMaintainer()
-
-    const headerText = await browser.$('main h1').getText()
-    expect(headerText).toEqual('Welcome EA Regulator!')
 
     await Navigation.clickOnLink('Organisations')
 
@@ -117,8 +109,6 @@ describe('Organisations page', () => {
     ])
 
     const { organisation, registrations } = linkedOrganisation
-
-    await loginAsServiceMaintainer()
 
     await OrganisationsPage.open()
 

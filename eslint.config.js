@@ -1,4 +1,5 @@
 import neostandard from 'neostandard'
+import wdio from 'eslint-plugin-wdio'
 
 const ns = neostandard({
   env: ['node', 'es2022', 'jest'],
@@ -24,6 +25,7 @@ for (const item of ns) {
 
 export default [
   ...ns,
+  wdio.configs['flat/recommended'],
   {
     rules: {
       camelcase: [
