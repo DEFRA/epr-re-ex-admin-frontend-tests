@@ -19,18 +19,18 @@ class QueueManagementPage extends Page {
 
   async getEmptyStateText() {
     const paragraphs = await $$('#main-content p')
-    const texts = await Promise.all(paragraphs.map((p) => p.getText()))
+    const texts = await Promise.all([...paragraphs].map((p) => p.getText()))
     return texts.find((t) => t.includes('no messages'))
   }
 
   async getTableHeaders() {
     const headers = await $$('table thead th')
-    return Promise.all(headers.map((th) => th.getText()))
+    return Promise.all([...headers].map((th) => th.getText()))
   }
 
   async getFirstRowData() {
     const cells = await $$('table tbody tr:first-child td')
-    const texts = await Promise.all(cells.map((td) => td.getText()))
+    const texts = await Promise.all([...cells].map((td) => td.getText()))
     return {
       commandType: texts[0],
       summaryLogId: texts[1],
@@ -45,9 +45,9 @@ class QueueManagementPage extends Page {
   }
 
   async getRawMessageBody() {
-    const pre = await $('table tbody details pre')
-    await pre.waitForDisplayed()
-    return pre.getText()
+    const code = await $('table tbody details .app-json-display')
+    await code.waitForDisplayed()
+    return code.getText()
   }
 
   async clickClearAllMessages() {
