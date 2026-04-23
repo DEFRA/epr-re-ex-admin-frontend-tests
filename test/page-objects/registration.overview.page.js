@@ -2,10 +2,6 @@ import { Page } from 'page-objects/page'
 import { $, $$ } from '@wdio/globals'
 
 class RegistrationOverviewPage extends Page {
-  open() {
-    return super.open('/organisations')
-  }
-
   async getHeaderText() {
     const heading = $('#main-content h1.govuk-heading-xl')
     await heading.waitForExist()
