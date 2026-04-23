@@ -176,7 +176,6 @@ services:
       NODE_ENV: development
       MONGO_URI: mongodb://mongodb:27017/
       GOVUK_NOTIFY_API_KEY: fake-key-for-testing
-      FEATURE_FLAG_SUMMARY_LOGS: true
       FEATURE_FLAG_DEV_ENDPOINTS: true
       FEATURE_FLAG_REPORTS: true
       ENTRA_OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
