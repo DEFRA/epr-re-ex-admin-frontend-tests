@@ -33,9 +33,8 @@ class QueueManagementPage extends Page {
     const texts = await Promise.all([...cells].map((td) => td.getText()))
     return {
       commandType: texts[0],
-      summaryLogId: texts[1],
-      sentTimestamp: texts[2],
-      receiveCount: texts[3]
+      sentTimestamp: texts[1],
+      receiveCount: texts[2]
     }
   }
 

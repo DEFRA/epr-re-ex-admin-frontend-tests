@@ -35,7 +35,6 @@ describe('Queue management page', () => {
     const headers = await QueueManagementPage.getTableHeaders()
     expect(headers).toEqual([
       'Command type',
-      'Summary log ID',
       'Sent timestamp',
       'Receive count',
       'Raw message'
@@ -44,13 +43,11 @@ describe('Queue management page', () => {
     // Verify the seeded message appears
     const row = await QueueManagementPage.getFirstRowData()
     expect(row.commandType).toBe('PROCESS_SUMMARY_LOG')
-    expect(row.summaryLogId).toBe('journey-test-dlq-001')
 
     // Expand and verify raw message body
     await QueueManagementPage.expandRawMessage()
     const rawBody = await QueueManagementPage.getRawMessageBody()
     expect(rawBody).toContain('"type": "PROCESS_SUMMARY_LOG"')
-    expect(rawBody).toContain('"summaryLogId": "journey-test-dlq-001"')
 
     // Clear all messages flow
     await QueueManagementPage.clickClearAllMessages()
