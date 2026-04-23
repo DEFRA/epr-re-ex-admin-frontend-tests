@@ -7,11 +7,11 @@ class OrganisationsPage extends Page {
   }
 
   async getHeaderText() {
-    return $('#main-content h1.govuk-heading-xl').getText()
+    return await $('#main-content h1.govuk-heading-xl').getText()
   }
 
   async getTableData() {
-    return $$('table.govuk-table tbody tr').map(async (row) => {
+    return await $$('table.govuk-table tbody tr').map(async (row) => {
       const header = await row.$('th.govuk-table__header')
       const orgId = await row.$('td:nth-child(2)')
       const regNo = await row.$('td:nth-child(3)')
@@ -27,6 +27,12 @@ class OrganisationsPage extends Page {
     })
   }
 
+  async viewLink(row) {
+    await $(
+      `main table tbody tr:nth-child(${row}) td:nth-child(6) a:nth-of-type(1)`
+    ).click()
+  }
+
   async editLink(row) {
     await $(
       `#main-content > div > div > div > table > tbody > tr:nth-child(${row}) > td:nth-child(6) > a:nth-of-type(2)`
@@ -39,13 +45,13 @@ class OrganisationsPage extends Page {
   }
 
   async searchResult() {
-    const elem = await $('#main-content > div:nth-child(2) > div > div > h2')
-    return elem.getText()
+    const elem = $('#main-content > div:nth-child(2) > div > div > h2')
+    return await elem.getText()
   }
 
   async getSuccessMessage() {
-    const successElem = await $('#organisation-success-message')
-    return successElem.getText()
+    const successElem = $('#organisation-success-message')
+    return await successElem.getText()
   }
 
   async clearSearch() {
