@@ -173,5 +173,9 @@ describe('Organisations page', () => {
 
     const reportsData = await RegistrationOverviewPage.getReportsTableData()
     expect(reportsData.length).toBeGreaterThanOrEqual(1)
+
+    const summaryLogContent =
+      await RegistrationOverviewPage.getSummaryLogsContent()
+    expect(summaryLogContent).toContain('No summary logs')
   })
 })

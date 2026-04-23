@@ -13,7 +13,7 @@ class RegistrationOverviewPage extends Page {
   }
 
   async getReportsTableData() {
-    return await $$('table.govuk-table tbody tr').map(async (row) => {
+    return await $$('#reports table tbody tr').map(async (row) => {
       const start = await row.$('td:nth-child(1)')
       const end = await row.$('td:nth-child(2)')
       const due = await row.$('td:nth-child(3)')
@@ -25,6 +25,10 @@ class RegistrationOverviewPage extends Page {
         status: await status.getText()
       }
     })
+  }
+
+  async getSummaryLogsContent() {
+    return await $('#summary-logs').getText()
   }
 }
 
