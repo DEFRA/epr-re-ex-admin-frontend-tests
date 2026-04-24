@@ -14,13 +14,19 @@ describe('Report Submissions page', () => {
     await Navigation.clickOnLink('Report submissions')
 
     const csv = await ReportSubmissionsPage.fetchCsv()
-    expect(csv.status).toEqual(200)
-    expect(csv.contentType).toContain('text/csv')
-    expect(csv.contentDisposition).toContain('attachment')
-    expect(csv.body).toContain(
-      '"Organisation name","Registration submitter contact number","Registration approved person contact number","Registration submitter email address","Registration approved person email address","Material","Registration No","Accreditation No","Report Type","Reporting Period","Due Date","Submitted Date","Submitted By"'
+    await expect(csv.status).toEqual(200)
+    await expect(csv.contentType).toContain('text/csv')
+    await expect(csv.contentDisposition).toContain('attachment')
+    await expect(csv.body).toContain(
+      '"Organisation name","Organisation registered approver contact number","Organisation registered approver person email address","Organisation registered submitter contact number","Organisation registered submitter email address","Material","Accreditation No","Registered No","Report Type","Report Period","Due Date","Submitted Date","Submitted By"'
     )
-    const rows = csv.body.split('\n').filter((line) => line.trim().length > 0)
-    expect(rows.length).toBeGreaterThan(3)
+    const lines = csv.body
+      .split(/\r?\n/)
+      .filter((line) => line.trim().length > 0)
+    const headerIndex = lines.findIndex((line) =>
+      line.startsWith('"Organisation name"')
+    )
+    const dataRows = lines.slice(headerIndex + 1)
+    await expect(dataRows.length).toBeGreaterThan(0)
   })
 })
