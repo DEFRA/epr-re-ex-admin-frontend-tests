@@ -32,7 +32,7 @@ services:
 
   ################################################################################
   floci:
-    image: hectorvent/floci:1.5.3
+    image: hectorvent/floci:1.5.5
     environment:
       FLOCI_HOSTNAME: floci
       FLOCI_DEFAULT_REGION: eu-west-2
@@ -42,7 +42,7 @@ services:
       - 4566:4566
 
   floci-init:
-    image: amazon/aws-cli:2.17.43
+    image: amazon/aws-cli:2.34.36
     entrypoint: /bin/sh
     command: /setup/init.sh
     depends_on:
@@ -146,7 +146,7 @@ services:
       retries: 3
 
   mongodb:
-    image: mongo:7.0.31
+    image: mongo:8.2.7
     restart: always
     ports:
       - 27017:27017
