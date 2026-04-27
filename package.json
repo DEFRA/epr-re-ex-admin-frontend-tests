@@ -50,6 +50,7 @@
     "undici": "7.24.5"
   },
   "overrides": {
+    "axios": "1.15.2",
     "eslint": "$eslint",
     "serialize-javascript": "7.0.5",
     "uuid": "14.0.0"
