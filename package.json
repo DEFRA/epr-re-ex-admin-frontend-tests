@@ -27,6 +27,7 @@
     "format:check": "prettier --check 'test/**/*.js' '**/*.{js,md,json,config.js}'",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:types": "tsc -p jsconfig.typecheck.json",
     "postinstall": "npm run setup:husky",
     "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
     "report": "allure generate allure-results --single-file --clean",
@@ -50,11 +51,10 @@
     "undici": "7.24.5"
   },
   "overrides": {
+    "axios": "1.15.2",
     "eslint": "$eslint",
     "serialize-javascript": "7.0.5",
-    "lodash": "4.18.1",
-    "basic-ftp": "5.2.2",
-    "axios": "1.15.0"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "eslint": "10.1.0",

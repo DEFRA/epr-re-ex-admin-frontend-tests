@@ -5,6 +5,7 @@ import {
 } from '../support/generator.js'
 
 import { BaseAPI } from '../apis/base-api.js'
+import { trackCreatedOrgId } from './cleanup-tracker.js'
 import { expect } from '@wdio/globals'
 import { request } from 'undici'
 
@@ -93,8 +94,10 @@ export async function createLinkedOrganisation(dataRows) {
   const orgResponseData = await response.body.json()
 
   const orgId = orgResponseData?.orgId
+  trackCreatedOrgId(orgId)
   const refNo = orgResponseData?.referenceNumber
 
+  const registrations = []
   for (const dataRow of dataRows) {
     let material = 'Paper or board (R3)'
     const glassRecyclingProcess = dataRow.glassRecyclingProcess?.trim()
@@ -102,6 +105,7 @@ export async function createLinkedOrganisation(dataRows) {
       material = dataRow.material
     }
     const registration = new Registration(orgId, refNo)
+    registrations.push(registration)
     payload =
       dataRow.wasteProcessingType === 'Reprocessor'
         ? registration.toAllMaterialsPayload(material, glassRecyclingProcess)
@@ -129,5 +133,5 @@ export async function createLinkedOrganisation(dataRows) {
   response = await baseAPI.post(`/v1/dev/form-submissions/${refNo}/migrate`, '')
   expect(response.statusCode).toBe(200)
 
-  return { orgId, refNo, organisation }
+  return { orgId, refNo, organisation, registrations }
 }

@@ -295,6 +295,7 @@ export class Registration {
 
     const postcode = fakerEN_GB.location.zipCode()
 
+    this.streetAddress = streetAddress
     this.address =
       streetAddress + ',' + fakerEN_GB.location.city() + ',' + postcode
 
