@@ -29,6 +29,10 @@ class SystemLogsPage extends Page {
     await $('button[type=submit]').click()
   }
 
+  async searchResults() {
+    return $('#main-content > div.govuk-summary-card')
+  }
+
   async submitSearch() {
     await $('button[type=submit]').click()
   }
