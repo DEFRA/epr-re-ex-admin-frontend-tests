@@ -23,6 +23,6 @@
       "components/*": ["./test/components/*"]
     }
   },
-  "include": ["test/**/*.js", "wdio.*.conf.js"],
+  "include": ["test/**/*.js"],
   "exclude": ["node_modules"]
 }
