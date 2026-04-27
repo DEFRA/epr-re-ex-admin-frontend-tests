@@ -146,7 +146,7 @@ services:
       retries: 3
 
   mongodb:
-    image: mongo:7.0.31
+    image: mongo:8.2.7
     restart: always
     ports:
       - 27017:27017
