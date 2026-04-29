@@ -89,6 +89,17 @@ describe('Organisations page', () => {
       orgId: {
         _changed: `${linkedOrganisation.orgId} -> ${updatedOrgId}`
       },
+      formSubmissionTime: {
+        _removed: expect.any(String)
+      },
+      registrations: {
+        0: { formSubmissionTime: { _removed: expect.any(String) } },
+        1: { formSubmissionTime: { _removed: expect.any(String) } }
+      },
+      accreditations: {
+        0: { formSubmissionTime: { _removed: expect.any(String) } },
+        1: { formSubmissionTime: { _removed: expect.any(String) } }
+      },
       users: {
         0: {
           _added: {
