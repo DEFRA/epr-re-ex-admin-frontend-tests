@@ -48,25 +48,19 @@ describe('Report Submissions page', () => {
     const rows = csv.body
       .split(/\r?\n/)
       .filter((line) => line.trim().length > 0)
-    const headerIndex = rows.findIndex((row) =>
-      row.startsWith('"Organisation name"')
-    )
+    const headerIndex = rows.findIndex((row) => row.startsWith('"Regulator"'))
     await expect(headerIndex).toBeGreaterThanOrEqual(0)
     const dataRows = rows.slice(headerIndex + 1)
 
     const orgRow = dataRows.find((row) => row.includes(orgName))
     await expect(orgRow).toBeDefined()
     const cols = orgRow.split('","')
-    await expect(cols[11]).toBeTruthy()
     await expect(cols[12]).toBeTruthy()
-    await expect(cols[14]).toBeTruthy()
+    await expect(cols[13]).toBeTruthy()
+    await expect(cols[15]).toBeTruthy()
   })
 
   it('should include all expected column headers in the CSV download @reportsubmissions', async () => {
-    await LoginPage.open()
-    await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
-
     await Navigation.clickOnLink('Report submissions')
 
     const csv = await ReportSubmissionsPage.fetchCsv()
@@ -75,13 +69,12 @@ describe('Report Submissions page', () => {
     const rows = csv.body
       .split(/\r?\n/)
       .filter((line) => line.trim().length > 0)
-    const headerIndex = rows.findIndex((row) =>
-      row.startsWith('"Organisation name"')
-    )
+    const headerIndex = rows.findIndex((row) => row.startsWith('"Regulator"'))
     await expect(headerIndex).toBeGreaterThanOrEqual(0)
 
     const headerRow = rows[headerIndex]
     const expectedHeaders = [
+      'Regulator',
       'Organisation name',
       'Organisation registered approver contact number',
       'Organisation registered approver person email address',
