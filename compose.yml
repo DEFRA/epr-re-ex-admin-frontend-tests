@@ -145,6 +145,23 @@ services:
       start_period: 2s
       retries: 3
 
+  defra-id-stub:
+    image: defradigital/cdp-defra-id-stub:latest
+    ports:
+      - '3200:3200'
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      APP_BASE_URL: http://defra-id-stub:3200
+      NODE_ENV: development
+      OIDC_BASE_PATH: /cdp-defra-id-stub
+      OIDC_CLIENT_ID: 63983fc2-cfff-45bb-8ec2-959e21062b9a
+      OIDC_CLIENT_SECRET: test_value
+      PORT: 3200
+      REDIS_HOST: redis
+      USE_SINGLE_INSTANCE_CACHE: true
+
   mongodb:
     image: mongo:8.2.7
     restart: always
@@ -180,6 +197,8 @@ services:
       FEATURE_FLAG_REPORTS: true
       ENTRA_OIDC_WELL_KNOWN_CONFIGURATION_URL: http://epr-re-ex-entra-stub:3010/.well-known/openid-configuration
       ADMIN_UI_ENTRA_CLIENT_ID: clientId
+      DEFRA_ID_CLIENT_ID: 63983fc2-cfff-45bb-8ec2-959e21062b9a
+      DEFRA_ID_OIDC_WELL_KNOWN_URL: http://defra-id-stub:3200/cdp-defra-id-stub/.well-known/openid-configuration
       SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
       CDP_UPLOADER_URL: http://cdp-uploader:7337
       SQS_ENDPOINT: http://floci:4566
