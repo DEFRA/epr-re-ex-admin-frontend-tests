@@ -42,7 +42,7 @@ services:
       - 4566:4566
 
   floci-init:
-    image: amazon/aws-cli:2.34.38
+    image: amazon/aws-cli:2.34.41
     entrypoint: /bin/sh
     command: /setup/init.sh
     depends_on:
@@ -71,7 +71,7 @@ services:
 
   ################################################################################
   cdp-uploader:
-    image: defradigital/cdp-uploader:1.15.0
+    image: defradigital/cdp-uploader:1.16.0
     ports:
       - '7337:7337'
     depends_on:
