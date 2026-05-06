@@ -103,7 +103,7 @@ describe('System logs search @searchsystemlogs', () => {
 
     await expect($('.govuk-error-summary')).toHaveText(
       expect.stringContaining(
-        'Enter an organisation reference number or email address'
+        'Enter an organisation reference number, email address or event type'
       )
     )
   })
