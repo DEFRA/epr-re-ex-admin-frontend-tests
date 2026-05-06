@@ -10,17 +10,23 @@ class RegistrationOverviewPage extends Page {
 
   async getReportsTableData() {
     return await $$('#reports table tbody tr').map(async (row) => {
-      const start = await row.$('td:nth-child(1)')
-      const end = await row.$('td:nth-child(2)')
-      const due = await row.$('td:nth-child(3)')
-      const status = await row.$('td:nth-child(4)')
+      const period = await row.$('td:nth-child(1)')
+      const due = await row.$('td:nth-child(2)')
+      const status = await row.$('td:nth-child(3)')
+      const actions = await row.$('td:nth-child(4)')
       return {
-        start: await start.getText(),
-        end: await end.getText(),
+        period: await period.getText(),
         due: await due.getText(),
-        status: await status.getText()
+        status: await status.getText(),
+        actions: await actions.getText()
       }
     })
+  }
+
+  async unsubmitReportLink(row) {
+    await $(
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a:nth-child(3)`
+    ).click()
   }
 
   async getSummaryLogsContent() {
