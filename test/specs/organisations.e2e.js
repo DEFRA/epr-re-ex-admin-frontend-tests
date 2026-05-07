@@ -6,8 +6,12 @@ import OrganisationsPage from 'page-objects/organisations.js'
 import OrganisationOverviewPage from 'page-objects/organisation.overview.page.js'
 import RegistrationOverviewPage from 'page-objects/registration.overview.page.js'
 import JsonEditor from 'page-objects/jsoneditor.js'
-import { createLinkedOrganisation } from '../support/apicalls.js'
+import {
+  createLinkedOrganisation,
+  createSubmittedReport
+} from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
+import UnsubmitConfirmationPage from 'page-objects/unsubmit.confirmation.page.js'
 
 describe('Organisations page', () => {
   before(async () => {
@@ -177,5 +181,66 @@ describe('Organisations page', () => {
     const summaryLogContent =
       await RegistrationOverviewPage.getSummaryLogsContent()
     expect(summaryLogContent).toContain('No summary logs')
+  })
+
+  it('Should be able to view an organisation overview and unsubmit a report @organisations @unsubmit', async () => {
+    const linkedOrganisation = await createLinkedOrganisation([
+      { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
+    ])
+
+    const { organisation } = linkedOrganisation
+
+    await createSubmittedReport(linkedOrganisation.refNo)
+
+    await OrganisationsPage.open()
+
+    await OrganisationsPage.searchFor(organisation.companyName)
+    const searchResult = await OrganisationsPage.searchResult()
+    expect(searchResult).toEqual('1 result found')
+
+    const searchOrgTable = await OrganisationsPage.getTableData()
+    const expectedSearchOrgTable = [
+      {
+        header: organisation.companyName,
+        orgId: `${linkedOrganisation.orgId}`,
+        regNo: '',
+        regulator: 'EA',
+        status: 'active'
+      }
+    ]
+    expect(searchOrgTable).toEqual(expectedSearchOrgTable)
+
+    await OrganisationsPage.viewLink(1)
+
+    // organisation overview page
+    const organisationOverviewPageHeader =
+      await OrganisationOverviewPage.getHeaderText()
+    expect(organisationOverviewPageHeader).toEqual(organisation.companyName)
+
+    await OrganisationOverviewPage.viewRegistrationLink(1)
+
+    let reportsData = await RegistrationOverviewPage.getReportsTableData()
+    expect(reportsData.length).toBeGreaterThanOrEqual(1)
+    expect(reportsData[0].status).toEqual('submitted')
+    expect(reportsData[0].actions).toContain('View')
+    expect(reportsData[0].actions).toContain('Unsubmit')
+
+    // unsubmit report
+    await RegistrationOverviewPage.unsubmitReportLink(1)
+    const warningText = await UnsubmitConfirmationPage.getWarningText()
+    expect(warningText).toContain(
+      "Unsubmitting will move the report back to 'ready to submit'. The operator will need to delete and resubmit it."
+    )
+    await UnsubmitConfirmationPage.confirmUnsubmit()
+
+    const successMessage = await UnsubmitConfirmationPage.getSuccessMessage()
+    expect(successMessage).toEqual('Report unsubmitted')
+
+    await UnsubmitConfirmationPage.returnToRegistrationOverview()
+
+    reportsData = await RegistrationOverviewPage.getReportsTableData()
+    expect(reportsData.length).toBeGreaterThanOrEqual(1)
+    expect(reportsData[0].status).toEqual('ready_to_submit')
+    expect(reportsData[0].actions).not.toContain('Unsubmit')
   })
 })
