@@ -200,6 +200,13 @@ services:
       DEFRA_ID_CLIENT_ID: 63983fc2-cfff-45bb-8ec2-959e21062b9a
       DEFRA_ID_OIDC_WELL_KNOWN_URL: http://defra-id-stub:3200/cdp-defra-id-stub/.well-known/openid-configuration
       SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
+      # ADR 0033: existing journey-test users are placed in the write tier so
+      # mutating-action journeys (edit organisation, generate public register,
+      # unsubmit report, clear DLQ) keep passing. The maintainer list above is
+      # retained so first-match-wins still resolves the same email; the write
+      # list takes precedence.
+      SERVICE_MAINTAINER_WRITE_EMAILS: '["ea@test.gov.uk"]'
+      SUPPORT_EMAILS: '[]'
       CDP_UPLOADER_URL: http://cdp-uploader:7337
       SQS_ENDPOINT: http://floci:4566
     ports:
