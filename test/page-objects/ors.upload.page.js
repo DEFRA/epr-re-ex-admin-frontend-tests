@@ -280,6 +280,10 @@ class OrsUploadPage extends Page {
     return insetText.getText()
   }
 
+  async getErrorText() {
+    return await $('#main-content div.govuk-error-summary__body').getText()
+  }
+
   async expectUploadFormVisible() {
     const uploadInput = await $('#ors-upload')
     const startButton = await $('button[type="submit"]')

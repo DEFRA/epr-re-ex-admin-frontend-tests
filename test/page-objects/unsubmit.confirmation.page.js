@@ -17,6 +17,14 @@ class UnsubmitConfirmationPage extends Page {
   async returnToRegistrationOverview() {
     await $('#main-content > div > div > div > p:nth-child(5) > a').click()
   }
+
+  async permissionsErrorHeading() {
+    return await $('#main-content > div > div > h1').getText()
+  }
+
+  async permissionsErrorText() {
+    return await $('#main-content > div > div > p:nth-child(2)').getText()
+  }
 }
 
 export default new UnsubmitConfirmationPage()
