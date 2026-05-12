@@ -39,6 +39,10 @@ class JsonEditor {
     await saveButton.waitForClickable()
     await saveButton.click()
   }
+
+  async saveButtonExists() {
+    return await $('#jsoneditor-save-button').isExisting()
+  }
 }
 
 export default new JsonEditor()

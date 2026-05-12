@@ -199,7 +199,7 @@ services:
       ADMIN_UI_ENTRA_CLIENT_ID: clientId
       DEFRA_ID_CLIENT_ID: 63983fc2-cfff-45bb-8ec2-959e21062b9a
       DEFRA_ID_OIDC_WELL_KNOWN_URL: http://defra-id-stub:3200/cdp-defra-id-stub/.well-known/openid-configuration
-      SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk"]'
+      SERVICE_MAINTAINER_EMAILS: '["ea@test.gov.uk","niea@test.gov.uk"]'
       # ADR 0033: existing journey-test users are placed in the write tier so
       # mutating-action journeys (edit organisation, generate public register,
       # unsubmit report, clear DLQ) keep passing. The maintainer list above is
