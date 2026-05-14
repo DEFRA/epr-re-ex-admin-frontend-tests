@@ -226,7 +226,7 @@ describe('Organisations page', () => {
     expect(reportsData[0].actions).toContain('Unsubmit')
 
     // unsubmit report
-    await RegistrationOverviewPage.unsubmitReportLink(1)
+    await RegistrationOverviewPage.clickOnUnsubmitReportLink(1)
     const warningText = await UnsubmitConfirmationPage.getWarningText()
     expect(warningText).toContain(
       "Unsubmitting will move the report back to 'ready to submit'. The operator will need to delete and resubmit it."

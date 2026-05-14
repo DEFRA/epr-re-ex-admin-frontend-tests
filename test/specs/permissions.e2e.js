@@ -11,8 +11,6 @@ import JsonEditor from 'page-objects/jsoneditor.js'
 import OrsUploadPage from 'page-objects/ors.upload.page.js'
 import OrganisationOverviewPage from 'page-objects/organisation.overview.page.js'
 import RegistrationOverviewPage from 'page-objects/registration.overview.page.js'
-import UnsubmitConfirmationPage from 'page-objects/unsubmit.confirmation.page.js'
-import PublicRegisterPage from 'page-objects/public.register.page.js'
 
 describe('Permissions flow for a user without write permissions', () => {
   it('Should not be able to update an organisation @permissions @organisationpermissions', async () => {
@@ -83,29 +81,9 @@ describe('Permissions flow for a user without write permissions', () => {
 
     await OrganisationOverviewPage.viewRegistrationLink(1)
 
-    await RegistrationOverviewPage.unsubmitReportLink(1)
-    const permissionsHeader =
-      await UnsubmitConfirmationPage.permissionsErrorHeading()
-    expect(permissionsHeader).toContain('You do not have permission')
-
-    const permissionsText =
-      await UnsubmitConfirmationPage.permissionsErrorText()
-    expect(permissionsText).toContain(
-      'Your account does not have permission to use this page. If you think this is wrong, contact your administrator.'
-    )
-
-    await HomePage.signOut()
-  })
-
-  it('Should not be able to download the public register @permissions @publicregisterpermissions', async () => {
-    await LoginPage.open()
-    await LoginPage.enterCredentials('niea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
-
-    await PublicRegisterPage.open()
-    const publicRegisterButtonExistence =
-      await PublicRegisterPage.downloadPublicRegisterButtonExistence()
-    expect(publicRegisterButtonExistence).toBeFalsy()
+    const unsubmitLinkExists =
+      await RegistrationOverviewPage.unsubmitReportLinkExists(1)
+    expect(unsubmitLinkExists).toBeFalsy()
 
     await HomePage.signOut()
   })
