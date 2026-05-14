@@ -41,7 +41,9 @@ class JsonEditor {
   }
 
   async saveButtonExists() {
-    return await $('#jsoneditor-save-button').isExisting()
+    const saveButton = $('#jsoneditor-save-button')
+    await saveButton.waitForExist({ timeout: 5000 })
+    return await saveButton.isExisting()
   }
 }
 

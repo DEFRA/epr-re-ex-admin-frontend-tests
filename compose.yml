@@ -105,7 +105,7 @@ services:
   #
   ################################################################################
   epr-re-ex-admin-frontend:
-    image: defradigital/epr-re-ex-admin-frontend:${EPR_RE_EX_ADMIN_FRONTEND:-latest}
+    image: defradigital/epr-re-ex-admin-frontend:local
     env_file:
       - ./docker/config/defaults.env
       - ./docker/config/example-frontend.env
@@ -174,7 +174,7 @@ services:
       retries: 3
 
   epr-backend:
-    image: defradigital/epr-backend:${EPR_BACKEND:-latest}
+    image: defradigital/epr-backend:local
     links:
       - 'floci:floci'
       - 'mongodb:mongodb'

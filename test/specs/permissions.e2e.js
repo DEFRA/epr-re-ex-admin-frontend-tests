@@ -13,11 +13,18 @@ import OrganisationOverviewPage from 'page-objects/organisation.overview.page.js
 import RegistrationOverviewPage from 'page-objects/registration.overview.page.js'
 
 describe('Permissions flow for a user without write permissions', () => {
-  it('Should not be able to update an organisation @permissions @organisationpermissions', async () => {
+  beforeEach(async () => {
+    // login as read only service maintainer
     await LoginPage.open()
     await LoginPage.enterCredentials('niea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
+  })
 
+  afterEach(async () => {
+    await HomePage.signOut()
+  })
+
+  it('Should not be able to update an organisation @permissions @organisationpermissions', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
     ])
@@ -39,15 +46,9 @@ describe('Permissions flow for a user without write permissions', () => {
 
     const saveButtonExists = await JsonEditor.saveButtonExists()
     expect(saveButtonExists).toBeFalsy()
-
-    await HomePage.signOut()
   })
 
   it('Should not be able to upload ORS file @permissions @orspermissions', async () => {
-    await LoginPage.open()
-    await LoginPage.enterCredentials('niea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
-
     await Navigation.clickOnLink('Overseas sites')
     await OrsUploadPage.open()
 
@@ -58,15 +59,9 @@ describe('Permissions flow for a user without write permissions', () => {
     expect(permissionsText).toContain(
       'Your account does not have permission to use this page. If you think this is wrong, contact your administrator.'
     )
-
-    await HomePage.signOut()
   })
 
   it('Should be not be able to unsubmit a report @permissions @unsubmitpermissions', async () => {
-    await LoginPage.open()
-    await LoginPage.enterCredentials('niea@test.gov.uk', 'pass')
-    await LoginPage.submitCredentials()
-
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
     ])
@@ -84,7 +79,5 @@ describe('Permissions flow for a user without write permissions', () => {
     const unsubmitLinkExists =
       await RegistrationOverviewPage.unsubmitReportLinkExists(1)
     expect(unsubmitLinkExists).toBeFalsy()
-
-    await HomePage.signOut()
   })
 })
