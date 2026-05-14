@@ -280,8 +280,12 @@ class OrsUploadPage extends Page {
     return insetText.getText()
   }
 
-  async getErrorText() {
-    return await $('#main-content div.govuk-error-summary__body').getText()
+  async permissionsErrorHeading() {
+    return await $('#main-content > div > div > h1').getText()
+  }
+
+  async permissionsErrorText() {
+    return await $('#main-content > div > div > p:nth-child(2)').getText()
   }
 
   async expectUploadFormVisible() {

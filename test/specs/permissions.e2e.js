@@ -53,9 +53,12 @@ describe('Permissions flow for a user without write permissions', () => {
     await Navigation.clickOnLink('Overseas sites')
     await OrsUploadPage.open()
 
-    const errorText = await OrsUploadPage.getErrorText()
-    expect(errorText).toContain(
-      'You do not have permission to start ORS uploads.'
+    const permissionsHeader = await OrsUploadPage.permissionsErrorHeading()
+    expect(permissionsHeader).toContain('You do not have permission')
+
+    const permissionsText = await OrsUploadPage.permissionsErrorText()
+    expect(permissionsText).toContain(
+      'Your account does not have permission to use this page. If you think this is wrong, contact your administrator.'
     )
 
     await HomePage.signOut()
