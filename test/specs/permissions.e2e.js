@@ -17,9 +17,9 @@ import QueueManagementPage from 'page-objects/queue.management.page.js'
 const users = [
   {
     username: 'niea@test.gov.uk',
-    scopes: ['admin_read', 'admin_purge_queues']
+    scopes: ['admin.read', 'admin.dlq.purge']
   },
-  { username: 'nrw@test.gov.uk', scopes: ['admin_read'] }
+  { username: 'nrw@test.gov.uk', scopes: ['admin.read'] }
 ]
 
 users.forEach(({ username, scopes }) => {
@@ -71,7 +71,7 @@ users.forEach(({ username, scopes }) => {
       )
     })
 
-    it('Should be not be able to unsubmit a report @permissions @unsubmitpermissions', async () => {
+    it('Should not be able to unsubmit a report @permissions @unsubmitpermissions', async () => {
       const linkedOrganisation = await createLinkedOrganisation([
         { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
       ])
@@ -113,7 +113,7 @@ describe('Permissions flow for a support user only', () => {
     }
   }
 
-  it('Should be not be able to purge the DLQ from the UI @permissions @dlqpermissions', async () => {
+  it('Should not be able to purge the DLQ from the UI @permissions @dlqpermissions', async () => {
     await purgeDlq()
     await sendMessageToDlq(testMessage)
 
