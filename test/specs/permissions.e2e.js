@@ -25,7 +25,6 @@ const users = [
 users.forEach(({ username, scopes }) => {
   describe(`Permissions flow for a user with the following scopes ${scopes}`, () => {
     beforeEach(async () => {
-      // login as read only service maintainer
       await LoginPage.open()
       await LoginPage.enterCredentials(username, 'pass')
       await LoginPage.submitCredentials()
