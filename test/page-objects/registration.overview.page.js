@@ -33,7 +33,6 @@ class RegistrationOverviewPage extends Page {
     const unsubmitElement = $(
       `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
     )
-    await unsubmitElement.isExisting({ timeout: 5000 })
     return await unsubmitElement.isExisting()
   }
 

@@ -56,6 +56,13 @@ class QueueManagementPage extends Page {
     await button.click()
   }
 
+  async clearAllMessagesButtonExists() {
+    const button = await $(
+      'a.govuk-button--warning, button.govuk-button--warning'
+    )
+    return await button.isExisting()
+  }
+
   async getConfirmHeading() {
     const heading = await $('h1')
     return heading.getText()
