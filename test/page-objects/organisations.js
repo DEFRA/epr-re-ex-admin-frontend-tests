@@ -59,6 +59,10 @@ class OrganisationsPage extends Page {
       '#main-content > div:nth-child(1) > div > form > div.govuk-button-group > a'
     ).click()
   }
+
+  async getPermissionText() {
+    return await $('#main-content > div > div > p').getText()
+  }
 }
 
 export default new OrganisationsPage()

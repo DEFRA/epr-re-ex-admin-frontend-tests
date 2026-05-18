@@ -2,7 +2,7 @@ import { browser, expect } from '@wdio/globals'
 
 import LoginPage from 'page-objects/login.js'
 import Navigation from 'page-objects/navigation.js'
-import WasteRecordsExportPage from 'page-objects/waste.records.export.page'
+import WasteRecordsExportPage from 'page-objects/waste.records.export.page.js'
 
 describe('Waste records export page', () => {
   it('Should download a CSV with the expected metadata header columns @wasterecordsexport', async () => {
