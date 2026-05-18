@@ -23,10 +23,17 @@ class RegistrationOverviewPage extends Page {
     })
   }
 
-  async unsubmitReportLink(row) {
+  async clickOnUnsubmitReportLink(row) {
     await $(
-      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a:nth-child(3)`
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
     ).click()
+  }
+
+  async unsubmitReportLinkExists(row) {
+    const unsubmitElement = $(
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
+    )
+    return await unsubmitElement.isExisting()
   }
 
   async getSummaryLogsContent() {
