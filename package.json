@@ -52,10 +52,8 @@
   },
   "overrides": {
     "eslint": "$eslint",
-    "protobufjs": "7.5.8",
     "serialize-javascript": "7.0.5",
-    "uuid": "14.0.0",
-    "ws": "8.20.1"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "eslint": "10.1.0",
