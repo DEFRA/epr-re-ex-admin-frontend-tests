@@ -16,22 +16,23 @@
   },
   "scripts": {
     "clean": "rm -rf allure-results && rm -rf allure-report",
-    "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js",
-    "test:browserstack": "npm run clean && wdio run wdio.browserstack.conf.js",
-    "test:local": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.local.conf.js",
-    "test:local:grep": "npm run clean && wdio run wdio.local.conf.js",
-    "test:local:debug": "npm run clean && GREP='@smoketest' GREP_INVERT=true DEBUG=true wdio run wdio.local.conf.js",
-    "test:github": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.github.conf.js",
-    "test:github:browserstack": "npm run clean && wdio run wdio.github.browserstack.conf.js",
-    "format": "prettier --write 'test/**/*.js' '**/*.{js,md,json,config.js}'",
     "format:check": "prettier --check 'test/**/*.js' '**/*.{js,md,json,config.js}'",
-    "lint": "eslint .",
+    "format": "prettier --write 'test/**/*.js' '**/*.{js,md,json,config.js}'",
     "lint:fix": "eslint . --fix",
     "lint:types": "tsc -p jsconfig.typecheck.json",
+    "lint": "eslint .",
     "postinstall": "npm run setup:husky",
-    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
+    "report:publish": "npm run report; ./bin/publish-tests.sh",
     "report": "allure generate allure-results --single-file --clean",
-    "report:publish": "npm run report; ./bin/publish-tests.sh"
+    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module",
+    "test:browserstack": "npm run clean && wdio run wdio.browserstack.conf.js",
+    "test:github:browserstack": "npm run clean && wdio run wdio.github.browserstack.conf.js",
+    "test:github": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.github.conf.js",
+    "test:local:debug": "npm run clean && GREP='@smoketest' GREP_INVERT=true DEBUG=true wdio run wdio.local.conf.js",
+    "test:local:grep": "npm run clean && wdio run wdio.local.conf.js",
+    "test:local": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.local.conf.js",
+    "test:unit": "vitest run",
+    "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js"
   },
   "dependencies": {
     "@axe-core/webdriverio": "4.11.1",
@@ -52,10 +53,8 @@
   },
   "overrides": {
     "eslint": "$eslint",
-    "protobufjs": "7.5.8",
     "serialize-javascript": "7.0.5",
-    "uuid": "14.0.0",
-    "ws": "8.20.1"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "eslint": "10.1.0",
@@ -65,6 +64,8 @@
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "neostandard": "0.13.0",
-    "prettier": "3.8.1"
+    "prettier": "3.8.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.2"
   }
 }
