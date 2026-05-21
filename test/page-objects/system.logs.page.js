@@ -11,20 +11,20 @@ class SystemLogsPage extends Page {
     await $('button[type=submit]').click()
   }
 
-  async searchByEmail(email) {
-    await $('#email').setValue(email)
+  async searchByUserId(userId) {
+    await $('#userId').setValue(userId)
     await $('button[type=submit]').click()
   }
 
-  async searchByEmailAndEventType(email, subCategory) {
-    await $('#email').setValue(email)
+  async searchByUserIdAndEventType(userId, subCategory) {
+    await $('#userId').setValue(userId)
     await $('#subCategory').selectByAttribute('value', subCategory)
     await $('button[type=submit]').click()
   }
 
-  async searchByAllFilters(referenceNumber, email, subCategory) {
+  async searchByAllFilters(referenceNumber, userId, subCategory) {
     await $('#referenceNumber').setValue(referenceNumber)
-    await $('#email').setValue(email)
+    await $('#userId').setValue(userId)
     await $('#subCategory').selectByAttribute('value', subCategory)
     await $('button[type=submit]').click()
   }
@@ -45,12 +45,21 @@ class SystemLogsPage extends Page {
     return await $('#referenceNumber').getValue()
   }
 
-  async emailValue() {
-    return await $('#email').getValue()
+  async userIdValue() {
+    return await $('#userId').getValue()
   }
 
   async eventTypeValue() {
     return await $('#subCategory').getValue()
+  }
+
+  // Reads the "User ID" value (the second summary-list row) from the most
+  // recent system log result card.
+  async firstResultUserId() {
+    const userId = await $(
+      '#main-content div.govuk-summary-card__content > dl > div:nth-child(2) > dd'
+    ).getText()
+    return userId.trim()
   }
 
   async jsonDifference() {
