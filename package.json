@@ -31,7 +31,6 @@
     "test:local:debug": "npm run clean && GREP='@smoketest' GREP_INVERT=true DEBUG=true wdio run wdio.local.conf.js",
     "test:local:grep": "npm run clean && wdio run wdio.local.conf.js",
     "test:local": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.local.conf.js",
-    "test:unit": "vitest run",
     "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js"
   },
   "dependencies": {
@@ -65,7 +64,6 @@
     "lint-staged": "16.4.0",
     "neostandard": "0.13.0",
     "prettier": "3.8.1",
-    "typescript": "5.9.3",
-    "vitest": "4.1.2"
+    "typescript": "5.9.3"
   }
 }
