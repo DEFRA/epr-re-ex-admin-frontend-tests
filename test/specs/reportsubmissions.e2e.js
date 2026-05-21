@@ -54,7 +54,7 @@ describe('Report Submissions page', () => {
 
     const orgRow = dataRows.find((row) => row.includes(orgName))
     await expect(orgRow).toBeDefined()
-    const cols = orgRow.split('","')
+    const cols = /** @type {string} */ (orgRow).split('","')
     await expect(cols[12]).toBeTruthy()
     await expect(cols[13]).toBeTruthy()
     await expect(cols[15]).toBeTruthy()
@@ -96,6 +96,7 @@ describe('Report Submissions page', () => {
       'Tonnage sent on to an exporter',
       'Tonnage sent on to other facilities',
       'Tonnage of PRNs/PERNs issued',
+      'Self-issued (free) tonnage',
       'Total revenue from PRNs/PERNs',
       'Average PRN/PERN price per tonne',
       'Tonnage received but not recycled',
