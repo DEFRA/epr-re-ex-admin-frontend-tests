@@ -1,4 +1,4 @@
-import { $, expect } from '@wdio/globals'
+import { $, $$, expect } from '@wdio/globals'
 
 import JsonEditor from 'page-objects/jsoneditor.js'
 import LoginPage from 'page-objects/login.js'
