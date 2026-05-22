@@ -1,4 +1,4 @@
-import { $, expect } from '@wdio/globals'
+import { $, $$, expect } from '@wdio/globals'
 
 import JsonEditor from 'page-objects/jsoneditor.js'
 import LoginPage from 'page-objects/login.js'
@@ -45,31 +45,34 @@ describe('System logs search @searchsystemlogs', () => {
     ).toBeElementsArrayOfSize({ gte: 1 })
   })
 
-  it('finds system logs by email address', async () => {
+  it('finds system logs by user ID', async () => {
     await Navigation.clickOnLink('System logs')
+    await SystemLogsPage.searchFor(linkedOrganisation.refNo)
+    const userId = await SystemLogsPage.firstResultUserId()
 
-    await SystemLogsPage.searchByEmail('ea@test.gov.uk')
+    await Navigation.clickOnLink('System logs')
+    await SystemLogsPage.searchByUserId(userId)
     await expect(
       $$('#main-content div.govuk-summary-card')
     ).toBeElementsArrayOfSize({ gte: 1 })
   })
 
-  it('shows no results when email matches no logs', async () => {
+  it('shows no results when user ID matches no logs', async () => {
     await Navigation.clickOnLink('System logs')
 
-    await SystemLogsPage.searchByEmail('nobody-real@example.com')
+    await SystemLogsPage.searchByUserId('no-such-user-id')
     await expect(
       $$('#main-content div.govuk-summary-card')
     ).toBeElementsArrayOfSize(0)
   })
 
-  it('filters by event type alongside email', async () => {
+  it('filters by event type alongside user ID', async () => {
     await Navigation.clickOnLink('System logs')
+    await SystemLogsPage.searchFor(linkedOrganisation.refNo)
+    const userId = await SystemLogsPage.firstResultUserId()
 
-    await SystemLogsPage.searchByEmailAndEventType(
-      'ea@test.gov.uk',
-      'epr-organisations'
-    )
+    await Navigation.clickOnLink('System logs')
+    await SystemLogsPage.searchByUserIdAndEventType(userId, 'epr-organisations')
     await expect(
       $$('#main-content div.govuk-summary-card')
     ).toBeElementsArrayOfSize({ gte: 1 })
@@ -77,10 +80,13 @@ describe('System logs search @searchsystemlogs', () => {
 
   it('clears search and resets the form', async () => {
     await Navigation.clickOnLink('System logs')
+    await SystemLogsPage.searchFor(linkedOrganisation.refNo)
+    const userId = await SystemLogsPage.firstResultUserId()
 
+    await Navigation.clickOnLink('System logs')
     await SystemLogsPage.searchByAllFilters(
       linkedOrganisation.refNo,
-      'ea@test.gov.uk',
+      userId,
       'epr-organisations'
     )
     await expect(
@@ -90,7 +96,7 @@ describe('System logs search @searchsystemlogs', () => {
     await SystemLogsPage.clearSearch()
 
     expect(await SystemLogsPage.referenceNumberValue()).toBe('')
-    expect(await SystemLogsPage.emailValue()).toBe('')
+    expect(await SystemLogsPage.userIdValue()).toBe('')
     expect(await SystemLogsPage.eventTypeValue()).toBe('')
     await expect(
       $$('#main-content div.govuk-summary-card')
@@ -103,7 +109,7 @@ describe('System logs search @searchsystemlogs', () => {
 
     await expect($('.govuk-error-summary')).toHaveText(
       expect.stringContaining(
-        'Enter an organisation reference number, email address or event type'
+        'Enter an organisation reference number, user ID or event type'
       )
     )
   })
