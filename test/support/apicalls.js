@@ -20,7 +20,13 @@ async function getEntraToken() {
     method: 'POST',
     body: payload
   })
-  const data = await response.body.json()
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const data = /** @type {AuthResponse} */ (await response.body.json())
   return data.access_token
 }
 
@@ -111,7 +117,16 @@ async function getDefraUserToken(defraOrgId) {
       code: sessionId
     })
   })
-  const tokenData = await tokenResponse.body.json()
+
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const tokenData = /** @type {AuthResponse} */ (
+    await tokenResponse.body.json()
+  )
   return tokenData.access_token
 }
 
