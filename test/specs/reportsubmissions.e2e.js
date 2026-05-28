@@ -1,5 +1,7 @@
 import { browser, expect } from '@wdio/globals'
 
+/** @typedef {{ status: number, contentType: string | null, contentDisposition: string | null, body: string }} CsvResponse */
+
 import {
   createLinkedOrganisation,
   updateMigratedOrganisation,
@@ -37,7 +39,9 @@ describe('Report Submissions page', () => {
 
     await Navigation.clickOnLink('Report submissions')
 
-    const csv = await ReportSubmissionsPage.fetchCsv()
+    const csv = /** @type {CsvResponse} */ (
+      /** @type {unknown} */ (await ReportSubmissionsPage.fetchCsv())
+    )
     await expect(csv.status).toEqual(200)
     await expect(csv.contentType).toContain('text/csv')
     await expect(csv.contentDisposition).toContain('attachment')
@@ -55,7 +59,7 @@ describe('Report Submissions page', () => {
     const orgRow = dataRows.find((row) => row.includes(orgName))
     await expect(orgRow).toBeDefined()
     if (!orgRow) throw new Error('Organisation row not found')
-    const cols = orgRow.split('","')
+    const cols = /** @type {string} */ (orgRow).split('","')
     await expect(cols[12]).toBeTruthy()
     await expect(cols[13]).toBeTruthy()
     await expect(cols[15]).toBeTruthy()
@@ -64,7 +68,9 @@ describe('Report Submissions page', () => {
   it('should include all expected column headers in the CSV download @reportsubmissions', async () => {
     await Navigation.clickOnLink('Report submissions')
 
-    const csv = await ReportSubmissionsPage.fetchCsv()
+    const csv = /** @type {CsvResponse} */ (
+      /** @type {unknown} */ (await ReportSubmissionsPage.fetchCsv())
+    )
     await expect(csv.status).toEqual(200)
 
     const rows = csv.body
@@ -97,6 +103,7 @@ describe('Report Submissions page', () => {
       'Tonnage sent on to an exporter',
       'Tonnage sent on to other facilities',
       'Tonnage of PRNs/PERNs issued',
+      'Self-issued (free) tonnage',
       'Total revenue from PRNs/PERNs',
       'Average PRN/PERN price per tonne',
       'Tonnage received but not recycled',
