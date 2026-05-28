@@ -134,7 +134,10 @@ class OrsUploadPage extends Page {
     })
 
     await browser.waitUntil(
-      async () => (await $$('table.govuk-table tbody tr')).length > 0,
+      async () => {
+        const rows = await $$('table.govuk-table tbody tr')
+        return (await rows.length) > 0
+      },
       {
         timeout: 10000,
         interval: 250,

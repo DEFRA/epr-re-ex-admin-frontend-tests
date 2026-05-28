@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2024",
-    "lib": ["ES2024"],
+    "lib": ["ES2024", "dom", "dom.iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowJs": true,

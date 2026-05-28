@@ -43,9 +43,11 @@ const auth = {
   password: process.env.AUTH_PASSWORD
 }
 
-let globalUndiciAgent = agent
+let globalUndiciAgent
 if (environment) {
   globalUndiciAgent = proxy
+} else {
+  globalUndiciAgent = agent
 }
 
 let apiUri
