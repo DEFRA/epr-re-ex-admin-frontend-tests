@@ -48,6 +48,6 @@ export async function logViolationsToAllure(violations) {
 
     allureReporter.addAttachment(`Output (JSON)`, output, 'text/plain')
 
-    allureReporter.endStep('failed')
+    allureReporter.endStep(/** @type {any} */ ('failed'))
   })
 }

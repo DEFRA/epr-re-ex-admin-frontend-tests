@@ -184,7 +184,9 @@ class OrsUploadPage extends Page {
 
       const formData = new URLSearchParams()
 
-      for (const input of form.querySelectorAll('input[name]')) {
+      for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (
+        form.querySelectorAll('input[name]')
+      )) {
         formData.set(input.name, input.value)
       }
 
