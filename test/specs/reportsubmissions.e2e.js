@@ -1,5 +1,7 @@
 import { browser, expect } from '@wdio/globals'
 
+/** @typedef {{ status: number, contentType: string | null, contentDisposition: string | null, body: string }} CsvResponse */
+
 import {
   createLinkedOrganisation,
   updateMigratedOrganisation,
@@ -37,7 +39,9 @@ describe('Report Submissions page', () => {
 
     await Navigation.clickOnLink('Report submissions')
 
-    const csv = await ReportSubmissionsPage.fetchCsv()
+    const csv = /** @type {CsvResponse} */ (
+      /** @type {unknown} */ (await ReportSubmissionsPage.fetchCsv())
+    )
     await expect(csv.status).toEqual(200)
     await expect(csv.contentType).toContain('text/csv')
     await expect(csv.contentDisposition).toContain('attachment')
@@ -63,7 +67,9 @@ describe('Report Submissions page', () => {
   it('should include all expected column headers in the CSV download @reportsubmissions', async () => {
     await Navigation.clickOnLink('Report submissions')
 
-    const csv = await ReportSubmissionsPage.fetchCsv()
+    const csv = /** @type {CsvResponse} */ (
+      /** @type {unknown} */ (await ReportSubmissionsPage.fetchCsv())
+    )
     await expect(csv.status).toEqual(200)
 
     const rows = csv.body
