@@ -150,8 +150,9 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     entraAuthHeader
   )
   expect(orgResponse.statusCode).toBe(200)
-  const orgData = await orgResponse.body.json()
+  const jsonResponse = await orgResponse.body.json()
 
+  const orgData = /** @type {any} */ (jsonResponse)
   const registration = orgData.registrations[registrationIndex]
   const registrationId = registration.id
 
@@ -251,7 +252,8 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
   const response = await baseAPI.get(`/v1/organisations/${refNo}`, authHeader)
   expect(response.statusCode).toBe(200)
 
-  const data = await response.body.json()
+  const jsonResponse = await response.body.json()
+  const data = /** @type {any} */ (jsonResponse)
   const currentYear = new Date().getFullYear()
 
   for (let i = 0; i < updateDataRows.length; i++) {

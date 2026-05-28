@@ -168,6 +168,9 @@ class OrsUploadPage extends Page {
     await expect(button).toHaveText('Download CSV')
   }
 
+  /**
+   * @returns {Promise<{status: number, contentDisposition: string|null, contentType: string|null, body: string}>}
+   */
   async fetchListCsv() {
     return browser.execute(async () => {
       const form = document.querySelector('form[method="POST"]')

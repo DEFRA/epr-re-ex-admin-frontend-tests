@@ -134,6 +134,7 @@ describe('ORS upload flow @orsupload', () => {
         row[3] === '001'
     )
     expect(uploadedRow).toBeDefined()
+    if (!uploadedRow) throw new Error('uploadedRow not found')
     expect(uploadedRow).toHaveLength(14)
     expect(uploadedRow[4]).not.toEqual('-')
     expect(uploadedRow.slice(5)).toEqual([
