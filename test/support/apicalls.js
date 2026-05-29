@@ -102,7 +102,10 @@ async function getDefraUserToken(defraOrgId) {
       `Defra ID authorize returned ${authResponse.statusCode}: ${body}`
     )
   }
-  const sessionId = authResponse.headers.location.split('sessionId=')[1]
+
+  const headers = await authResponse.headers
+  const headersLocation = String(headers.location)
+  const sessionId = headersLocation.split('sessionId=')[1]
 
   const tokenResponse = await request(`${stubUrl}/cdp-defra-id-stub/token`, {
     method: 'POST',
@@ -231,7 +234,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
       `POST ${basePath} returned ${createResponse.statusCode}: ${body}`
     )
   }
-  let version = (await createResponse.body.json()).version
+  let version
 
   const patchResponse = await baseAPI.patch(
     basePath,
@@ -239,7 +242,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     jsonHeaders
   )
   expect(patchResponse.statusCode).toBe(200)
-  version = (await patchResponse.body.json()).version
+  version = /** @type {any} */ (await patchResponse.body.json()).version
 
   const readyResponse = await baseAPI.post(
     `${basePath}/status`,
@@ -328,7 +331,7 @@ export async function createLinkedOrganisation(dataRows) {
   )
   expect(response.statusCode).toBe(200)
 
-  const orgResponseData = await response.body.json()
+  const orgResponseData = /** @type {any} */ (await response.body.json())
 
   const orgId = orgResponseData?.orgId
   trackCreatedOrgId(orgId)
