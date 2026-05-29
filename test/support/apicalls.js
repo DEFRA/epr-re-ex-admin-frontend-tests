@@ -20,7 +20,13 @@ async function getEntraToken() {
     method: 'POST',
     body: payload
   })
-  const data = await response.body.json()
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const data = /** @type {AuthResponse} */ (await response.body.json())
   return data.access_token
 }
 
@@ -96,7 +102,10 @@ async function getDefraUserToken(defraOrgId) {
       `Defra ID authorize returned ${authResponse.statusCode}: ${body}`
     )
   }
-  const sessionId = authResponse.headers.location.split('sessionId=')[1]
+
+  const headers = await authResponse.headers
+  const headersLocation = String(headers.location)
+  const sessionId = headersLocation.split('sessionId=')[1]
 
   const tokenResponse = await request(`${stubUrl}/cdp-defra-id-stub/token`, {
     method: 'POST',
@@ -111,7 +120,16 @@ async function getDefraUserToken(defraOrgId) {
       code: sessionId
     })
   })
-  const tokenData = await tokenResponse.body.json()
+
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const tokenData = /** @type {AuthResponse} */ (
+    await tokenResponse.body.json()
+  )
   return tokenData.access_token
 }
 
@@ -150,8 +168,9 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     entraAuthHeader
   )
   expect(orgResponse.statusCode).toBe(200)
-  const orgData = await orgResponse.body.json()
+  const jsonResponse = await orgResponse.body.json()
 
+  const orgData = /** @type {OrgResponse} */ (jsonResponse)
   const registration = orgData.registrations[registrationIndex]
   const registrationId = registration.id
 
@@ -215,7 +234,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
       `POST ${basePath} returned ${createResponse.statusCode}: ${body}`
     )
   }
-  let version = (await createResponse.body.json()).version
+  let version
 
   const patchResponse = await baseAPI.patch(
     basePath,
@@ -223,7 +242,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     jsonHeaders
   )
   expect(patchResponse.statusCode).toBe(200)
-  version = (await patchResponse.body.json()).version
+  version = /** @type {OrgResponse} */ (await patchResponse.body.json()).version
 
   const readyResponse = await baseAPI.post(
     `${basePath}/status`,
@@ -251,7 +270,8 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
   const response = await baseAPI.get(`/v1/organisations/${refNo}`, authHeader)
   expect(response.statusCode).toBe(200)
 
-  const data = await response.body.json()
+  const jsonResponse = await response.body.json()
+  const data = /** @type {OrgResponse} */ (jsonResponse)
   const currentYear = new Date().getFullYear()
 
   for (let i = 0; i < updateDataRows.length; i++) {
@@ -311,7 +331,9 @@ export async function createLinkedOrganisation(dataRows) {
   )
   expect(response.statusCode).toBe(200)
 
-  const orgResponseData = await response.body.json()
+  const orgResponseData = /** @type {OrgCreatedResponse} */ (
+    await response.body.json()
+  )
 
   const orgId = orgResponseData?.orgId
   trackCreatedOrgId(orgId)

@@ -57,7 +57,7 @@ describe('ORS upload flow @orsupload', () => {
     await createOrsSpreadsheet(workbookPath, {
       metadata: {
         packagingWasteCategory: 'Paper or board',
-        orgId: parseInt(orgId),
+        orgId,
         registrationNumber,
         accreditationNumber
       },
@@ -134,6 +134,9 @@ describe('ORS upload flow @orsupload', () => {
         row[3] === '001'
     )
     expect(uploadedRow).toBeDefined()
+    if (!uploadedRow) {
+      throw new Error('uploadedRow not found')
+    }
     expect(uploadedRow).toHaveLength(14)
     expect(uploadedRow[4]).not.toEqual('-')
     expect(uploadedRow.slice(5)).toEqual([
@@ -204,7 +207,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(alphaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Paper or board',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: alphaRegistrationNumber,
           accreditationNumber: alphaAccreditationNumber
         },
@@ -214,7 +217,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(betaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Steel',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: betaRegistrationNumber,
           accreditationNumber: betaAccreditationNumber
         },

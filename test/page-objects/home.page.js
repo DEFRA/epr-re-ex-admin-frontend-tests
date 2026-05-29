@@ -1,4 +1,5 @@
 import { Page } from 'page-objects/page'
+import { $ } from '@wdio/globals'
 
 class HomePage extends Page {
   open() {

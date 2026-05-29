@@ -58,6 +58,9 @@ describe('Report Submissions page', () => {
 
     const orgRow = dataRows.find((row) => row.includes(orgName))
     await expect(orgRow).toBeDefined()
+    if (!orgRow) {
+      throw new Error('Organisation row not found')
+    }
     const cols = /** @type {string} */ (orgRow).split('","')
     await expect(cols[12]).toBeTruthy()
     await expect(cols[13]).toBeTruthy()
