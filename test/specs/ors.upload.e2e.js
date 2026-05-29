@@ -57,7 +57,7 @@ describe('ORS upload flow @orsupload', () => {
     await createOrsSpreadsheet(workbookPath, {
       metadata: {
         packagingWasteCategory: 'Paper or board',
-        orgId: parseInt(orgId),
+        orgId,
         registrationNumber,
         accreditationNumber
       },
@@ -207,7 +207,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(alphaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Paper or board',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: alphaRegistrationNumber,
           accreditationNumber: alphaAccreditationNumber
         },
@@ -217,7 +217,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(betaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Steel',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: betaRegistrationNumber,
           accreditationNumber: betaAccreditationNumber
         },

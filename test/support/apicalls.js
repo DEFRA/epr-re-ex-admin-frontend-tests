@@ -170,7 +170,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
   expect(orgResponse.statusCode).toBe(200)
   const jsonResponse = await orgResponse.body.json()
 
-  const orgData = /** @type {any} */ (jsonResponse)
+  const orgData = /** @type {OrgResponse} */ (jsonResponse)
   const registration = orgData.registrations[registrationIndex]
   const registrationId = registration.id
 
@@ -242,7 +242,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     jsonHeaders
   )
   expect(patchResponse.statusCode).toBe(200)
-  version = /** @type {any} */ (await patchResponse.body.json()).version
+  version = /** @type {OrgResponse} */ (await patchResponse.body.json()).version
 
   const readyResponse = await baseAPI.post(
     `${basePath}/status`,
@@ -271,7 +271,7 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
   expect(response.statusCode).toBe(200)
 
   const jsonResponse = await response.body.json()
-  const data = /** @type {any} */ (jsonResponse)
+  const data = /** @type {OrgResponse} */ (jsonResponse)
   const currentYear = new Date().getFullYear()
 
   for (let i = 0; i < updateDataRows.length; i++) {
@@ -331,7 +331,9 @@ export async function createLinkedOrganisation(dataRows) {
   )
   expect(response.statusCode).toBe(200)
 
-  const orgResponseData = /** @type {any} */ (await response.body.json())
+  const orgResponseData = /** @type {OrgCreatedResponse} */ (
+    await response.body.json()
+  )
 
   const orgId = orgResponseData?.orgId
   trackCreatedOrgId(orgId)
