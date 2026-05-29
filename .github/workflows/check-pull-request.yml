@@ -50,7 +50,6 @@ jobs:
           npm-script: lint:types
           include-globs: |
             test/**/*.js
-            data/**/*.js
 
   docker-build:
     name: Docker Build
