@@ -9,7 +9,9 @@ class ReportSubmissionsPage extends Page {
   async fetchCsv() {
     return browser.execute(async () => {
       const form = document.querySelector('#main-content form')
-      if (!form) throw new Error('Report submissions form not found')
+      if (!form) {
+        throw new Error('Report submissions form not found')
+      }
 
       const formData = new URLSearchParams()
       for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (

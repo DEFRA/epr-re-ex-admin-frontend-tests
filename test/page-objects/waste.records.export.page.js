@@ -9,7 +9,9 @@ class WasteRecordsExportPage extends Page {
   async fetchCsv() {
     return browser.execute(async () => {
       const form = document.querySelector('#main-content form')
-      if (!form) throw new Error('Waste records export form not found')
+      if (!form) {
+        throw new Error('Waste records export form not found')
+      }
 
       const formData = new URLSearchParams()
       for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (
