@@ -52,8 +52,8 @@
   },
   "overrides": {
     "eslint": "$eslint",
+    "axios": "1.16.1",
     "serialize-javascript": "7.0.5",
-    "tmp": "0.2.6",
     "uuid": "14.0.0"
   },
   "devDependencies": {
