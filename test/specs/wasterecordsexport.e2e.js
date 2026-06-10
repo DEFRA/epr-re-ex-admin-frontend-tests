@@ -28,9 +28,11 @@ describe('Waste records export page', () => {
     const expectedMetadataHeaders = [
       'Regulator',
       'Organisation Name',
+      'Registration Number',
       'Material',
       'Operator Processing Type',
       'Accredited',
+      'Accreditation Number',
       'Waste Record Type',
       'Submitted At',
       'Included in Waste Balance',
