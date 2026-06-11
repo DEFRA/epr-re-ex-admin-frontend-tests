@@ -34,6 +34,30 @@ class OrganisationOverviewPage extends Page {
       `main table tbody tr:nth-child(${row}) td:nth-child(8) a:nth-of-type(1)`
     ).click()
   }
+
+  async getDefraIdLinkText() {
+    const summary = $('#main-content .govuk-summary-list')
+    await summary.waitForExist()
+    return summary.getText()
+  }
+
+  async isUnlinkButtonDisplayed() {
+    return $('a*=Unlink organisation').isExisting()
+  }
+
+  async clickUnlink() {
+    await $('a*=Unlink organisation').click()
+  }
+
+  async getNoLinkedOrganisationText() {
+    return $('p*=No linked organisation').getText()
+  }
+
+  async getNotificationBannerText() {
+    const banner = $('.govuk-notification-banner')
+    await banner.waitForExist()
+    return banner.getText()
+  }
 }
 
 export default new OrganisationOverviewPage()
