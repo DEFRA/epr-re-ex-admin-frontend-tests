@@ -23,6 +23,12 @@ class RegistrationOverviewPage extends Page {
     })
   }
 
+  async clickOnViewORSLink() {
+    await $(
+      '#main-content > div > div:nth-child(2) > div > dl > div:nth-child(10) > dd > a'
+    ).click()
+  }
+
   async clickOnUnsubmitReportLink(row) {
     await $(
       `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
