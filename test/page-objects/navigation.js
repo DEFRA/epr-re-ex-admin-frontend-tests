@@ -30,7 +30,7 @@ class Navigation {
             console.log('Navigating directly to:', href)
             await browser.url(href)
             console.log('URL now:', await browser.getUrl())
-            break
+            return true
           }
         }
         return false
