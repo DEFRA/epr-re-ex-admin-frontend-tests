@@ -152,6 +152,26 @@ function lastCompletedPeriod(cadence) {
     : { year, period: currentQuarter - 1 }
 }
 
+function setLinkedDefraOrganisation(orgData) {
+  const defraOrgId = randomUUID()
+  const defraOrgName = 'Test Organisation'
+  const linkedAt = new Date().toISOString()
+
+  orgData.status = 'active'
+  orgData.statusHistory = [
+    ...(orgData.statusHistory || []),
+    { status: 'active', updatedAt: linkedAt }
+  ]
+  orgData.linkedDefraOrganisation = {
+    orgId: defraOrgId,
+    orgName: defraOrgName,
+    linkedAt,
+    linkedBy: { email: 'test@example.com', id: randomUUID() }
+  }
+
+  return { defraOrgId, defraOrgName, linkedAt }
+}
+
 // Creates and submits a report for a registration, transitioning it through
 // in_progress → ready_to_submit → submitted.
 // Cadence is determined by matching the CSV generator's logic: monthly only
@@ -196,18 +216,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     delete orgData.registrations[registrationIndex].accreditationId
   }
 
-  const defraOrgId = randomUUID()
-  orgData.status = 'active'
-  orgData.statusHistory = [
-    ...(orgData.statusHistory || []),
-    { status: 'active', updatedAt: new Date().toISOString() }
-  ]
-  orgData.linkedDefraOrganisation = {
-    orgId: defraOrgId,
-    orgName: 'Test Organisation',
-    linkedAt: new Date().toISOString(),
-    linkedBy: { email: 'test@example.com', id: randomUUID() }
-  }
+  const { defraOrgId } = setLinkedDefraOrganisation(orgData)
 
   const activateResponse = await baseAPI.put(
     `/v1/dev/organisations/${refNo}`,
@@ -376,4 +385,41 @@ export async function createLinkedOrganisation(dataRows) {
   expect(response.statusCode).toBe(200)
 
   return { orgId, refNo, organisation, registrations }
+}
+
+export async function getOrganisation(refNo) {
+  const baseAPI = new BaseAPI()
+  const entraToken = await getEntraToken()
+  const orgResponse = await baseAPI.get(`/v1/organisations/${refNo}`, {
+    Authorization: `Bearer ${entraToken}`
+  })
+  expect(orgResponse.statusCode).toBe(200)
+  return /** @type {OrgResponse} */ (await orgResponse.body.json())
+}
+
+export async function linkOrganisationToDefraId(refNo) {
+  const baseAPI = new BaseAPI()
+  const entraToken = await getEntraToken()
+  const entraAuthHeader = { Authorization: `Bearer ${entraToken}` }
+
+  const orgResponse = await baseAPI.get(
+    `/v1/organisations/${refNo}`,
+    entraAuthHeader
+  )
+  expect(orgResponse.statusCode).toBe(200)
+  const orgData = /** @type {OrgResponse} */ (await orgResponse.body.json())
+
+  const linkedDefraOrg = setLinkedDefraOrganisation(orgData)
+
+  const putResponse = await baseAPI.put(
+    `/v1/dev/organisations/${refNo}`,
+    JSON.stringify({ organisation: orgData }),
+    entraAuthHeader
+  )
+  if (putResponse.statusCode !== 200) {
+    const body = await putResponse.body.text()
+    throw new Error(`link PUT returned ${putResponse.statusCode}: ${body}`)
+  }
+
+  return linkedDefraOrg
 }

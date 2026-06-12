@@ -1,5 +1,5 @@
 import { Page } from 'page-objects/page'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 class SystemLogsPage extends Page {
   open() {
@@ -71,6 +71,29 @@ class SystemLogsPage extends Page {
 
   async noSystemLogsFound() {
     return await $('#main-content div.govuk-inset-text').getText()
+  }
+
+  async unlinkLogCard() {
+    await $('#main-content .govuk-summary-card').waitForExist()
+    const cards = await $$('#main-content .govuk-summary-card')
+    for (const card of cards) {
+      const title = await card.$('.govuk-summary-card__title').getText()
+      if (title.includes('unlinked-from-defra-id-organisation')) {
+        return card
+      }
+    }
+    return null
+  }
+
+  async logCardField(card, keyText) {
+    const rows = await card.$$('.govuk-summary-list__row')
+    for (const row of rows) {
+      const key = (await row.$('.govuk-summary-list__key').getText()).trim()
+      if (key === keyText) {
+        return (await row.$('.govuk-summary-list__value').getText()).trim()
+      }
+    }
+    return null
   }
 }
 
