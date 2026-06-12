@@ -43,7 +43,8 @@ export const config = {
           '--disable-background-networking',
           '--disable-remote-fonts',
           '--ignore-certificate-errors',
-          '--disable-dev-shm-usage'
+          '--disable-dev-shm-usage',
+          '--remote-allow-origins=*'
         ]
       }
     }
