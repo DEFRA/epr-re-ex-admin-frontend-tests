@@ -4,7 +4,6 @@ class Navigation {
   async clickOnLink(linkText) {
     const selector = '#navigation li a'
 
-    await browser.pause(2000)
     await browser.waitUntil(
       async () => {
         const elements = await $$(selector)
@@ -19,9 +18,17 @@ class Navigation {
         const links = await $$(selector)
         for (const el of links) {
           const text = await el.getText()
+          console.log(
+            'Found link:',
+            text,
+            '| href:',
+            await el.getAttribute('href')
+          )
           if (text === linkText) {
+            console.log('Clicking:', text)
             await el.click()
-            return true
+            console.log('Clicked, current URL now:', await browser.getUrl())
+            break
           }
         }
         return false
