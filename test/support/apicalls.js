@@ -234,7 +234,7 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
   const defraAuthHeader = { Authorization: `Bearer ${defraToken}` }
   const jsonHeaders = { ...defraAuthHeader, 'content-type': 'application/json' }
 
-  const basePath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}/1`
+  const basePath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}/submissions/1`
 
   const createResponse = await baseAPI.post(basePath, '', defraAuthHeader)
   if (createResponse.statusCode !== 201) {
