@@ -25,9 +25,11 @@ class Navigation {
             await el.getAttribute('href')
           )
           if (text === linkText) {
-            console.log('Clicking:', text)
-            await el.click()
-            console.log('Clicked, current URL now:', await browser.getUrl())
+            // Try navigating directly instead of clicking
+            const href = await el.getAttribute('href')
+            console.log('Navigating directly to:', href)
+            await browser.url(href)
+            console.log('URL now:', await browser.getUrl())
             break
           }
         }
