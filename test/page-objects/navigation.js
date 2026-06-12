@@ -7,7 +7,7 @@ class Navigation {
     await browser.waitUntil(
       async () => {
         const elements = await $$(selector)
-        return elements.length > 0
+        return (await elements.length) > 0
       },
       { timeout: 10000, timeoutMsg: 'Expected to find navigation items' }
     )
