@@ -291,6 +291,52 @@ describe('ORS upload flow @orsupload', () => {
       expect(
         pageOneRows.every((row) => row[1] === alphaRegistrationNumber)
       ).toBe(true)
+
+      await OrsUploadPage.clickPageNumber(2)
+      await expect(browser).toHaveUrl(
+        expect.stringContaining(
+          new URLSearchParams({
+            page: '2',
+            pageSize: '2',
+            registrationNumber: alphaRegistrationNumber
+          }).toString()
+        )
+      )
+
+      const pageTwoStatus = await OrsUploadPage.getPaginationStatusText()
+      expect(pageTwoStatus).toContain('Showing page 2 of 2')
+
+      const pageTwoRows = await OrsUploadPage.getListTableRows()
+      expect(pageTwoRows).toHaveLength(1)
+      expect(pageTwoRows[0][1]).toEqual(alphaRegistrationNumber)
+    })
+
+    it('Should download CSV with active filter', async () => {
+      await OrsUploadPage.openList(
+        new URLSearchParams({
+          page: '1',
+          pageSize: '2',
+          registrationNumber: alphaRegistrationNumber
+        }).toString()
+      )
+      const filteredCsvDownload = await OrsUploadPage.fetchListCsv()
+      expect(filteredCsvDownload.status).toEqual(200)
+      expect(filteredCsvDownload.contentType).toContain('text/csv')
+      expect(filteredCsvDownload.contentDisposition).toEqual(
+        'attachment; filename="overseas-reprocessing-sites.csv"'
+      )
+      expect(filteredCsvDownload.body).toContain(
+        '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+      )
+      expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
+      expect(filteredCsvDownload.body).toContain(betaRegistrationNumber)
+    })
+
+    it('Should show empty state for non-matching filter', async () => {
+      await OrsUploadPage.openList('registrationNumber=NOT-FOUND')
+      expect(await OrsUploadPage.getInsetText()).toContain(
+        "No overseas reprocessing site data found matching 'NOT-FOUND'."
+      )
     })
 
     it('Should be able to view ORS data for an organisation', async () => {
