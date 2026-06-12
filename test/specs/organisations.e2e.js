@@ -32,6 +32,14 @@ describe('Organisations page', () => {
 
     await Navigation.clickOnLink('Organisations')
 
+    const csp = await browser.execute(() => {
+      const meta = document.querySelector(
+        'meta[http-equiv="Content-Security-Policy"]'
+      )
+      return meta ? meta.getAttribute('content') : 'no meta CSP'
+    })
+    console.log('CSP meta:', csp)
+
     await OrganisationsPage.searchFor(organisation.companyName)
     const searchResult = await OrganisationsPage.searchResult()
     expect(searchResult).toEqual('1 result found')

@@ -40,6 +40,10 @@ class OrganisationsPage extends Page {
   }
 
   async searchFor(orgName) {
+    const searchEl = await $('#search')
+    console.log('Exists:', await searchEl.isExisting())
+    console.log('Displayed:', await searchEl.isDisplayed())
+    console.log('Enabled:', await searchEl.isEnabled())
     await $('#search').setValue(orgName)
     await $('button[type=submit]').click()
   }
