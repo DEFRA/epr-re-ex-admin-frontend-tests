@@ -5,8 +5,8 @@ class Page {
     return $('h1')
   }
 
-  open(path) {
-    return browser.url(path)
+  async open(path) {
+    await browser.url(path)
   }
 }
 

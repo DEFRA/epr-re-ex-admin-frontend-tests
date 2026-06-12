@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { browser } from '@wdio/globals'
 
 class WasteRecordsExportPage extends Page {
-  open() {
-    return super.open('/waste-records-export')
+  async open() {
+    await super.open('/waste-records-export')
   }
 
   async fetchCsv() {

@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { $, $$ } from '@wdio/globals'
 
 class QueueManagementPage extends Page {
-  open() {
-    return super.open('/queue-management')
+  async open() {
+    await super.open('/queue-management')
   }
 
   async getHeaderText() {

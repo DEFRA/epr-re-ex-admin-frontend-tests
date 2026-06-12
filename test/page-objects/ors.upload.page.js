@@ -20,13 +20,13 @@ class OrsUploadPage extends Page {
     return $('form[method="POST"]')
   }
 
-  openList(query = '') {
+  async openList(query = '') {
     const suffix = query ? `?${query}` : ''
-    return super.open(`/overseas-sites${suffix}`)
+    await super.open(`/overseas-sites${suffix}`)
   }
 
-  open() {
-    return super.open('/overseas-sites/imports')
+  async open() {
+    await super.open('/overseas-sites/imports')
   }
 
   async capturePageState() {

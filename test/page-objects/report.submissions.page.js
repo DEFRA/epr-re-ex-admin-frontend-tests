@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { browser } from '@wdio/globals'
 
 class ReportSubmissionsPage extends Page {
-  open() {
-    return super.open('/report-submissions')
+  async open() {
+    await super.open('/report-submissions')
   }
 
   async fetchCsv() {

@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { $, $$ } from '@wdio/globals'
 
 class OrganisationsPage extends Page {
-  open() {
-    return super.open('/organisations')
+  async open() {
+    await super.open('/organisations')
   }
 
   async getHeaderText() {

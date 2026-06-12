@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { $, $$ } from '@wdio/globals'
 
 class SystemLogsPage extends Page {
-  open() {
-    return super.open('/system-logs')
+  async open() {
+    await super.open('/system-logs')
   }
 
   async searchFor(orgName) {

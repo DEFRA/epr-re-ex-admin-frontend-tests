@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { $, $$ } from '@wdio/globals'
 
 class TonnageMonitoringPage extends Page {
-  open() {
-    return super.open('/tonnage-monitoring')
+  async open() {
+    await super.open('/tonnage-monitoring')
   }
 
   async downloadCsv() {

@@ -2,8 +2,8 @@ import { Page } from 'page-objects/page'
 import { $ } from '@wdio/globals'
 
 class LoginPage extends Page {
-  open() {
-    return super.open('/auth/sign-in')
+  async open() {
+    await super.open('/auth/sign-in')
   }
 
   async enterCredentials(username, password) {
