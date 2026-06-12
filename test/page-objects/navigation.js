@@ -4,6 +4,7 @@ class Navigation {
   async clickOnLink(linkText) {
     const selector = '#navigation li a'
 
+    await browser.pause(2000)
     await browser.waitUntil(
       async () => {
         const elements = await $$(selector)
