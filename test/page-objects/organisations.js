@@ -47,6 +47,8 @@ class OrganisationsPage extends Page {
     await browser.execute((el) => (el.value = 'orgName'), searchEl)
     console.log('Value after execute:', await searchEl.getValue())
     console.log('org name ' + orgName)
+    await searchEl.click()
+    await browser.keys(orgName)
     await $('#search').setValue(orgName)
     await $('button[type=submit]').click()
   }
