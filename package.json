@@ -51,9 +51,9 @@
   },
   "overrides": {
     "eslint": "$eslint",
+    "form-data": "4.0.6",
     "@grpc/grpc-js": "1.13.5",
     "serialize-javascript": "7.0.5",
-    "tmp": "0.2.7",
     "uuid": "14.0.0"
   },
   "devDependencies": {
@@ -62,7 +62,7 @@
     "eslint-plugin-prettier": "5.5.5",
     "eslint-plugin-wdio": "9.27.0",
     "husky": "9.1.7",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.7",
     "neostandard": "0.13.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3"
