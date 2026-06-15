@@ -1,3 +1,4 @@
+/// <reference types="@wdio/globals/types" />
 import { Page } from 'page-objects/page'
 import { $ } from '@wdio/globals'
 
