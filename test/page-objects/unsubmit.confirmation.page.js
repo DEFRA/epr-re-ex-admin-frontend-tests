@@ -3,7 +3,7 @@ import { $ } from '@wdio/globals'
 
 class UnsubmitConfirmationPage extends Page {
   async getWarningText() {
-    return await $('#main-content > div > div > div > strong').getText()
+    return await $('.govuk-warning-text__text').getText()
   }
 
   async confirmUnsubmit() {
