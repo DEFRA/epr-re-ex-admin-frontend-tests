@@ -45,7 +45,8 @@ export const config = {
           '--ignore-certificate-errors',
           '--disable-dev-shm-usage'
         ]
-      }
+      },
+      'wdio:enforceWebDriverClassic': true
     }
   ],
 
