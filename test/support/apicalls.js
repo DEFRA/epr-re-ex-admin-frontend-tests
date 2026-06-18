@@ -218,9 +218,13 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
 
   const { defraOrgId } = setLinkedDefraOrganisation(orgData)
 
+  const payload = {
+    version: Number(orgData.version),
+    updateFragment: orgData
+  }
   const activateResponse = await baseAPI.put(
-    `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: orgData }),
+    `/v1/organisations/${refNo}`,
+    JSON.stringify(payload),
     entraAuthHeader
   )
   if (activateResponse.statusCode !== 200) {
@@ -311,9 +315,13 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
 
   data.status = updateDataRows[0].status
 
+  const payload = {
+    version: Number(data.version),
+    updateFragment: data
+  }
   const putResponse = await baseAPI.put(
-    `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: data }),
+    `/v1/organisations/${refNo}`,
+    JSON.stringify(payload),
     authHeader
   )
   expect(putResponse.statusCode).toBe(200)
@@ -411,9 +419,13 @@ export async function linkOrganisationToDefraId(refNo) {
 
   const linkedDefraOrg = setLinkedDefraOrganisation(orgData)
 
+  const payload = {
+    version: Number(orgData.version),
+    updateFragment: orgData
+  }
   const putResponse = await baseAPI.put(
     `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: orgData }),
+    JSON.stringify(payload),
     entraAuthHeader
   )
   if (putResponse.statusCode !== 200) {
