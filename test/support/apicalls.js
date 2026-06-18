@@ -424,7 +424,7 @@ export async function linkOrganisationToDefraId(refNo) {
     updateFragment: orgData
   }
   const putResponse = await baseAPI.put(
-    `/v1/dev/organisations/${refNo}`,
+    `/v1/organisations/${refNo}`,
     JSON.stringify(payload),
     entraAuthHeader
   )
