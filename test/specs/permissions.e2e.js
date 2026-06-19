@@ -1,6 +1,7 @@
 import {
   createLinkedOrganisation,
-  createSubmittedReport
+  createSubmittedReport,
+  updateMigratedOrganisation
 } from '~/test/support/apicalls.js'
 import OrganisationsPage from 'page-objects/organisations.js'
 import { expect } from '@wdio/globals'
@@ -77,6 +78,18 @@ users.forEach(({ username, scopes }) => {
       ])
 
       const { organisation } = linkedOrganisation
+
+      const registrationNumber = `FAKE/REG123/TEST`
+      const accreditationNumber = `FAKE/ACC123/TEST`
+
+      await updateMigratedOrganisation(linkedOrganisation.refNo, [
+        {
+          regNumber: registrationNumber,
+          accNumber: accreditationNumber,
+          status: 'approved',
+          reprocessingType: 'input'
+        }
+      ])
 
       await createSubmittedReport(linkedOrganisation.refNo)
 
