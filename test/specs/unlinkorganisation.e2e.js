@@ -8,7 +8,8 @@ import SystemLogsPage from 'page-objects/system.logs.page.js'
 import {
   createLinkedOrganisation,
   getOrganisation,
-  linkOrganisationToDefraId
+  linkOrganisationToDefraId,
+  updateMigratedOrganisation
 } from '../support/apicalls.js'
 
 describe('Unlink organisation from Defra ID', () => {
@@ -24,7 +25,18 @@ describe('Unlink organisation from Defra ID', () => {
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
     ])
     const { organisation, refNo } = linkedOrganisation
-    const defraOrg = await linkOrganisationToDefraId(refNo)
+    const registrationNumber = `FAKE/REG123/TEST`
+    const accreditationNumber = `FAKE/ACC123/TEST`
+
+    await updateMigratedOrganisation(refNo, [
+      {
+        regNumber: registrationNumber,
+        accNumber: accreditationNumber,
+        status: 'approved',
+        reprocessingType: 'input'
+      }
+    ])
+    const defraOrg = await linkOrganisationToDefraId(refNo, organisation.email)
 
     await OrganisationsPage.open()
     await OrganisationsPage.searchFor(organisation.companyName)
