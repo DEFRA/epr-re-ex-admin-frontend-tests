@@ -424,11 +424,15 @@ export async function linkOrganisationToDefraId(refNo, email) {
 }
 
 async function assertSuccessResponse(response, context) {
-  const body = await response.body.text()
+  const text = await response.body.text()
   if (response.statusCode < 200 || response.statusCode >= 300) {
     throw new Error(
-      `${context}: expected 2xx but got ${response.statusCode}\n${body}`
+      `${context}: expected 2xx but got ${response.statusCode}\n${text}`
     )
   }
-  return body
+  try {
+    return JSON.parse(text)
+  } catch (err) {
+    throw new Error(`${context}: failed to parse JSON response\n${text}`)
+  }
 }
