@@ -424,10 +424,10 @@ export async function linkOrganisationToDefraId(refNo, email) {
 }
 
 async function assertSuccessResponse(response, context) {
-  const body = await response.body.json()
+  const body = await response.body.text()
   if (response.statusCode < 200 || response.statusCode >= 300) {
     throw new Error(
-      `${context}: expected 2xx but got ${response.statusCode}\n${JSON.stringify(body, null, 2)}`
+      `${context}: expected 2xx but got ${response.statusCode}\n${body}`
     )
   }
   return body
