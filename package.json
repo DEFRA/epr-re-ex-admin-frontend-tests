@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@axe-core/webdriverio": "4.11.3",
-    "@faker-js/faker": "10.4.0",
+    "@faker-js/faker": "10.5.0",
     "@wdio/allure-reporter": "9.28.0",
     "@wdio/browserstack-service": "9.28.0",
     "@wdio/cli": "9.28.0",
