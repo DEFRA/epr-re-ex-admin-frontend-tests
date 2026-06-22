@@ -4,7 +4,7 @@
   "type": "module",
   "description": "",
   "engines": {
-    "node": ">=24.17.0 <25"
+    "node": ">=24.16.0 <25"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
@@ -30,7 +30,7 @@
     "test:local:debug": "npm run clean && GREP='@smoketest' GREP_INVERT=true DEBUG=true wdio run wdio.local.conf.js",
     "test:local:grep": "npm run clean && wdio run wdio.local.conf.js",
     "test:local": "npm run clean && GREP='@smoketest' GREP_INVERT=true wdio run wdio.local.conf.js",
-    "test": "npm run clean && DEBUG=* GREP='@smoketest' wdio run wdio.conf.js"
+    "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js"
   },
   "dependencies": {
     "@axe-core/webdriverio": "4.11.3",
