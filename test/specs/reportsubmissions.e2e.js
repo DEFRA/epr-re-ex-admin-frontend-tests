@@ -23,6 +23,7 @@ describe('Report Submissions page', () => {
     await updateMigratedOrganisation(refNo, [
       {
         regNumber: 'REPROCESS-001',
+        accNumber: 'ACC-001',
         status: 'approved',
         reprocessingType: 'input'
       }
@@ -56,7 +57,7 @@ describe('Report Submissions page', () => {
     await expect(headerIndex).toBeGreaterThanOrEqual(0)
     const dataRows = rows.slice(headerIndex + 1)
 
-    const orgRow = dataRows.find((row) => row.includes(orgName))
+    const orgRow = dataRows.findLast((row) => row.includes(orgName))
     await expect(orgRow).toBeDefined()
     if (!orgRow) {
       throw new Error('Organisation row not found')

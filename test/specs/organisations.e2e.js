@@ -8,7 +8,8 @@ import RegistrationOverviewPage from 'page-objects/registration.overview.page.js
 import JsonEditor from 'page-objects/jsoneditor.js'
 import {
   createLinkedOrganisation,
-  createSubmittedReport
+  createSubmittedReport,
+  updateMigratedOrganisation
 } from '../support/apicalls.js'
 import SystemLogsPage from 'page-objects/system.logs.page.js'
 import UnsubmitConfirmationPage from 'page-objects/unsubmit.confirmation.page.js'
@@ -188,6 +189,18 @@ describe('Organisations page', () => {
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
     ])
 
+    const registrationNumber = `FAKE/REG123/TEST`
+    const accreditationNumber = `FAKE/ACC123/TEST`
+
+    await updateMigratedOrganisation(linkedOrganisation.refNo, [
+      {
+        regNumber: registrationNumber,
+        accNumber: accreditationNumber,
+        status: 'approved',
+        reprocessingType: 'input'
+      }
+    ])
+
     const { organisation } = linkedOrganisation
 
     await createSubmittedReport(linkedOrganisation.refNo)
@@ -220,13 +233,14 @@ describe('Organisations page', () => {
     await OrganisationOverviewPage.viewRegistrationLink(1)
 
     let reportsData = await RegistrationOverviewPage.getReportsTableData()
+    const lastRowIdx = reportsData.length - 1
     expect(reportsData.length).toBeGreaterThanOrEqual(1)
-    expect(reportsData[0].status).toEqual('submitted')
-    expect(reportsData[0].actions).toContain('View')
-    expect(reportsData[0].actions).toContain('Unsubmit')
+    expect(reportsData[lastRowIdx].status).toEqual('submitted')
+    expect(reportsData[lastRowIdx].actions).toContain('View')
+    expect(reportsData[lastRowIdx].actions).toContain('Unsubmit')
 
     // unsubmit report
-    await RegistrationOverviewPage.clickOnUnsubmitReportLink(1)
+    await RegistrationOverviewPage.clickOnUnsubmitReportLink(lastRowIdx + 1)
     const warningText = await UnsubmitConfirmationPage.getWarningText()
     expect(warningText).toContain(
       "Unsubmitting will move the report back to 'ready to submit'. The operator will need to delete and resubmit it."
@@ -240,7 +254,7 @@ describe('Organisations page', () => {
 
     reportsData = await RegistrationOverviewPage.getReportsTableData()
     expect(reportsData.length).toBeGreaterThanOrEqual(1)
-    expect(reportsData[0].status).toEqual('ready_to_submit')
-    expect(reportsData[0].actions).not.toContain('Unsubmit')
+    expect(reportsData[lastRowIdx].status).toEqual('ready_to_submit')
+    expect(reportsData[lastRowIdx].actions).not.toContain('Unsubmit')
   })
 })
