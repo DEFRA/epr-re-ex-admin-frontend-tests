@@ -7,14 +7,5 @@
     "nvm",
     "custom.regex",
     "mise"
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["nvm", "node-version"],
-      "matchDepNames": ["node"],
-      "allowedVersions": "<=24.16.x",
-      "enabled": true,
-      "description": "Pinned: Node 24.17+ bundles stricter undici fetch validation that rejects webdriver's manual Content-Length/Connection headers (UND_ERR_INVALID_ARG). Unpin once webdriverio/webdriver ships a fix."
-    }
   ]
 }
