@@ -262,7 +262,11 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
 
   const submitResponse = await baseAPI.post(
     `${basePath}/status`,
-    JSON.stringify({ status: 'submitted', version }),
+    JSON.stringify({
+      status: 'submitted',
+      version,
+      submissionDeclaredBy: 'Test User'
+    }),
     jsonHeaders
   )
 
