@@ -43,7 +43,7 @@
     "@wdio/local-runner": "9.29.0",
     "@wdio/mocha-framework": "9.29.0",
     "@wdio/spec-reporter": "9.29.0",
-    "allure-commandline": "2.42.1",
+    "allure-commandline": "2.43.0",
     "esm-module-alias": "2.2.1",
     "exceljs": "4.4.0",
     "global-agent": "4.1.3",
