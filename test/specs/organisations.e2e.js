@@ -239,6 +239,9 @@ describe('Organisations page', () => {
     expect(reportsData[lastRowIdx].actions).toContain('View')
     expect(reportsData[lastRowIdx].actions).toContain('Unsubmit')
 
+    await browser.execute(() => {
+      window.scrollTo(0, document.body.scrollHeight)
+    })
     // await browser.scrollIntoView(
     //   await $(
     //     `#reports > table > tbody > tr:nth-child(${lastRowIdx + 1}) > td:nth-child(4) > a[href*="unsubmit"]`
