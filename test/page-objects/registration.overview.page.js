@@ -39,6 +39,18 @@ class RegistrationOverviewPage extends Page {
   async getSummaryLogsContent() {
     return await $('#summary-logs').getText()
   }
+
+  get statusTag() {
+    return $('dl.govuk-summary-list .govuk-tag')
+  }
+
+  get approveLink() {
+    return $('a=Approve')
+  }
+
+  async clickApprove() {
+    await this.approveLink.click()
+  }
 }
 
 export default new RegistrationOverviewPage()
