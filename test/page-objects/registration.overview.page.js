@@ -41,11 +41,11 @@ class RegistrationOverviewPage extends Page {
   }
 
   get statusTag() {
-    return $('dl.govuk-summary-list .govuk-tag')
+    return $('dl.govuk-summary-list > div:first-child .govuk-tag')
   }
 
   get approveLink() {
-    return $('a=Approve')
+    return $('a*=Approve')
   }
 
   async clickApprove() {
