@@ -25,7 +25,7 @@ class RegistrationOverviewPage extends Page {
 
   async clickOnViewORSLink() {
     await $(
-      '#main-content > div > div:nth-child(2) > div > dl > div:nth-child(10) > dd > a'
+      '#main-content > div > div:nth-child(2) > div > dl > div:nth-child(11) > dd > a'
     ).click()
   }
 
