@@ -31,13 +31,13 @@ class RegistrationOverviewPage extends Page {
 
   async clickOnUnsubmitReportLink(row) {
     await $(
-      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="Unsubmit"]`
     ).click()
   }
 
   async unsubmitReportLinkExists(row) {
     const unsubmitElement = $(
-      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="unsubmit"]`
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a[href*="Unsubmit"]`
     )
     return await unsubmitElement.isExisting()
   }

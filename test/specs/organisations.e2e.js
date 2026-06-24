@@ -239,17 +239,12 @@ describe('Organisations page', () => {
     expect(reportsData[lastRowIdx].actions).toContain('View')
     expect(reportsData[lastRowIdx].actions).toContain('Unsubmit')
 
-    await browser.execute(() => {
-      window.scrollTo(0, document.body.scrollHeight)
-    })
-    // await browser.scrollIntoView(
-    //   await $(
-    //     `#reports > table > tbody > tr:nth-child(${lastRowIdx + 1}) > td:nth-child(4) > a[href*="unsubmit"]`
-    //   )
-    // )
+    // await browser.execute(() => {
+    //   window.scrollTo(0, document.body.scrollHeight)
+    // })
 
     // unsubmit report
-    // await RegistrationOverviewPage.clickOnUnsubmitReportLink(lastRowIdx + 1)
+    await RegistrationOverviewPage.clickOnUnsubmitReportLink(lastRowIdx + 1)
     const warningText = await UnsubmitConfirmationPage.getWarningText()
     expect(warningText).toContain(
       "Unsubmitting will move the report back to 'ready to submit'. The operator will need to delete and resubmit it."
