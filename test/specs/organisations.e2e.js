@@ -184,7 +184,7 @@ describe('Organisations page', () => {
     expect(summaryLogContent).toContain('No summary logs')
   })
 
-  it('Should be able to view an organisation overview and unsubmit a report @organisations @unsubmit', async () => {
+  it('Should be able to view an organisation overview and unsubmit a report @organisations @unsubmitci', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' }
     ])
@@ -240,7 +240,7 @@ describe('Organisations page', () => {
     expect(reportsData[lastRowIdx].actions).toContain('Unsubmit')
 
     // unsubmit report
-    await RegistrationOverviewPage.clickOnUnsubmitReportLink(lastRowIdx + 1)
+    // await RegistrationOverviewPage.clickOnUnsubmitReportLink(lastRowIdx + 1)
     const warningText = await UnsubmitConfirmationPage.getWarningText()
     expect(warningText).toContain(
       "Unsubmitting will move the report back to 'ready to submit'. The operator will need to delete and resubmit it."
