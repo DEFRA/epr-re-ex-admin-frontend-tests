@@ -134,7 +134,10 @@ class OrsUploadPage extends Page {
     })
 
     await browser.waitUntil(
-      async () => (await $$('table.govuk-table tbody tr')).length > 0,
+      async () => {
+        const rows = await $$('table.govuk-table tbody tr')
+        return (await rows.length) > 0
+      },
       {
         timeout: 10000,
         interval: 250,
@@ -168,6 +171,9 @@ class OrsUploadPage extends Page {
     await expect(button).toHaveText('Download CSV')
   }
 
+  /**
+   * @returns {Promise<{status: number, contentDisposition: string|null, contentType: string|null, body: string}>}
+   */
   async fetchListCsv() {
     return browser.execute(async () => {
       const form = document.querySelector('form[method="POST"]')
@@ -178,7 +184,9 @@ class OrsUploadPage extends Page {
 
       const formData = new URLSearchParams()
 
-      for (const input of form.querySelectorAll('input[name]')) {
+      for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (
+        form.querySelectorAll('input[name]')
+      )) {
         formData.set(input.name, input.value)
       }
 

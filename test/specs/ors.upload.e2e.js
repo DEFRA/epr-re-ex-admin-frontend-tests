@@ -13,6 +13,10 @@ import {
   createOrsSpreadsheet,
   validOrsSites
 } from '../support/ors-spreadsheet.js'
+import OrganisationsPage from 'page-objects/organisations.js'
+import OrganisationOverviewPage from 'page-objects/organisation.overview.page.js'
+import RegistrationOverviewPage from 'page-objects/registration.overview.page.js'
+import ORSOverviewPage from 'page-objects/ors.overview.page.js'
 
 async function loginAsServiceMaintainer() {
   await browser.deleteCookies()
@@ -57,7 +61,7 @@ describe('ORS upload flow @orsupload', () => {
     await createOrsSpreadsheet(workbookPath, {
       metadata: {
         packagingWasteCategory: 'Paper or board',
-        orgId: parseInt(orgId),
+        orgId,
         registrationNumber,
         accreditationNumber
       },
@@ -134,6 +138,9 @@ describe('ORS upload flow @orsupload', () => {
         row[3] === '001'
     )
     expect(uploadedRow).toBeDefined()
+    if (!uploadedRow) {
+      throw new Error('uploadedRow not found')
+    }
     expect(uploadedRow).toHaveLength(14)
     expect(uploadedRow[4]).not.toEqual('-')
     expect(uploadedRow.slice(5)).toEqual([
@@ -169,18 +176,23 @@ describe('ORS upload flow @orsupload', () => {
 
   describe('Registration number filter @orsupload', () => {
     let alphaRegistrationNumber
+    let alphaAccreditationNumber
     let betaRegistrationNumber
+    let betaAccreditationNumber
+    let organisationName
 
     it('Should upload workbooks for filter tests', async () => {
-      const { orgId, refNo } = await createLinkedOrganisation([
+      const { orgId, refNo, organisation } = await createLinkedOrganisation([
         { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' },
         { material: 'Steel (R4)', wasteProcessingType: 'Exporter' }
       ])
 
+      organisationName = organisation.companyName
+
       alphaRegistrationNumber = `FAKE/REG${orgId}/ALPHA`
       betaRegistrationNumber = `FAKE/REG${orgId}/BETA`
-      const alphaAccreditationNumber = `FAKE/ACC${orgId}/ALPHA`
-      const betaAccreditationNumber = `FAKE/ACC${orgId}/BETA`
+      alphaAccreditationNumber = `FAKE/ACC${orgId}/ALPHA`
+      betaAccreditationNumber = `FAKE/ACC${orgId}/BETA`
 
       await updateMigratedOrganisation(refNo, [
         {
@@ -204,7 +216,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(alphaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Paper or board',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: alphaRegistrationNumber,
           accreditationNumber: alphaAccreditationNumber
         },
@@ -214,7 +226,7 @@ describe('ORS upload flow @orsupload', () => {
       await createOrsSpreadsheet(betaWorkbookPath, {
         metadata: {
           packagingWasteCategory: 'Steel',
-          orgId: parseInt(orgId),
+          orgId,
           registrationNumber: betaRegistrationNumber,
           accreditationNumber: betaAccreditationNumber
         },
@@ -307,7 +319,6 @@ describe('ORS upload flow @orsupload', () => {
           registrationNumber: alphaRegistrationNumber
         }).toString()
       )
-
       const filteredCsvDownload = await OrsUploadPage.fetchListCsv()
       expect(filteredCsvDownload.status).toEqual(200)
       expect(filteredCsvDownload.contentType).toContain('text/csv')
@@ -326,6 +337,116 @@ describe('ORS upload flow @orsupload', () => {
       expect(await OrsUploadPage.getInsetText()).toContain(
         "No overseas reprocessing site data found matching 'NOT-FOUND'."
       )
+    })
+
+    it('Should be able to view ORS data for an organisation', async () => {
+      await OrganisationsPage.open()
+      await OrganisationsPage.searchFor(organisationName)
+      await OrganisationsPage.viewLink(1)
+      await OrganisationOverviewPage.viewRegistrationLink(1)
+      await RegistrationOverviewPage.clickOnViewORSLink()
+      let orsOverviewHeader = await ORSOverviewPage.getHeaderText()
+      expect(orsOverviewHeader).toContain(
+        organisationName + ' - ' + alphaAccreditationNumber
+      )
+      let actualOrsTableData = await ORSOverviewPage.getORSTableData()
+      const expectedOrsTableData = [
+        {
+          orsId: '001',
+          packagingWasteCategory: 'paper',
+          destinationCountry: 'Testland',
+          overseasReprocessorName: 'Fake Recycling Co',
+          addressLine1: '1 Test Street',
+          addressLine2: 'Unit 99',
+          cityOrTown: 'Testville',
+          stateProvinceOrRegion: 'Testshire',
+          postcode: 'TEST 001',
+          coordinates: '0.0000,0.0000',
+          validFrom: '1 January 2025'
+        },
+        {
+          orsId: '002',
+          packagingWasteCategory: 'paper',
+          destinationCountry: 'Fakestan',
+          overseasReprocessorName: 'Bogus Paper Mills',
+          addressLine1: '42 Nonsense Avenue',
+          addressLine2: '-',
+          cityOrTown: 'Faketown',
+          stateProvinceOrRegion: 'Nowhere',
+          postcode: 'FAKE 002',
+          coordinates: '1.0000,1.0000',
+          validFrom: '1 January 2025'
+        },
+        {
+          orsId: '003',
+          packagingWasteCategory: 'paper',
+          destinationCountry: 'Madeupistan',
+          overseasReprocessorName: 'Imaginary Exports Ltd',
+          addressLine1: '999 Fiction Road',
+          addressLine2: 'Floor 0',
+          cityOrTown: 'Inventedburg',
+          stateProvinceOrRegion: 'Neverland',
+          postcode: 'NOPE 003',
+          coordinates: '2.0000,2.0000',
+          validFrom: '1 January 2025'
+        }
+      ]
+      expect(actualOrsTableData).toEqual(expectedOrsTableData)
+
+      // Return to Organisation Overview Page
+      ORSOverviewPage.clickOnBreadcrumbLink(2)
+      await OrganisationOverviewPage.viewRegistrationLink(2)
+
+      await RegistrationOverviewPage.clickOnViewORSLink()
+      orsOverviewHeader = await ORSOverviewPage.getHeaderText()
+      expect(orsOverviewHeader).toContain(
+        organisationName + ' - ' + betaAccreditationNumber
+      )
+
+      const expectedSecondOrsTableData = [
+        {
+          orsId: '001',
+          packagingWasteCategory: 'steel',
+          destinationCountry: 'Testland',
+          overseasReprocessorName: 'Fake Recycling Co',
+          addressLine1: '1 Test Street',
+          addressLine2: 'Unit 99',
+          cityOrTown: 'Testville',
+          stateProvinceOrRegion: 'Testshire',
+          postcode: 'TEST 001',
+          coordinates: '0.0000,0.0000',
+          validFrom: '1 January 2025'
+        },
+        {
+          orsId: '002',
+          packagingWasteCategory: 'steel',
+          destinationCountry: 'Fakestan',
+          overseasReprocessorName: 'Bogus Paper Mills',
+          addressLine1: '42 Nonsense Avenue',
+          addressLine2: '-',
+          cityOrTown: 'Faketown',
+          stateProvinceOrRegion: 'Nowhere',
+          postcode: 'FAKE 002',
+          coordinates: '1.0000,1.0000',
+          validFrom: '1 January 2025'
+        },
+        {
+          orsId: '003',
+          packagingWasteCategory: 'steel',
+          destinationCountry: 'Madeupistan',
+          overseasReprocessorName: 'Imaginary Exports Ltd',
+          addressLine1: '999 Fiction Road',
+          addressLine2: 'Floor 0',
+          cityOrTown: 'Inventedburg',
+          stateProvinceOrRegion: 'Neverland',
+          postcode: 'NOPE 003',
+          coordinates: '2.0000,2.0000',
+          validFrom: '1 January 2025'
+        }
+      ]
+
+      actualOrsTableData = await ORSOverviewPage.getORSTableData()
+      expect(actualOrsTableData).toEqual(expectedSecondOrsTableData)
     })
   })
 })

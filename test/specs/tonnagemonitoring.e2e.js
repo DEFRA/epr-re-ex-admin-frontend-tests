@@ -45,6 +45,9 @@ describe('Tonnage Monitoring page', () => {
           (r) => r.Material === material && r.Type === type
         )
         await expect(row).toBeDefined()
+        if (!row) {
+          throw new Error('Row not found')
+        }
 
         for (const month of monthColumns) {
           await expect(row).toHaveProperty(month)

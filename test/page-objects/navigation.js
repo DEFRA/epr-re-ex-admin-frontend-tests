@@ -5,7 +5,7 @@ class Navigation {
     await browser.waitUntil(
       async () => {
         const elements = await $$('#navigation li a')
-        return elements.length > 0
+        return (await elements.length) > 0
       },
       {
         timeout: 5000,

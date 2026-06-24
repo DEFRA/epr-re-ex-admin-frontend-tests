@@ -20,7 +20,13 @@ async function getEntraToken() {
     method: 'POST',
     body: payload
   })
-  const data = await response.body.json()
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const data = /** @type {AuthResponse} */ (await response.body.json())
   return data.access_token
 }
 
@@ -29,11 +35,10 @@ async function getEntraToken() {
 // The Host header is spoofed on every request so the stub embeds
 // http://defra-id-stub:3200/cdp-defra-id-stub as the JWT issuer — which is
 // what the backend is configured to trust.
-async function getDefraUserToken(defraOrgId) {
+async function getDefraUserToken(email, orgId = randomUUID()) {
   const stubUrl = 'http://localhost:3200'
   const stubHost = 'defra-id-stub:3200'
   const userId = randomUUID()
-  const email = `test-${userId}@example.com`
   const clientId = '63983fc2-cfff-45bb-8ec2-959e21062b9a'
 
   await request(`${stubUrl}/cdp-defra-id-stub/API/register`, {
@@ -55,7 +60,7 @@ async function getDefraUserToken(defraOrgId) {
     csrfToken: randomUUID(),
     userId,
     relationshipId: 'relId1',
-    organisationId: defraOrgId,
+    organisationId: orgId,
     organisationName: 'Test Organisation',
     relationshipRole: 'role',
     roleName: 'User',
@@ -96,7 +101,10 @@ async function getDefraUserToken(defraOrgId) {
       `Defra ID authorize returned ${authResponse.statusCode}: ${body}`
     )
   }
-  const sessionId = authResponse.headers.location.split('sessionId=')[1]
+
+  const headers = await authResponse.headers
+  const headersLocation = String(headers.location)
+  const sessionId = headersLocation.split('sessionId=')[1]
 
   const tokenResponse = await request(`${stubUrl}/cdp-defra-id-stub/token`, {
     method: 'POST',
@@ -111,7 +119,16 @@ async function getDefraUserToken(defraOrgId) {
       code: sessionId
     })
   })
-  const tokenData = await tokenResponse.body.json()
+
+  /**
+   * @typedef {Object} AuthResponse
+   * @property {string} access_token
+   * @property {string} token_type
+   * @property {number} expires_in
+   */
+  const tokenData = /** @type {AuthResponse} */ (
+    await tokenResponse.body.json()
+  )
   return tokenData.access_token
 }
 
@@ -149,8 +166,10 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     `/v1/organisations/${refNo}`,
     entraAuthHeader
   )
-  expect(orgResponse.statusCode).toBe(200)
-  const orgData = await orgResponse.body.json()
+  const orgData = await assertSuccessResponse(
+    orgResponse,
+    `/v1/organisations/${refNo}`
+  )
 
   const registration = orgData.registrations[registrationIndex]
   const registrationId = registration.id
@@ -177,68 +196,81 @@ export async function createSubmittedReport(refNo, registrationIndex = 0) {
     delete orgData.registrations[registrationIndex].accreditationId
   }
 
-  const defraOrgId = randomUUID()
-  orgData.status = 'active'
-  orgData.statusHistory = [
-    ...(orgData.statusHistory || []),
-    { status: 'active', updatedAt: new Date().toISOString() }
-  ]
-  orgData.linkedDefraOrganisation = {
-    orgId: defraOrgId,
-    orgName: 'Test Organisation',
-    linkedAt: new Date().toISOString(),
-    linkedBy: { email: 'test@example.com', id: randomUUID() }
-  }
+  const email = orgData.submitterContactDetails.email
 
-  const activateResponse = await baseAPI.put(
-    `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: orgData }),
+  const payload = {
+    version: Number(orgData.version),
+    updateFragment: orgData
+  }
+  const updateResponse = await baseAPI.put(
+    `/v1/organisations/${refNo}`,
+    JSON.stringify(payload),
     entraAuthHeader
   )
-  if (activateResponse.statusCode !== 200) {
-    const body = await activateResponse.body.text()
-    throw new Error(
-      `activate PUT returned ${activateResponse.statusCode}: ${body}`
-    )
-  }
 
-  const defraToken = await getDefraUserToken(defraOrgId)
+  await assertSuccessResponse(updateResponse, `PUT /v1/organisations/${refNo}`)
+
+  const defraToken = await getDefraUserToken(email)
   const defraAuthHeader = { Authorization: `Bearer ${defraToken}` }
   const jsonHeaders = { ...defraAuthHeader, 'content-type': 'application/json' }
 
-  const basePath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}`
+  const linkResponse = await baseAPI.post(
+    `/v1/organisations/${refNo}/link`,
+    '',
+    defraAuthHeader
+  )
+
+  await assertSuccessResponse(
+    linkResponse,
+    `POST /v1/organisations/${refNo}/link`
+  )
+
+  const basePath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}/submissions/1`
 
   const createResponse = await baseAPI.post(basePath, '', defraAuthHeader)
-  if (createResponse.statusCode !== 201) {
-    const body = await createResponse.body.text()
-    throw new Error(
-      `POST ${basePath} returned ${createResponse.statusCode}: ${body}`
-    )
-  }
-  let version = (await createResponse.body.json()).version
 
-  const patchResponse = await baseAPI.patch(
+  await assertSuccessResponse(createResponse, `POST ${basePath}`)
+
+  let version
+
+  let patchResponse = await baseAPI.patch(
     basePath,
-    JSON.stringify({ tonnageRecycled: 10, tonnageNotRecycled: 0 }),
+    JSON.stringify({
+      tonnageRecycled: 10,
+      tonnageNotRecycled: 0,
+      prnRevenue: 0,
+      freeTonnage: 0
+    }),
     jsonHeaders
   )
-  expect(patchResponse.statusCode).toBe(200)
-  version = (await patchResponse.body.json()).version
+
+  patchResponse = await assertSuccessResponse(
+    patchResponse,
+    `PATCH ${basePath}`
+  )
+
+  version = patchResponse.version
 
   const readyResponse = await baseAPI.post(
     `${basePath}/status`,
     JSON.stringify({ status: 'ready_to_submit', version }),
     jsonHeaders
   )
-  expect(readyResponse.statusCode).toBe(200)
+
+  await assertSuccessResponse(readyResponse, `POST ${basePath}/status`)
   version += 1
 
   const submitResponse = await baseAPI.post(
     `${basePath}/status`,
-    JSON.stringify({ status: 'submitted', version }),
+    JSON.stringify({
+      status: 'submitted',
+      version,
+      submissionDeclaredBy: 'Test User'
+    }),
     jsonHeaders
   )
-  expect(submitResponse.statusCode).toBe(200)
+
+  await assertSuccessResponse(submitResponse, `POST ${basePath}/status`)
 
   return { organisationId: refNo, registrationId, year, cadence, period }
 }
@@ -249,9 +281,11 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
   const authHeader = { Authorization: `Bearer ${token}` }
 
   const response = await baseAPI.get(`/v1/organisations/${refNo}`, authHeader)
-  expect(response.statusCode).toBe(200)
+  const data = await assertSuccessResponse(
+    response,
+    `GET /v1/organisations/${refNo}`
+  )
 
-  const data = await response.body.json()
   const currentYear = new Date().getFullYear()
 
   for (let i = 0; i < updateDataRows.length; i++) {
@@ -282,13 +316,17 @@ export async function updateMigratedOrganisation(refNo, updateDataRows) {
 
   data.status = updateDataRows[0].status
 
+  const payload = {
+    version: Number(data.version),
+    updateFragment: data
+  }
   const putResponse = await baseAPI.put(
-    `/v1/dev/organisations/${refNo}`,
-    JSON.stringify({ organisation: data }),
+    `/v1/organisations/${refNo}`,
+    JSON.stringify(payload),
     authHeader
   )
-  expect(putResponse.statusCode).toBe(200)
 
+  await assertSuccessResponse(putResponse, `PUT /v1/organisations/${refNo}`)
   return data
 }
 
@@ -309,9 +347,10 @@ export async function createLinkedOrganisation(dataRows) {
     '/v1/apply/organisation',
     JSON.stringify(payload)
   )
-  expect(response.statusCode).toBe(200)
-
-  const orgResponseData = await response.body.json()
+  const orgResponseData = await assertSuccessResponse(
+    response,
+    `POST /v1/apply/organisations`
+  )
 
   const orgId = orgResponseData?.orgId
   trackCreatedOrgId(orgId)
@@ -351,7 +390,53 @@ export async function createLinkedOrganisation(dataRows) {
   }
 
   response = await baseAPI.post(`/v1/dev/form-submissions/${refNo}/migrate`, '')
-  expect(response.statusCode).toBe(200)
+  await assertSuccessResponse(
+    response,
+    `POST /v1/dev/form-submissions/${refNo}/migrate`
+  )
 
   return { orgId, refNo, organisation, registrations }
+}
+
+export async function getOrganisation(refNo) {
+  const baseAPI = new BaseAPI()
+  const entraToken = await getEntraToken()
+  const orgResponse = await baseAPI.get(`/v1/organisations/${refNo}`, {
+    Authorization: `Bearer ${entraToken}`
+  })
+  return await assertSuccessResponse(orgResponse, `/v1/organisations/${refNo}`)
+}
+
+export async function linkOrganisationToDefraId(refNo, email) {
+  const baseAPI = new BaseAPI()
+
+  const orgId = randomUUID()
+  const defraToken = await getDefraUserToken(email, orgId)
+  const defraAuthHeader = { Authorization: `Bearer ${defraToken}` }
+
+  const linkResponse = await baseAPI.post(
+    `/v1/organisations/${refNo}/link`,
+    '',
+    defraAuthHeader
+  )
+
+  await assertSuccessResponse(
+    linkResponse,
+    `POST /v1/organisations/${refNo}/link`
+  )
+  return { defraOrgId: orgId, defraOrgName: 'Test Organisation' }
+}
+
+async function assertSuccessResponse(response, context) {
+  const text = await response.body.text()
+  if (response.statusCode < 200 || response.statusCode >= 300) {
+    throw new Error(
+      `${context}: expected 2xx but got ${response.statusCode}\n${text}`
+    )
+  }
+  try {
+    return JSON.parse(text)
+  } catch (err) {
+    throw new Error(`${context}: failed to parse JSON response\n${text}`)
+  }
 }

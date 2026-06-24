@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2024",
-    "lib": ["ES2024"],
+    "lib": ["ES2024", "dom", "dom.iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowJs": true,
@@ -16,7 +16,7 @@
     "strictNullChecks": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "baseUrl": ".",
+    "types": ["node", "mocha", "@wdio/globals/types", "expect-webdriverio"],
     "paths": {
       "~/*": ["./*"],
       "page-objects/*": ["./test/page-objects/*"],

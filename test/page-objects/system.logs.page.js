@@ -1,5 +1,5 @@
 import { Page } from 'page-objects/page'
-import { $ } from '@wdio/globals'
+import { $, $$ } from '@wdio/globals'
 
 class SystemLogsPage extends Page {
   open() {
@@ -11,20 +11,20 @@ class SystemLogsPage extends Page {
     await $('button[type=submit]').click()
   }
 
-  async searchByEmail(email) {
-    await $('#email').setValue(email)
+  async searchByUserId(userId) {
+    await $('#userId').setValue(userId)
     await $('button[type=submit]').click()
   }
 
-  async searchByEmailAndEventType(email, subCategory) {
-    await $('#email').setValue(email)
+  async searchByUserIdAndEventType(userId, subCategory) {
+    await $('#userId').setValue(userId)
     await $('#subCategory').selectByAttribute('value', subCategory)
     await $('button[type=submit]').click()
   }
 
-  async searchByAllFilters(referenceNumber, email, subCategory) {
+  async searchByAllFilters(referenceNumber, userId, subCategory) {
     await $('#referenceNumber').setValue(referenceNumber)
-    await $('#email').setValue(email)
+    await $('#userId').setValue(userId)
     await $('#subCategory').selectByAttribute('value', subCategory)
     await $('button[type=submit]').click()
   }
@@ -45,12 +45,21 @@ class SystemLogsPage extends Page {
     return await $('#referenceNumber').getValue()
   }
 
-  async emailValue() {
-    return await $('#email').getValue()
+  async userIdValue() {
+    return await $('#userId').getValue()
   }
 
   async eventTypeValue() {
     return await $('#subCategory').getValue()
+  }
+
+  // Reads the "User ID" value (the second summary-list row) from the most
+  // recent system log result card.
+  async firstResultUserId() {
+    const userId = await $(
+      '#main-content div.govuk-summary-card__content > dl > div:nth-child(2) > dd'
+    ).getText()
+    return userId.trim()
   }
 
   async jsonDifference() {
@@ -62,6 +71,29 @@ class SystemLogsPage extends Page {
 
   async noSystemLogsFound() {
     return await $('#main-content div.govuk-inset-text').getText()
+  }
+
+  async unlinkLogCard() {
+    await $('#main-content .govuk-summary-card').waitForExist()
+    const cards = await $$('#main-content .govuk-summary-card')
+    for (const card of cards) {
+      const title = await card.$('.govuk-summary-card__title').getText()
+      if (title.includes('unlinked-from-defra-id-organisation')) {
+        return card
+      }
+    }
+    return null
+  }
+
+  async logCardField(card, keyText) {
+    const rows = await card.$$('.govuk-summary-list__row')
+    for (const row of rows) {
+      const key = (await row.$('.govuk-summary-list__key').getText()).trim()
+      if (key === keyText) {
+        return (await row.$('.govuk-summary-list__value').getText()).trim()
+      }
+    }
+    return null
   }
 }
 
