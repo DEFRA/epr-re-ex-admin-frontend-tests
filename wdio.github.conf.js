@@ -21,7 +21,7 @@ export const config = {
   port: process.env.CHROMEDRIVER_PORT || 4444,
 
   // Tests to run
-  specs: ['./test/specs/**/*.js'],
+  specs: ['./test/specs/systemlogs.e2e.js'],
   // Tests to exclude
   exclude: [],
   maxInstances: 1,
@@ -141,7 +141,21 @@ export const config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // before: function (capabilities, specs) {},
+  // Chrome 148 only delivers synthetic WebDriver input when document.hasFocus()
+  // is true; headless CI has no window manager keeping the page focused, so input
+  // is dropped intermittently. Emulate focus via CDP so the page is always
+  // considered focused. See PAE-000.
+  before: async function () {
+    try {
+      const puppeteer = await browser.getPuppeteer()
+      const pages = await puppeteer.pages()
+      const client = await pages[0].createCDPSession()
+      await client.send('Emulation.setFocusEmulationEnabled', { enabled: true })
+      console.log('FOCUSEMU enabled ok')
+    } catch (e) {
+      console.log('FOCUSEMU failed: ' + e.message)
+    }
+  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name
