@@ -40,12 +40,7 @@ class OrganisationsPage extends Page {
   }
 
   async searchFor(orgName) {
-    const { browser } = await import('@wdio/globals')
-    const focus = await browser.execute(() => document.hasFocus())
     await $('#search').setValue(orgName)
-    console.log(
-      `SFDBG hasFocus=${focus} url=${(await browser.getUrl()).replace('http://localhost:3002', '')} searchValue=${JSON.stringify(await $('#search').getValue())}`
-    )
     await $('button[type=submit]').click()
   }
 

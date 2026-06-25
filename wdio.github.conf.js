@@ -21,7 +21,7 @@ export const config = {
   port: process.env.CHROMEDRIVER_PORT || 4444,
 
   // Tests to run
-  specs: ['./test/specs/systemlogs.e2e.js'],
+  specs: ['./test/specs/**/*.js'],
   // Tests to exclude
   exclude: [],
   maxInstances: 1,
@@ -141,20 +141,49 @@ export const config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // Chrome 148 only delivers synthetic WebDriver input when document.hasFocus()
-  // is true; headless CI has no window manager keeping the page focused, so input
-  // is dropped intermittently. Emulate focus via CDP so the page is always
-  // considered focused. See PAE-000.
+  // Recent Chrome only delivers native pointer/keyboard input when the page holds
+  // OS focus, which headless CI (no window manager) loses after navigation. Route
+  // click and setValue through the DOM so interactions do not depend on focus.
+  // See PAE-000 and https://makandracards.com/makandra/12661-solve-selenium-focus-issues
   before: async function () {
-    try {
-      const puppeteer = await browser.getPuppeteer()
-      const pages = await puppeteer.pages()
-      const client = await pages[0].createCDPSession()
-      await client.send('Emulation.setFocusEmulationEnabled', { enabled: true })
-      console.log('FOCUSEMU enabled ok')
-    } catch (e) {
-      console.log('FOCUSEMU failed: ' + e.message)
+    await browser.overwriteCommand(
+      'click',
+      async function () {
+        await this.waitForClickable()
+        return browser.execute((el) => el.click(), this)
+      },
+      true
+    )
+    const setVia = (el, v) => {
+      el.focus()
+      if (el.isContentEditable) {
+        el.textContent = v
+      } else {
+        el.value = v
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
     }
+    await browser.overwriteCommand(
+      'setValue',
+      async function (originalSetValue, value) {
+        await this.waitForExist()
+        // File inputs upload via the native WebDriver path (not keyboard), so
+        // leave them to the original command - JS cannot set a file input value.
+        if ((await this.getProperty('type')) === 'file') {
+          return originalSetValue.call(this, value)
+        }
+        return browser.execute(setVia, this, value)
+      },
+      true
+    )
+    await browser.overwriteCommand(
+      'clearValue',
+      function () {
+        return browser.execute(setVia, this, '')
+      },
+      true
+    )
   },
   /**
    * Runs before a WebdriverIO command gets executed.
