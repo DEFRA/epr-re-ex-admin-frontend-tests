@@ -31,9 +31,14 @@ describe('Organisations page', () => {
 
     const organisation = linkedOrganisation.organisation
 
-    await browser.refresh()
+    // await browser.refresh()
+    const handles = await browser.getWindowHandles()
+    await browser.switchToWindow(handles[handles.length - 1])
     await OrganisationsPage.open()
     await Navigation.clickOnLink('Organisations')
+
+    console.log(await browser.getWindowHandle())
+    console.log(await browser.execute(() => window.location.href))
 
     await OrganisationsPage.searchFor(organisation.companyName)
     const searchResult = await OrganisationsPage.searchResult()
