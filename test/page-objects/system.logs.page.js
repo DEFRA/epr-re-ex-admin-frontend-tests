@@ -62,11 +62,12 @@ class SystemLogsPage extends Page {
     return userId.trim()
   }
 
+  // Reads the "Difference" JSON from the most recent system log result card.
+  // Matches the row by its key text rather than position, so it is unaffected
+  // by rows being added to or removed from the summary list.
   async jsonDifference() {
-    const difference = await $(
-      '#main-content div.govuk-summary-card dl.govuk-summary-list div.govuk-summary-list__row:nth-child(9) > dd > code'
-    )
-    return difference.getText()
+    const card = await $('#main-content div.govuk-summary-card')
+    return this.logCardField(card, 'Difference')
   }
 
   async noSystemLogsFound() {
