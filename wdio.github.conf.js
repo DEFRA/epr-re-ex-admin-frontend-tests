@@ -141,36 +141,7 @@ export const config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // Chrome 148 silently drops native WebDriver pointer/keyboard input when the
-  // navigated document does not hold focus, which happens intermittently on the
-  // app's pages and is not recoverable (window.focus/switchToWindow/headless off
-  // all fail). Route click and setValue through the DOM so they do not depend on
-  // document focus. See PAE-000.
-  before: async function () {
-    await browser.overwriteCommand(
-      'click',
-      function () {
-        return browser.execute((el) => el.click(), this)
-      },
-      true
-    )
-    await browser.overwriteCommand(
-      'setValue',
-      function (originalSetValue, value) {
-        return browser.execute(
-          (el, v) => {
-            el.focus()
-            el.value = v
-            el.dispatchEvent(new Event('input', { bubbles: true }))
-            el.dispatchEvent(new Event('change', { bubbles: true }))
-          },
-          this,
-          value
-        )
-      },
-      true
-    )
-  },
+  // before: function (capabilities, specs) {},
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name
