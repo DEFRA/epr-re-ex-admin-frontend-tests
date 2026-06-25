@@ -19,6 +19,7 @@ describe('Organisations page', () => {
     // login as service maintainer
     await browser.deleteCookies()
     await LoginPage.open()
+    console.log(await browser.execute(() => window.location.href))
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
   })
