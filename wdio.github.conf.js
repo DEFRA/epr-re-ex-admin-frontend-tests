@@ -189,6 +189,29 @@ export const config = {
   ) {
     if (error) {
       await browser.takeScreenshot()
+      try {
+        const url = await browser.getUrl()
+        const cookies = await browser.getCookies()
+        const src = await browser.getPageSource()
+        console.log('DEBUG_URL ' + url)
+        console.log(
+          'DEBUG_COOKIES ' +
+            JSON.stringify(
+              cookies.map((c) => ({ name: c.name, domain: c.domain }))
+            )
+        )
+        console.log('DEBUG_HAS_SEARCH ' + src.includes('id="search"'))
+        console.log(
+          'DEBUG_TITLE ' + (src.match(/<title>([^<]*)<\/title>/)?.[1] || '?')
+        )
+        console.log(
+          'DEBUG_H1 ' + (src.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1] || '?')
+        )
+        console.log('DEBUG_BODYLEN ' + src.length)
+        console.log('DEBUG_SRC_HEAD ' + src.slice(0, 1500).replace(/\s+/g, ' '))
+      } catch (e) {
+        console.log('DEBUG_ERR ' + e.message)
+      }
     }
   },
 
