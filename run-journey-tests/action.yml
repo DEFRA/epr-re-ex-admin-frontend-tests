@@ -67,6 +67,13 @@ runs:
       run: npm ci
       shell: bash
 
+    - name: Add hosts entry
+      run: |
+        sudo echo "127.0.0.1 epr-re-ex-entra-stub" | sudo tee -a /etc/hosts
+        # Verify it worked
+        cat /etc/hosts
+      shell: bash
+
     - name: Check for matching epr-backend branch
       id: backend-branch
       shell: bash
