@@ -3,19 +3,19 @@ import { $ } from '@wdio/globals'
 
 class UnsubmitConfirmationPage extends Page {
   async getWarningText() {
-    return await $('#main-content > div > div > div > strong').getText()
+    return await $('.govuk-warning-text__text').getText()
   }
 
   async confirmUnsubmit() {
-    await $('#main-content > div > div > form > button').click()
+    await $('button=Yes, unsubmit this report').click()
   }
 
   async getSuccessMessage() {
-    return await $('#main-content > div > div > div > div > h1').getText()
+    return await $('.govuk-panel__title').getText()
   }
 
   async returnToRegistrationOverview() {
-    await $('#main-content > div > div > div > p:nth-child(5) > a').click()
+    await $('a=Back to registration overview').click()
   }
 }
 
