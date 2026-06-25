@@ -29,6 +29,10 @@ export const config = {
   capabilities: [
     {
       browserName: 'chrome',
+      // Use classic WebDriver: the BiDi session loses its browsing context on the
+      // app's navigations ("Cannot find context with specified id"), which makes
+      // element lookups flaky. Classic is stable here.
+      'wdio:enforceWebDriverClassic': true,
       'goog:chromeOptions': {
         args: [
           '--no-sandbox',
