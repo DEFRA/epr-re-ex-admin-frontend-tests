@@ -29,7 +29,6 @@ export const config = {
   capabilities: [
     {
       browserName: 'chrome',
-      'wdio:enforceWebDriverClassic': true,
       'goog:chromeOptions': {
         args: [
           '--no-sandbox',
@@ -64,7 +63,6 @@ export const config = {
   waitforInterval: 200,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
-  specFileRetries: 1,
 
   framework: 'mocha',
 
@@ -91,7 +89,7 @@ export const config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: 2 * oneMinute,
+    timeout: oneMinute,
     grep: process.env.GREP || '',
     invert: process.env.GREP_INVERT === 'true'
   },
@@ -190,29 +188,6 @@ export const config = {
   ) {
     if (error) {
       await browser.takeScreenshot()
-      try {
-        const url = await browser.getUrl()
-        const cookies = await browser.getCookies()
-        const src = await browser.getPageSource()
-        console.log('DEBUG_URL ' + url)
-        console.log(
-          'DEBUG_COOKIES ' +
-            JSON.stringify(
-              cookies.map((c) => ({ name: c.name, domain: c.domain }))
-            )
-        )
-        console.log('DEBUG_HAS_SEARCH ' + src.includes('id="search"'))
-        console.log(
-          'DEBUG_TITLE ' + (src.match(/<title>([^<]*)<\/title>/)?.[1] || '?')
-        )
-        console.log(
-          'DEBUG_H1 ' + (src.match(/<h1[^>]*>([^<]*)<\/h1>/)?.[1] || '?')
-        )
-        console.log('DEBUG_BODYLEN ' + src.length)
-        console.log('DEBUG_SRC_HEAD ' + src.slice(0, 1500).replace(/\s+/g, ' '))
-      } catch (e) {
-        console.log('DEBUG_ERR ' + e.message)
-      }
     }
   },
 
