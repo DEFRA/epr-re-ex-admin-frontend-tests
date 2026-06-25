@@ -25,7 +25,7 @@ export const config = {
   // Tests to exclude
   exclude: [],
   maxInstances: 1,
-
+  automationProtocol: 'webdriver',
   capabilities: [
     {
       browserName: 'chrome',
