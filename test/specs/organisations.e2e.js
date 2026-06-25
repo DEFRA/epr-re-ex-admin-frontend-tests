@@ -57,6 +57,14 @@ describe('Organisations page', () => {
       organisation.companyName
     )
 
+    console.log(
+      'Match count:',
+      await browser.execute(
+        (sel) => document.querySelectorAll(sel).length,
+        '#search'
+      )
+    )
+
     await OrganisationsPage.searchFor(organisation.companyName)
     const searchResult = await OrganisationsPage.searchResult()
     expect(searchResult).toEqual('1 result found')
