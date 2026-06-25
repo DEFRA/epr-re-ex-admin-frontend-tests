@@ -2,6 +2,51 @@ import allure from 'allure-commandline'
 
 const oneMinute = 60 * 1000
 
+// Runs in the browser: set a field's value without keyboard input.
+const assignValue = (el, value) => {
+  el.focus()
+  if (el.isContentEditable) {
+    el.textContent = value
+  } else {
+    el.value = value
+  }
+  el.dispatchEvent(new Event('input', { bubbles: true }))
+  el.dispatchEvent(new Event('change', { bubbles: true }))
+}
+
+// Headless CI has no window manager, so the page loses OS focus after navigation
+// and recent Chrome then silently drops native pointer/keyboard input. Driving
+// interactions through the DOM removes the dependency on focus.
+// https://makandracards.com/makandra/12661-solve-selenium-focus-issues
+const routeInputThroughDom = async (browser) => {
+  await browser.overwriteCommand(
+    'click',
+    async function () {
+      await this.waitForClickable()
+      return browser.execute((el) => el.click(), this)
+    },
+    true
+  )
+  await browser.overwriteCommand(
+    'setValue',
+    async function (nativeSetValue, value) {
+      await this.waitForExist()
+      const isFileInput = (await this.getProperty('type')) === 'file'
+      return isFileInput
+        ? nativeSetValue.call(this, value) // file uploads need the native path
+        : browser.execute(assignValue, this, value)
+    },
+    true
+  )
+  await browser.overwriteCommand(
+    'clearValue',
+    function () {
+      return browser.execute(assignValue, this, '')
+    },
+    true
+  )
+}
+
 export const config = {
   //
   // ====================
@@ -29,9 +74,8 @@ export const config = {
   capabilities: [
     {
       browserName: 'chrome',
-      // Use classic WebDriver: the BiDi session loses its browsing context on the
-      // app's navigations ("Cannot find context with specified id"), which makes
-      // element lookups flaky. Classic is stable here.
+      // BiDi drops its browsing context on our navigations (and falls back per
+      // call, adding latency); classic is stable and faster here.
       'wdio:enforceWebDriverClassic': true,
       'goog:chromeOptions': {
         args: [
@@ -145,50 +189,7 @@ export const config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {object}         browser      instance of created browser/device session
    */
-  // Recent Chrome only delivers native pointer/keyboard input when the page holds
-  // OS focus, which headless CI (no window manager) loses after navigation. Route
-  // click and setValue through the DOM so interactions do not depend on focus.
-  // See PAE-000 and https://makandracards.com/makandra/12661-solve-selenium-focus-issues
-  before: async function () {
-    await browser.overwriteCommand(
-      'click',
-      async function () {
-        await this.waitForClickable()
-        return browser.execute((el) => el.click(), this)
-      },
-      true
-    )
-    const setVia = (el, v) => {
-      el.focus()
-      if (el.isContentEditable) {
-        el.textContent = v
-      } else {
-        el.value = v
-      }
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    }
-    await browser.overwriteCommand(
-      'setValue',
-      async function (originalSetValue, value) {
-        await this.waitForExist()
-        // File inputs upload via the native WebDriver path (not keyboard), so
-        // leave them to the original command - JS cannot set a file input value.
-        if ((await this.getProperty('type')) === 'file') {
-          return originalSetValue.call(this, value)
-        }
-        return browser.execute(setVia, this, value)
-      },
-      true
-    )
-    await browser.overwriteCommand(
-      'clearValue',
-      function () {
-        return browser.execute(setVia, this, '')
-      },
-      true
-    )
-  },
+  before: () => routeInputThroughDom(browser),
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {string} commandName hook command name
