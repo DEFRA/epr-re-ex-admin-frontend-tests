@@ -73,8 +73,7 @@ export const config = {
               '--no-sandbox',
               '--disable-infobars',
               '--disable-gpu',
-              '--window-size=1920,1080',
-              '--host-resolver-rules=MAP epr-re-ex-entra-stub:3010 localhost:3010'
+              '--window-size=1920,1080'
             ]
           }
         }

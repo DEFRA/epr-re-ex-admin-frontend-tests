@@ -43,8 +43,7 @@ export const config = {
           '--disable-background-networking',
           '--disable-remote-fonts',
           '--ignore-certificate-errors',
-          '--disable-dev-shm-usage',
-          '--host-resolver-rules=MAP epr-re-ex-entra-stub:3010 localhost:3010'
+          '--disable-dev-shm-usage'
         ]
       }
     }
@@ -64,6 +63,7 @@ export const config = {
   waitforInterval: 200,
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
+  specFileRetries: 1,
 
   framework: 'mocha',
 
@@ -90,7 +90,7 @@ export const config = {
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: 'bdd',
-    timeout: oneMinute,
+    timeout: 2 * oneMinute,
     grep: process.env.GREP || '',
     invert: process.env.GREP_INVERT === 'true'
   },

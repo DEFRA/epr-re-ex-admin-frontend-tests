@@ -139,7 +139,6 @@ services:
       - 3010:3010
     environment:
       STUB_INTERNAL_URL: http://epr-re-ex-entra-stub:3010
-      STUB_EXTERNAL_URL: http://epr-re-ex-entra-stub:3010
     healthcheck:
       test: ["CMD", "curl", "http://localhost:3010/health"]
       interval: 3s
