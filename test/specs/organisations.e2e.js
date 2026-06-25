@@ -19,9 +19,29 @@ describe('Organisations page', () => {
     // login as service maintainer
     await browser.deleteCookies()
     await LoginPage.open()
+    console.log(await browser.getUrl())
     console.log(await browser.execute(() => window.location.href))
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
+
+    console.log('Cookies:', await browser.getCookies())
+    console.log(
+      'document.cookie:',
+      await browser.execute(() => document.cookie)
+    )
+    console.log('Origin:', await browser.execute(() => window.location.origin))
+    console.log(
+      'Body innerHTML length:',
+      await browser.execute(() => document.body.innerHTML.length)
+    )
+    console.log(
+      'Any service workers:',
+      await browser.execute(() => navigator.serviceWorker?.controller)
+    )
+    console.log(
+      'Console errors:',
+      (await browser.getLogs('browser')).filter((l) => l.level === 'SEVERE')
+    )
   })
 
   it('Should be able to update an organisation and view system logs @organisationstest', async () => {
