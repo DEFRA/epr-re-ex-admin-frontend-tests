@@ -23,7 +23,7 @@ describe('Organisations page', () => {
     await LoginPage.submitCredentials()
   })
 
-  it('Should be able to update an organisation and view system logs @organisations', async () => {
+  it('Should be able to update an organisation and view system logs @organisationstest', async () => {
     const linkedOrganisation = await createLinkedOrganisation([
       { material: 'Paper or board (R3)', wasteProcessingType: 'Reprocessor' },
       { material: 'Paper or board (R3)', wasteProcessingType: 'Exporter' }
