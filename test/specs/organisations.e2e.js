@@ -31,6 +31,8 @@ describe('Organisations page', () => {
 
     const organisation = linkedOrganisation.organisation
 
+    await browser.refresh()
+    await OrganisationsPage.open()
     await Navigation.clickOnLink('Organisations')
 
     await OrganisationsPage.searchFor(organisation.companyName)
