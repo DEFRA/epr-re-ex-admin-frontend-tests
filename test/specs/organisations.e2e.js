@@ -45,24 +45,19 @@ describe('Organisations page', () => {
     await Navigation.clickOnLink('Organisations')
 
     await OrganisationsPage.open()
-    await browser.execute(
-      (sel, val) => {
-        const el = document.querySelector(sel)
-        el.focus()
-        el.value = val
-        el.dispatchEvent(new Event('input', { bubbles: true }))
-        el.dispatchEvent(new Event('change', { bubbles: true }))
-      },
-      '#search',
-      organisation.companyName
-    )
 
     console.log(
-      'Match count:',
-      await browser.execute(
-        (sel) => document.querySelectorAll(sel).length,
-        '#search'
-      )
+      await browser.execute((sel) => {
+        const el = document.querySelector(sel)
+        el.value = 'IMMEDIATE_TEST'
+        return {
+          immediatelyAfter: el.value,
+          docURL: document.URL,
+          docTitle: document.title,
+          isElInLiveDoc: document.contains(el),
+          topWindowURL: window.top.location.href
+        }
+      }, '#search')
     )
 
     await OrganisationsPage.searchFor(organisation.companyName)
