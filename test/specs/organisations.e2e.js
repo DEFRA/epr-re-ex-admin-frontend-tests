@@ -18,21 +18,10 @@ describe('Organisations page', () => {
   before(async () => {
     // login as service maintainer
     await browser.deleteCookies()
+    console.log(await browser.capabilities)
     await LoginPage.open()
-    console.log(await browser.getUrl())
-    console.log(await browser.execute(() => window.location.href))
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
-
-    console.log(
-      'WDIO viewport:',
-      await browser.execute(() => ({
-        w: window.innerWidth,
-        h: window.innerHeight,
-        dpr: window.devicePixelRatio
-      }))
-    )
-    console.log('Window size via WDIO:', await browser.getWindowSize())
   })
 
   it('Should be able to update an organisation and view system logs @organisationstest', async () => {

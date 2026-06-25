@@ -29,6 +29,7 @@ export const config = {
   capabilities: [
     {
       browserName: 'chrome',
+      'wdio:enforceWebDriverClassic': true,
       'goog:chromeOptions': {
         args: [
           '--no-sandbox',
