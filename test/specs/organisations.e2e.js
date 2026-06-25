@@ -24,24 +24,15 @@ describe('Organisations page', () => {
     await LoginPage.enterCredentials('ea@test.gov.uk', 'pass')
     await LoginPage.submitCredentials()
 
-    console.log('Cookies:', await browser.getCookies())
     console.log(
-      'document.cookie:',
-      await browser.execute(() => document.cookie)
+      'WDIO viewport:',
+      await browser.execute(() => ({
+        w: window.innerWidth,
+        h: window.innerHeight,
+        dpr: window.devicePixelRatio
+      }))
     )
-    console.log('Origin:', await browser.execute(() => window.location.origin))
-    console.log(
-      'Body innerHTML length:',
-      await browser.execute(() => document.body.innerHTML.length)
-    )
-    console.log(
-      'Any service workers:',
-      await browser.execute(() => navigator.serviceWorker?.controller)
-    )
-    console.log(
-      'Console errors:',
-      (await browser.getLogs('browser')).filter((l) => l.level === 'SEVERE')
-    )
+    console.log('Window size via WDIO:', await browser.getWindowSize())
   })
 
   it('Should be able to update an organisation and view system logs @organisationstest', async () => {
@@ -52,6 +43,19 @@ describe('Organisations page', () => {
 
     const organisation = linkedOrganisation.organisation
     await Navigation.clickOnLink('Organisations')
+
+    await OrganisationsPage.open()
+    await browser.execute(
+      (sel, val) => {
+        const el = document.querySelector(sel)
+        el.focus()
+        el.value = val
+        el.dispatchEvent(new Event('input', { bubbles: true }))
+        el.dispatchEvent(new Event('change', { bubbles: true }))
+      },
+      '#search',
+      organisation.companyName
+    )
 
     await OrganisationsPage.searchFor(organisation.companyName)
     const searchResult = await OrganisationsPage.searchResult()
