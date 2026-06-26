@@ -37,6 +37,7 @@ describe('Waste records export page', () => {
       'Submitted At',
       'Included in Waste Balance',
       'Waste Balance Exclusion Reason',
+      'Waste Balance Tonnage',
       'Row ID'
     ]
 
