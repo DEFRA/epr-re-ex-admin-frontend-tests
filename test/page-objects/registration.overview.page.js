@@ -25,7 +25,7 @@ class RegistrationOverviewPage extends Page {
 
   async clickOnViewORSLink() {
     await $(
-      '#main-content > div > div:nth-child(2) > div > dl > div:nth-child(10) > dd > a'
+      '#main-content > div > div:nth-child(2) > div > dl > div:nth-child(11) > dd > a'
     ).click()
   }
 
@@ -44,6 +44,18 @@ class RegistrationOverviewPage extends Page {
 
   async getSummaryLogsContent() {
     return await $('#summary-logs').getText()
+  }
+
+  get statusTag() {
+    return $('dl.govuk-summary-list > div:first-child .govuk-tag')
+  }
+
+  get approveLink() {
+    return $('a*=Approve')
+  }
+
+  async clickApprove() {
+    await this.approveLink.click()
   }
 }
 
