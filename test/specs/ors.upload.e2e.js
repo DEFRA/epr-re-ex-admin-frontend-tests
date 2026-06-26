@@ -100,7 +100,7 @@ describe('ORS upload flow @orsupload', () => {
       'attachment; filename="overseas-reprocessing-sites.csv"'
     )
     expect(csvDownload.body).toContain(
-      '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+      'Org ID,Registration Number,Accreditation Number,ORS ID'
     )
     expect(csvDownload.body).toContain(String(orgId))
     expect(csvDownload.body).toContain(registrationNumber)
@@ -326,7 +326,7 @@ describe('ORS upload flow @orsupload', () => {
         'attachment; filename="overseas-reprocessing-sites.csv"'
       )
       expect(filteredCsvDownload.body).toContain(
-        '"Org ID","Registration Number","Accreditation Number","ORS ID"'
+        'Org ID,Registration Number,Accreditation Number,ORS ID'
       )
       expect(filteredCsvDownload.body).toContain(alphaRegistrationNumber)
       expect(filteredCsvDownload.body).toContain(betaRegistrationNumber)

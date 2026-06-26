@@ -4,7 +4,7 @@
   "type": "module",
   "description": "",
   "engines": {
-    "node": ">=24.17.0 <25"
+    "node": ">=24.18.0 <25"
   },
   "author": "Defra DDTS",
   "license": "OGL-UK-3.0",
@@ -66,6 +66,6 @@
     "lint-staged": "17.0.8",
     "neostandard": "0.13.0",
     "prettier": "3.8.4",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   }
 }

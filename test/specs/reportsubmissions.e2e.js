@@ -11,6 +11,44 @@ import LoginPage from 'page-objects/login.js'
 import Navigation from 'page-objects/navigation.js'
 import ReportSubmissionsPage from 'page-objects/report.submissions.page'
 
+/**
+ * Splits a single CSV row into fields, honouring fast-csv's default selective
+ * quoting so a quoted value containing a comma (e.g. an organisation name)
+ * stays one field.
+ * @param {string} row
+ * @returns {string[]}
+ */
+function parseCsvRow(row) {
+  const fields = []
+  let field = ''
+  let inQuotes = false
+
+  for (let i = 0; i < row.length; i++) {
+    const character = row[i]
+
+    if (inQuotes) {
+      if (character === '"' && row[i + 1] === '"') {
+        field += '"'
+        i++
+      } else if (character === '"') {
+        inQuotes = false
+      } else {
+        field += character
+      }
+    } else if (character === '"') {
+      inQuotes = true
+    } else if (character === ',') {
+      fields.push(field)
+      field = ''
+    } else {
+      field += character
+    }
+  }
+
+  fields.push(field)
+  return fields
+}
+
 describe('Report Submissions page', () => {
   let orgName
 
@@ -53,7 +91,7 @@ describe('Report Submissions page', () => {
     const rows = csv.body
       .split(/\r?\n/)
       .filter((line) => line.trim().length > 0)
-    const headerIndex = rows.findIndex((row) => row.startsWith('"Regulator"'))
+    const headerIndex = rows.findIndex((row) => row.startsWith('Regulator,'))
     await expect(headerIndex).toBeGreaterThanOrEqual(0)
     const dataRows = rows.slice(headerIndex + 1)
 
@@ -62,7 +100,7 @@ describe('Report Submissions page', () => {
     if (!orgRow) {
       throw new Error('Organisation row not found')
     }
-    const cols = /** @type {string} */ (orgRow).split('","')
+    const cols = parseCsvRow(/** @type {string} */ (orgRow))
     await expect(cols[12]).toBeTruthy()
     await expect(cols[13]).toBeTruthy()
     await expect(cols[15]).toBeTruthy()
@@ -79,7 +117,7 @@ describe('Report Submissions page', () => {
     const rows = csv.body
       .split(/\r?\n/)
       .filter((line) => line.trim().length > 0)
-    const headerIndex = rows.findIndex((row) => row.startsWith('"Regulator"'))
+    const headerIndex = rows.findIndex((row) => row.startsWith('Regulator,'))
     await expect(headerIndex).toBeGreaterThanOrEqual(0)
 
     const headerRow = rows[headerIndex]
