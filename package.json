@@ -33,7 +33,7 @@
     "test": "npm run clean && GREP='@smoketest' wdio run wdio.conf.js"
   },
   "dependencies": {
-    "@axe-core/webdriverio": "4.11.3",
+    "@axe-core/webdriverio": "4.12.1",
     "@faker-js/faker": "10.5.0",
     "@wdio/allure-reporter": "9.29.0",
     "@wdio/browserstack-service": "9.29.0",
