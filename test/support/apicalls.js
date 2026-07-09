@@ -312,6 +312,9 @@ export async function seedReportSubmission(
   registrationId,
   defraAuthHeader,
   { year, cadence, period, submissionNumber },
+  // Deliberately narrower than createSubmittedReport's patch: prnRevenue and
+  // freeTonnage are optional PRN fields that only apply to accredited
+  // registrations, and this helper seeds registered-only ones.
   patchFields = { tonnageRecycled: 100, tonnageNotRecycled: 0 }
 ) {
   const baseAPI = new BaseAPI()
@@ -483,6 +486,7 @@ export async function waitForReportingPeriodStatus(
   const calendarPath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/calendar`
   const timeoutMs = 30000
   const startTime = Date.now()
+  let lastSeen = []
 
   while (Date.now() - startTime < timeoutMs) {
     const response = await baseAPI.get(calendarPath, defraAuthHeader)
@@ -493,11 +497,15 @@ export async function waitForReportingPeriodStatus(
     if (reportingPeriods.some((rp) => rp.periodStatus === periodStatus)) {
       return
     }
+    lastSeen = reportingPeriods.map(
+      (rp) =>
+        `${rp.year}/${rp.period}#${rp.submissionNumber}:${rp.periodStatus}`
+    )
     await new Promise((resolve) => setTimeout(resolve, 1000))
   }
 
   throw new Error(
-    `Timed out waiting for a reporting period with status '${periodStatus}'`
+    `Timed out waiting for a reporting period with status '${periodStatus}' (last seen: ${lastSeen.join(', ')})`
   )
 }
 

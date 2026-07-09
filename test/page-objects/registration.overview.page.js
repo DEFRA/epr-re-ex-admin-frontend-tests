@@ -36,6 +36,8 @@ class RegistrationOverviewPage extends Page {
     ).click()
   }
 
+  // The actions cell renders <a>View</a><br><a>Unsubmit</a>, so the nth-child
+  // indices below count the <br>: View is child 1 and Unsubmit is child 3.
   async clickOnViewReportLink(row) {
     await $(
       `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(5) > a:nth-child(1)`

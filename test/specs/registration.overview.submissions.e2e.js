@@ -147,6 +147,9 @@ describe('Registration overview - multiple submissions per period', function () 
 
     reportsData = await RegistrationOverviewPage.getReportsTableData()
     quarterOneRows = reportsData.filter(isQuarterOne2026)
+    // Row order relies on the backend calendar sorting items within a period
+    // by submissionNumber ascending (build-all-submission-periods.js), which
+    // the frontend renders as-is.
     expect(quarterOneRows.map((row) => row.submission)).toEqual(['1', '2'])
     for (const [index, row] of quarterOneRows.entries()) {
       expect(row.status).toEqual('submitted')
