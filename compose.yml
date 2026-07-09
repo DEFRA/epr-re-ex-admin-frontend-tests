@@ -208,6 +208,10 @@ services:
       SUPPORT_EMAILS: '["nrw@test.gov.uk"]'
       CDP_UPLOADER_URL: http://cdp-uploader:7337
       SQS_ENDPOINT: http://floci:4566
+      # Same flag and default as epr-frontend-journey-tests: the backend gates
+      # resubmission (submission 2+) creation and closed-period marking on it,
+      # which the multiple-submissions registration overview journey relies on.
+      FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS: ${FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS:-true}
     ports:
       - '3001:3001'
     healthcheck:
