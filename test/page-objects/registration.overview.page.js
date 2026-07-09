@@ -11,14 +11,21 @@ class RegistrationOverviewPage extends Page {
   async getReportsTableData() {
     return await $$('#reports table tbody tr').map(async (row) => {
       const period = await row.$('td:nth-child(1)')
-      const due = await row.$('td:nth-child(2)')
-      const status = await row.$('td:nth-child(3)')
-      const actions = await row.$('td:nth-child(4)')
+      const submission = await row.$('td:nth-child(2)')
+      const due = await row.$('td:nth-child(3)')
+      const status = await row.$('td:nth-child(4)')
+      const actions = await row.$('td:nth-child(5)')
+      const links = await row.$$('td:nth-child(5) a').map(async (link) => ({
+        text: await link.getText(),
+        href: await link.getAttribute('href')
+      }))
       return {
         period: await period.getText(),
+        submission: await submission.getText(),
         due: await due.getText(),
         status: await status.getText(),
-        actions: await actions.getText()
+        actions: await actions.getText(),
+        links
       }
     })
   }
@@ -29,15 +36,21 @@ class RegistrationOverviewPage extends Page {
     ).click()
   }
 
+  async clickOnViewReportLink(row) {
+    await $(
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(5) > a:nth-child(1)`
+    ).click()
+  }
+
   async clickOnUnsubmitReportLink(row) {
     await $(
-      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a:nth-child(3)`
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(5) > a:nth-child(3)`
     ).click()
   }
 
   async unsubmitReportLinkExists(row) {
     const unsubmitElement = $(
-      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(4) > a:nth-child(3)`
+      `#reports > table > tbody > tr:nth-child(${row}) > td:nth-child(5) > a:nth-child(3)`
     )
     return await unsubmitElement.isExisting()
   }
