@@ -163,6 +163,27 @@ describe('Registration overview - multiple submissions per period', function () 
       )
     }
 
+    // Submission 1 is now superseded by the later submitted submission 2, so
+    // its row offers View only: Unsubmit is hidden on a superseded submission
+    // (PAE-1657, admin-frontend #472). Submission 2, the current submission,
+    // still offers Unsubmit.
+    const supersededRow = findOrThrow(
+      quarterOneRows,
+      (row) => row.submission === '1',
+      'Quarter 1 superseded submission 1 row'
+    )
+    expect(supersededRow.links.map((link) => link.text)).toEqual(['View'])
+
+    const currentRow = findOrThrow(
+      quarterOneRows,
+      (row) => row.submission === '2',
+      'Quarter 1 current submission 2 row'
+    )
+    expect(currentRow.links.map((link) => link.text)).toEqual([
+      'View',
+      'Unsubmit'
+    ])
+
     // Opening a prior submission resolves that submission: the report view
     // heading names it.
     const firstSubmissionRowNumber =
