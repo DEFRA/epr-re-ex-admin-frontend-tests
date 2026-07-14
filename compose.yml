@@ -212,6 +212,12 @@ services:
       # resubmission (submission 2+) creation and closed-period marking on it,
       # which the multiple-submissions registration overview journey relies on.
       FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS: ${FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS:-true}
+      # On in every deployed environment (and in epr-backend-journey-tests): the
+      # report-detail read derives from summary-log row states, whose repository
+      # is only registered when this flag is on. Without it, GET report detail
+      # 500s, so keep it on here to match deployed config.
+      FEATURE_FLAG_SUMMARY_LOG_ROW_STATES: ${FEATURE_FLAG_SUMMARY_LOG_ROW_STATES:-true}
+      FEATURE_FLAG_SUMMARY_LOG_ROW_STATES_BACKFILL: ${FEATURE_FLAG_SUMMARY_LOG_ROW_STATES_BACKFILL:-true}
     ports:
       - '3001:3001'
     healthcheck:
