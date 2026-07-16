@@ -212,7 +212,6 @@ services:
       # resubmission (submission 2+) creation and closed-period marking on it,
       # which the multiple-submissions registration overview journey relies on.
       FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS: ${FEATURE_FLAG_CLOSED_PERIOD_ADJUSTMENTS:-true}
-      FEATURE_FLAG_SUMMARY_LOG_ROW_STATES_BACKFILL: ${FEATURE_FLAG_SUMMARY_LOG_ROW_STATES_BACKFILL:-true}
     ports:
       - '3001:3001'
     healthcheck:
