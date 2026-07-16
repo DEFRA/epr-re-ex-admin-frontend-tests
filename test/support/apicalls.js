@@ -307,11 +307,84 @@ export async function linkDefraUser(refNo) {
 // submissionNumber. Submission numbers above 1 are resubmissions: the backend
 // only permits them once the period's latest submitted report is marked as
 // requiring resubmission (see uploadAndSubmitSummaryLog).
-export async function seedReportSubmission(
+// Must match the REGISTRATION_NUMBER meta cell inside the fixture spreadsheet.
+const RESTATED_REGISTRATION_NUMBER = 'R25SR500040912PA'
+const RESTATED_CMA_FIXTURE = 'test/fixtures/reprocessor-output-regonly-cma.xlsx'
+// The period the CMA fixture restates. Consumers render it differently
+// ('Q1 2026' in the CSV, 'Quarter 1' in the admin table), so labels live with
+// the spec that reads them.
+export const RESTATED_PERIOD = { year: 2026, cadence: 'quarterly', period: 1 }
+
+/**
+ * Seeds a registered-only reprocessor whose Q1 2026 is submitted, then restated
+ * by a summary log so the period is flagged requires_resubmission.
+ *
+ * That flag is the precondition for creating submission 2 at all, and there is
+ * no endpoint for it: the backend sets it as a side effect of submitting the
+ * summary log, which is why a real fixture is uploaded here.
+ *
+ * @param {{ tonnageRecycled?: number }} [options]
+ * @returns {Promise<{ refNo: string, companyName: string, registrationId: string, defraAuthHeader: Record<string, string> }>}
+ */
+export async function seedRestatedClosedPeriod({ tonnageRecycled = 100 } = {}) {
+  const linkedOrganisation = await createLinkedOrganisation([
+    {
+      material: 'Paper or board (R3)',
+      wasteProcessingType: 'Reprocessor',
+      withoutAccreditation: true
+    }
+  ])
+  const refNo = linkedOrganisation.refNo
+  const companyName = linkedOrganisation.organisation.companyName
+
+  const migrated = await updateMigratedOrganisation(refNo, [
+    {
+      regNumber: RESTATED_REGISTRATION_NUMBER,
+      status: 'approved',
+      reprocessingType: 'output'
+    }
+  ])
+  const registrationId = migrated.registrations[0].id
+  const { defraAuthHeader } = await linkDefraUser(refNo)
+
+  await seedReportSubmission(
+    refNo,
+    registrationId,
+    defraAuthHeader,
+    { ...RESTATED_PERIOD, submissionNumber: 1 },
+    { tonnageRecycled, tonnageNotRecycled: 0 }
+  )
+  await uploadAndSubmitSummaryLog(
+    refNo,
+    registrationId,
+    defraAuthHeader,
+    RESTATED_CMA_FIXTURE
+  )
+  await waitForReportingPeriodStatus(
+    refNo,
+    registrationId,
+    defraAuthHeader,
+    'requires_resubmission'
+  )
+
+  return { refNo, companyName, registrationId, defraAuthHeader }
+}
+
+const submissionPath = (
+  refNo,
+  registrationId,
+  { year, cadence, period, submissionNumber }
+) =>
+  `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}/submissions/${submissionNumber}`
+
+// Creates a submission and leaves it in_progress, returning the version the
+// next transition needs. An in-flight draft is a state under test in its own
+// right: it must not disturb what the period has already submitted.
+export async function seedDraftSubmission(
   refNo,
   registrationId,
   defraAuthHeader,
-  { year, cadence, period, submissionNumber },
+  periodSubmission,
   // Deliberately narrower than createSubmittedReport's patch: prnRevenue and
   // freeTonnage are optional PRN fields that only apply to accredited
   // registrations, and this helper seeds registered-only ones.
@@ -319,22 +392,30 @@ export async function seedReportSubmission(
 ) {
   const baseAPI = new BaseAPI()
   const jsonHeaders = { ...defraAuthHeader, 'content-type': 'application/json' }
-  const basePath = `/v1/organisations/${refNo}/registrations/${registrationId}/reports/${year}/${cadence}/${period}/submissions/${submissionNumber}`
+  const basePath = submissionPath(refNo, registrationId, periodSubmission)
 
   const createResponse = await baseAPI.post(basePath, '', defraAuthHeader)
   await assertSuccessResponse(createResponse, `POST ${basePath}`)
 
-  let patchResponse = await baseAPI.patch(
-    basePath,
-    JSON.stringify(patchFields),
-    jsonHeaders
-  )
-  patchResponse = await assertSuccessResponse(
-    patchResponse,
+  const patchResponse = await assertSuccessResponse(
+    await baseAPI.patch(basePath, JSON.stringify(patchFields), jsonHeaders),
     `PATCH ${basePath}`
   )
 
-  let version = patchResponse.version
+  return patchResponse.version
+}
+
+// Drives an in_progress submission through ready_to_submit → submitted.
+export async function submitSeededDraft(
+  refNo,
+  registrationId,
+  defraAuthHeader,
+  periodSubmission,
+  version
+) {
+  const baseAPI = new BaseAPI()
+  const jsonHeaders = { ...defraAuthHeader, 'content-type': 'application/json' }
+  const basePath = submissionPath(refNo, registrationId, periodSubmission)
 
   const readyResponse = await baseAPI.post(
     `${basePath}/status`,
@@ -342,18 +423,40 @@ export async function seedReportSubmission(
     jsonHeaders
   )
   await assertSuccessResponse(readyResponse, `POST ${basePath}/status`)
-  version += 1
 
   const submitResponse = await baseAPI.post(
     `${basePath}/status`,
     JSON.stringify({
       status: 'submitted',
-      version,
+      version: version + 1,
       submissionDeclaredBy: 'Test User'
     }),
     jsonHeaders
   )
   await assertSuccessResponse(submitResponse, `POST ${basePath}/status`)
+}
+
+export async function seedReportSubmission(
+  refNo,
+  registrationId,
+  defraAuthHeader,
+  periodSubmission,
+  patchFields = { tonnageRecycled: 100, tonnageNotRecycled: 0 }
+) {
+  const version = await seedDraftSubmission(
+    refNo,
+    registrationId,
+    defraAuthHeader,
+    periodSubmission,
+    patchFields
+  )
+  await submitSeededDraft(
+    refNo,
+    registrationId,
+    defraAuthHeader,
+    periodSubmission,
+    version
+  )
 }
 
 const SUMMARY_LOG_FAILURE_STATUSES = [

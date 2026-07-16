@@ -7,20 +7,10 @@ import RegistrationOverviewPage from 'page-objects/registration.overview.page.js
 import ReportViewPage from 'page-objects/report.view.page.js'
 import UnsubmitConfirmationPage from 'page-objects/unsubmit.confirmation.page.js'
 import {
-  createLinkedOrganisation,
-  updateMigratedOrganisation,
-  linkDefraUser,
+  RESTATED_PERIOD,
   seedReportSubmission,
-  uploadAndSubmitSummaryLog,
-  waitForReportingPeriodStatus
+  seedRestatedClosedPeriod
 } from '../support/apicalls.js'
-
-// Must match the REGISTRATION_NUMBER meta cell inside the fixture spreadsheet.
-const REGISTRATION_NUMBER = 'R25SR500040912PA'
-// The fixture restates Q1 2026, so the seeded submitted report must be for
-// that period (registered-only registrations report quarterly).
-const CMA_FIXTURE = 'test/fixtures/reprocessor-output-regonly-cma.xlsx'
-const PERIOD = { year: 2026, cadence: 'quarterly', period: 1 }
 
 const isQuarterOne2026 = (row) =>
   row.period === 'Quarter 1' && row.due.startsWith('2026')
@@ -49,52 +39,13 @@ describe('Registration overview - multiple submissions per period', function () 
   })
 
   it('lists every submission for a period as its own reachable row, with submission numbers on view and unsubmit pages @organisations @multipleSubmissions', async () => {
-    // Registered-only reprocessor whose registration matches the fixture.
-    const linkedOrganisation = await createLinkedOrganisation([
-      {
-        material: 'Paper or board (R3)',
-        wasteProcessingType: 'Reprocessor',
-        withoutAccreditation: true
-      }
-    ])
-    const migrated = await updateMigratedOrganisation(
-      linkedOrganisation.refNo,
-      [
-        {
-          regNumber: REGISTRATION_NUMBER,
-          status: 'approved',
-          reprocessingType: 'output'
-        }
-      ]
-    )
-    const registrationId = migrated.registrations[0].id
-    const { defraAuthHeader } = await linkDefraUser(linkedOrganisation.refNo)
-
-    // Close Q1 2026 with a submitted report, then restate it via a summary
-    // log so the backend flags the period as requiring resubmission.
-    await seedReportSubmission(
-      linkedOrganisation.refNo,
-      registrationId,
-      defraAuthHeader,
-      { ...PERIOD, submissionNumber: 1 }
-    )
-    await uploadAndSubmitSummaryLog(
-      linkedOrganisation.refNo,
-      registrationId,
-      defraAuthHeader,
-      CMA_FIXTURE
-    )
-    await waitForReportingPeriodStatus(
-      linkedOrganisation.refNo,
-      registrationId,
-      defraAuthHeader,
-      'requires_resubmission'
-    )
+    // A registered-only reprocessor whose Q1 2026 is closed by a submitted
+    // report and then restated, so the backend flags it requiring resubmission.
+    const { refNo, companyName, registrationId, defraAuthHeader } =
+      await seedRestatedClosedPeriod()
 
     await OrganisationsPage.open()
-    await OrganisationsPage.searchFor(
-      linkedOrganisation.organisation.companyName
-    )
+    await OrganisationsPage.searchFor(companyName)
     await OrganisationsPage.viewLink(1)
     await OrganisationOverviewPage.viewRegistrationLink(1)
 
@@ -137,12 +88,10 @@ describe('Registration overview - multiple submissions per period', function () 
 
     // Resubmit via the API: the period now holds two submitted submissions,
     // each with its own row and its own View link.
-    await seedReportSubmission(
-      linkedOrganisation.refNo,
-      registrationId,
-      defraAuthHeader,
-      { ...PERIOD, submissionNumber: 2 }
-    )
+    await seedReportSubmission(refNo, registrationId, defraAuthHeader, {
+      ...RESTATED_PERIOD,
+      submissionNumber: 2
+    })
     await browser.refresh()
 
     reportsData = await RegistrationOverviewPage.getReportsTableData()

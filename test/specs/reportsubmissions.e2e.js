@@ -10,44 +10,7 @@ import {
 import LoginPage from 'page-objects/login.js'
 import Navigation from 'page-objects/navigation.js'
 import ReportSubmissionsPage from 'page-objects/report.submissions.page'
-
-/**
- * Splits a single CSV row into fields, honouring fast-csv's default selective
- * quoting so a quoted value containing a comma (e.g. an organisation name)
- * stays one field.
- * @param {string} row
- * @returns {string[]}
- */
-function parseCsvRow(row) {
-  const fields = []
-  let field = ''
-  let inQuotes = false
-
-  for (let i = 0; i < row.length; i++) {
-    const character = row[i]
-
-    if (inQuotes) {
-      if (character === '"' && row[i + 1] === '"') {
-        field += '"'
-        i++
-      } else if (character === '"') {
-        inQuotes = false
-      } else {
-        field += character
-      }
-    } else if (character === '"') {
-      inQuotes = true
-    } else if (character === ',') {
-      fields.push(field)
-      field = ''
-    } else {
-      field += character
-    }
-  }
-
-  fields.push(field)
-  return fields
-}
+import { parseCsvRow } from '../support/csv.js'
 
 describe('Report Submissions page', () => {
   let orgName
