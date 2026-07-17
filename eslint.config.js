@@ -33,6 +33,7 @@ export default [
   },
   {
     rules: {
+      curly: ['error', 'all'],
       camelcase: [
         'error',
         {
